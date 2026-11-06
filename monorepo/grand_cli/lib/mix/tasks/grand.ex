@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Grand do
-  @shortdoc "Grand v1 JSON import, manual requirement link, and unrun export"
+  @shortdoc "Grand v1/v2 JSON import, local bounded queries, and unrun export"
   @moduledoc "See Grand.CLI and the repository README for the exact command grammar."
   use Mix.Task
 

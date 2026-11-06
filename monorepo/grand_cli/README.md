@@ -82,3 +82,17 @@ Development uses sibling poncho dependencies. Standalone installs resolve depend
 ## License
 
 MIT — Copyright (c) 2026 nshkrdotcom. See [LICENSE](LICENSE).
+
+### G02A v2 CLI (authored; run in local G02B)
+
+`mix grand import SNAPSHOT --project ID --schema 2 --store DIR` accepts the
+pinned source-only v2 JSON. `inspect snapshot` supports `--schema 2`;
+`inspect entity|relation|evidence PROJECT SNAPSHOT OBJECT_ID --schema 2`
+returns a full exact ref and object. `query PROJECT SNAPSHOT --focus ENTITY_ID
+--lens neighbors|connected|effects --budget N [--preserve entity=ID]
+[--preserve relation=ID] --store DIR [--out NEW_FILE]` returns a local bounded
+slice and preserved/omitted/unresolved receipt; it does not call an upstream
+projection. `export snapshot PROJECT SNAPSHOT --schema 2 --store DIR --out
+NEW_FILE` writes a validated portable upstream snapshot without overwriting.
+Legacy v1 commands (`link`, `approve`, `export REQUIREMENT_ID`) remain unchanged
+and do not accept a forged v2 fact. G02A Mix tests have not run locally.

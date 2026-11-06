@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://beamcompass.invalid/contracts/behavior-reference.schema.json",
+  "title": "PROPOSED exact BeamCompass object reference",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "provider",
+    "snapshot_schema_version",
+    "project_id",
+    "snapshot_id",
+    "object_kind",
+    "object_id",
+    "evidence_ids"
+  ],
+  "properties": {
+    "provider": {
+      "const": "beamcompass"
+    },
+    "snapshot_schema_version": {
+      "const": 2
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "object_kind": {
+      "enum": [
+        "entity",
+        "relation",
+        "evidence"
+      ]
+    },
+    "object_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  }
+}

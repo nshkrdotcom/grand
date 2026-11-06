@@ -1,0 +1,68 @@
+{
+  "code_commit": "ef2d60b982256e7112ef99f9d6a34ca7b034daaf",
+  "doc_evidence_commit": "c8d7f35af5fd6689cbc51c0802193902a8ec296d",
+  "doc_delivery_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+  "role": "read_only_external_contract_and_actual_export_fixture",
+  "files": [
+    {
+      "path": "snapshot-v2.schema.json",
+      "upstream_path": "contracts/snapshot-v2.schema.json",
+      "bytes": 9074,
+      "sha256": "41fabccf564220b5529b3cd6fa72337672a3539442486690a89b304d59b8f50a"
+    },
+    {
+      "path": "behavior-reference.schema.json",
+      "upstream_path": "contracts/behavior-reference.schema.json",
+      "bytes": 1040,
+      "sha256": "a2d2b23e3b20621e380fd1d1466908d24c1333bada6f36a92c0e000afd071e1f"
+    },
+    {
+      "path": "behavioral-export.md",
+      "upstream_path": "contracts/behavioral-export.md",
+      "bytes": 9644,
+      "sha256": "e4740f7afbce36cfdf9e39c838afe542921d027aab6fcd2b16efebf401cf3adf"
+    },
+    {
+      "path": "P02B.md",
+      "upstream_path": "handoffs/P02B.md",
+      "bytes": 5817,
+      "sha256": "3954e646c3efd9934d3d697f78387de058a62fdf355735b07eabe3e79839ebb4"
+    },
+    {
+      "path": "a.json",
+      "upstream_path": "handoffs/P02B-evidence/actual-export/a.json",
+      "bytes": 66139,
+      "sha256": "e67e9be5644b4492e5f2b8da4ac58514a0172a532b0b07fd2600e5d94a196321"
+    },
+    {
+      "path": "a-inputs.json",
+      "upstream_path": "handoffs/P02B-evidence/actual-export/a-inputs.json",
+      "bytes": 883,
+      "sha256": "03ccf4e94b3327619d3ed1ef8cc9ff20dd8c658e853e17674168db384572e690"
+    },
+    {
+      "path": "mutated.json",
+      "upstream_path": "handoffs/P02B-evidence/actual-export/mutated.json",
+      "bytes": 61108,
+      "sha256": "4804c660d84133c27e934bc131e210d8e96d9b94ab0e5d230539fb8dc02af49f"
+    },
+    {
+      "path": "mutated-inputs.json",
+      "upstream_path": "handoffs/P02B-evidence/actual-export/mutated-inputs.json",
+      "bytes": 883,
+      "sha256": "411996883b2f22eb87c4875c4b7359a7f8e958d2e1bba781e620eeeff54fdd15"
+    },
+    {
+      "path": "exact-0.json",
+      "upstream_path": "handoffs/P02B-evidence/actual-export/exact-0.json",
+      "bytes": 380,
+      "sha256": "cda4b466905710065146873fa50568f70addf8d9297b559967349add27fa6218"
+    },
+    {
+      "path": "exact-1.json",
+      "upstream_path": "handoffs/P02B-evidence/actual-export/exact-1.json",
+      "bytes": 380,
+      "sha256": "b15d633acb61390b9df546fdd843ed5107f71a04c35a9ccc9fb575c853283b52"
+    }
+  ]
+}

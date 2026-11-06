@@ -1,6 +1,6 @@
 defmodule Grand.CLI do
   @moduledoc """
-  Headless Grand G01A entry point. Use via `mix grand ...` from grand_cli.
+  Headless Grand versioned JSON entry point. Use via `mix grand ...` from grand_cli.
 
   All import operations read serialized JSON only. No source code is loaded,
   compiled, evaluated or executed. Only explicit CLI `approve` changes a
@@ -20,17 +20,25 @@ defmodule Grand.CLI do
     actor: :string,
     at: :string,
     out: :string,
-    ack_human: :boolean
+    ack_human: :boolean,
+    schema: :integer,
+    focus: :string,
+    budget: :integer,
+    lens: :string,
+    preserve: :string
   ]
 
   @usage """
   Run in monorepo/grand_cli (all options are long-form):
-    mix grand import SNAPSHOT.json --project ID --store DIRECTORY
+    mix grand import SNAPSHOT.json --project ID --store DIRECTORY [--schema 1|2]
     mix grand link REQUIREMENT.json --project ID --snapshot ID --fact ID --actor human:ID --store DIRECTORY [--at ISO8601]
     mix grand approve REQUIREMENT_ID --actor human:ID --ack-human --store DIRECTORY [--at ISO8601]
     mix grand inspect requirement REQUIREMENT_ID --store DIRECTORY
-    mix grand inspect snapshot PROJECT_ID SNAPSHOT_ID --store DIRECTORY
+    mix grand inspect snapshot PROJECT_ID SNAPSHOT_ID --store DIRECTORY [--schema 1|2]
     mix grand inspect fact PROJECT_ID SNAPSHOT_ID FACT_ID --store DIRECTORY
+    mix grand inspect entity|relation|evidence PROJECT_ID SNAPSHOT_ID OBJECT_ID --store DIRECTORY [--schema 2]
+    mix grand query PROJECT_ID SNAPSHOT_ID --focus ENTITY_ID [--lens neighbors|connected|effects] [--budget N] [--preserve entity=ID] [--preserve relation=ID] --store DIRECTORY [--out NEW_FILE]
+    mix grand export snapshot PROJECT_ID SNAPSHOT_ID --schema 2 --store DIRECTORY --out NEW_FILE
     mix grand export REQUIREMENT_ID --project ID --store DIRECTORY [--out NEW_FILE]
   """
 
@@ -51,16 +59,32 @@ defmodule Grand.CLI do
     with {:ok, root} <- required(opts, :store),
          {:ok, project} <- required(opts, :project),
          {:ok, snapshot} <- BeamCompass.import_file(path, project_id: project),
+         :ok <- expected_version(snapshot, opts),
          {:ok, _persisted_path} <- BeamCompass.store(snapshot, root) do
-      {:ok,
-       %{
-         "command" => "import",
-         "project_id" => project,
-         "snapshot_id" => snapshot["snapshot_id"],
-         "fact_count" => length(snapshot["upstream"]["facts"]),
-         "source_sha256" => snapshot["source_sha256"],
-         "epistemic_scope" => "syntactic_source_only"
-       }}
+      if snapshot["schema_version"] == 1 do
+        {:ok,
+         %{
+           "command" => "import",
+           "project_id" => project,
+           "snapshot_id" => snapshot["snapshot_id"],
+           "fact_count" => length(snapshot["upstream"]["facts"]),
+           "source_sha256" => snapshot["source_sha256"],
+           "epistemic_scope" => "syntactic_source_only"
+         }}
+      else
+        {:ok,
+         %{
+           "command" => "import",
+           "schema_version" => 2,
+           "project_id" => project,
+           "snapshot_id" => snapshot["snapshot_id"],
+           "entity_count" => length(snapshot["upstream"]["entities"]),
+           "relation_count" => length(snapshot["upstream"]["relations"]),
+           "evidence_count" => length(snapshot["upstream"]["evidence"]),
+           "source_sha256" => snapshot["source_sha256"],
+           "epistemic_scope" => "source_only_no_runtime_claim"
+         }}
+      end
     end
   end
 
@@ -117,7 +141,7 @@ defmodule Grand.CLI do
   end
 
   defp dispatch(["inspect", "snapshot", project, id], opts) do
-    with {:ok, root} <- required(opts, :store), do: BeamCompass.load(root, project, id)
+    with {:ok, root} <- required(opts, :store), do: load_version(root, project, id, opts)
   end
 
   defp dispatch(["inspect", "fact", project, snapshot_id, fact_id], opts) do
@@ -126,6 +150,58 @@ defmodule Grand.CLI do
          {:ok, reference} <- BeamCompass.reference(snapshot, fact_id),
          {:ok, fact} <- BeamCompass.resolve(snapshot, reference) do
       {:ok, %{"behavior_ref" => reference, "upstream_fact" => fact}}
+    end
+  end
+
+  defp dispatch(["inspect", kind, project, snapshot_id, id], opts)
+       when kind in ~w(entity relation evidence) do
+    with :ok <- require_v2(opts),
+         {:ok, root} <- required(opts, :store),
+         {:ok, snapshot} <- BeamCompass.load(root, project, snapshot_id, 2),
+         {:ok, reference} <- BeamCompass.reference(snapshot, kind, id),
+         {:ok, object} <- BeamCompass.resolve(snapshot, reference) do
+      {:ok, %{"behavior_ref" => reference, "upstream_object" => object}}
+    end
+  end
+
+  defp dispatch(["query", project, snapshot_id], opts) do
+    with :ok <- require_v2(opts),
+         {:ok, root} <- required(opts, :store),
+         {:ok, focus} <- required(opts, :focus),
+         {:ok, preserve} <- parse_preserve(opts),
+         {:ok, snapshot} <- BeamCompass.load(root, project, snapshot_id, 2),
+         {:ok, query} <-
+           BeamCompass.query(snapshot,
+             focus: focus,
+             budget: Keyword.get(opts, :budget, 32),
+             lens: Keyword.get(opts, :lens, "neighbors"),
+             preserve: preserve
+           ) do
+      case Keyword.get(opts, :out) do
+        nil -> {:ok, query}
+        path ->
+          with {:ok, _} <- write_document(path, query) do
+            {:ok, %{"command" => "query", "exported_path" => path, "receipt" => query["receipt"]}}
+          end
+      end
+    end
+  end
+
+  defp dispatch(["export", "snapshot", project, snapshot_id], opts) do
+    with :ok <- require_v2(opts),
+         {:ok, root} <- required(opts, :store),
+         {:ok, path} <- required(opts, :out),
+         {:ok, snapshot} <- BeamCompass.load(root, project, snapshot_id, 2),
+         {:ok, _} <- write_document(path, snapshot["upstream"]) do
+      {:ok,
+       %{
+         "command" => "export snapshot",
+         "exported_path" => path,
+         "project_id" => project,
+         "snapshot_id" => snapshot_id,
+         "format" => "beamcompass.snapshot",
+         "epistemic_scope" => "source_only_no_runtime_claim"
+       }}
     end
   end
 
@@ -149,6 +225,55 @@ defmodule Grand.CLI do
   end
 
   defp dispatch(_, _), do: {:error, {:usage, @usage}}
+
+  defp load_version(root, project, id, opts) do
+    case Keyword.get(opts, :schema) do
+      nil -> BeamCompass.load(root, project, id)
+      version -> BeamCompass.load(root, project, id, version)
+    end
+  end
+
+  defp expected_version(snapshot, opts) do
+    actual = snapshot["schema_version"]
+
+    case Keyword.get(opts, :schema) do
+      nil -> :ok
+      ^actual -> :ok
+      version -> {:error, {:schema_version_mismatch, version, actual}}
+    end
+  end
+
+  defp require_v2(opts) do
+    case Keyword.get(opts, :schema, 2) do
+      2 -> :ok
+      version -> {:error, {:v2_schema_required, version}}
+    end
+  end
+
+  defp parse_preserve(opts) do
+    opts
+    |> Keyword.get_values(:preserve)
+    |> Enum.reduce_while({:ok, []}, fn item, {:ok, entries} ->
+      case String.split(item, "=", parts: 2) do
+        [kind, id] when kind in ~w(entity relation) and byte_size(id) > 0 ->
+          {:cont, {:ok, [%{"object_kind" => kind, "object_id" => id} | entries]}}
+
+        _ ->
+          {:halt, {:error, {:invalid_preserve_option, item}}}
+      end
+    end)
+    |> case do
+      {:ok, entries} -> {:ok, Enum.reverse(entries)}
+      other -> other
+    end
+  end
+
+  defp write_document(path, data) do
+    with {:ok, json} <- JSON.encode(data),
+         :ok <- File.write(path, json <> "\n", [:exclusive, :binary]) do
+      {:ok, path}
+    end
+  end
 
   defp actor_and_at(actor, options) do
     case Keyword.fetch(options, :at) do

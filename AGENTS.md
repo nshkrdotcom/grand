@@ -9,11 +9,15 @@
    and commits both A ZIP updates; local B verifies/fixes those already committed
    checkouts and commits only new B repairs/evidence. B returns committed ZIPs
    and ONE canonical next-A implementation prompt. No duplicate A import/commit.
-3. G01B's 24 Mix gates passed. It is complete for the local prototype. Proceed
-   to G02A implementation against the pinned BeamCompass P02B contract. Incoming
-   cold read is part of implementation in the same run, not a review-only stop.
-   Do not re-request authorization for the existing prototype direction. Original
-   historical ZIP availability is provenance metadata, not an implementation gate.
+3. G01B's 24 Mix gates and 14 ExUnit tests passed historically. G02A has now
+   authored distinct v1/v2 adapters, source-only P02B verification, exact refs,
+   bounded local query/CLI and regressions; new Mix gates were UNRUN in A due to
+   missing toolchain. The USER applies and COMMITS both G02A ZIPs before local
+   G02B. Next owner inspects the current committed trees, verifies/repairs ALL
+   six Mix gates and phase/security/CLI/docset checks, commits only new B work,
+   and returns committed paired ZIPs plus one G03A implementation prompt.
+   No BeamCompass source changes/P03 dependency, target run, fabricated proof,
+   repeated A import, closure loop or historical ZIP gate.
 4. There is no root Mix file. Run each project's deps.get --check-locked,
    format --check-formatted, compile --warnings-as-errors, test, credo --strict,
    and dialyzer. Record exact passed/failed/unrun evidence; repair defects.

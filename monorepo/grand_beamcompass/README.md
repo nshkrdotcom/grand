@@ -80,3 +80,29 @@ Development uses the sibling core application when available. Standalone install
 ## License
 
 MIT — Copyright (c) 2026 nshkrdotcom. See [LICENSE](LICENSE).
+
+## G02A typed P02B consumer (authored, runtime verification pending)
+
+`Grand.BeamCompass` dispatches only on a declared JSON `schema_version`:
+separate `V1` and `V2` implementations. Version 2 requires caller-supplied
+`project_id` matching the export; checks snapshot and manifest digests, source
+mode, typed effect targets, evidence DAG, canonical ordering, and safe paths;
+returns a versioned immutable envelope. `reference(snapshot, "entity" |
+"relation" | "evidence", id)` constructs an exact Grand v2 ref and
+`resolve/2` checks scope, complete evidence sets and optional status/resolution.
+Old two-argument v1 references and v1 store paths are unchanged. `load/3` is
+backwards compatible, `load/4` selects version explicitly. Source-only facts
+are neither runtime observations nor execution/causal guarantees.
+
+`Grand.BeamCompass.query(snapshot, focus: entity_id, budget: 1..256,
+lens: "neighbors" | "connected" | "effects", preserve: [typed_refs])`
+reads only a valid stored v2 envelope, returns typed objects, evidence closure
+and explicit preserved/omitted/unresolved receipts. No BeamCompass P03 API is
+called. `preserve` entries are maps with `object_kind` entity/relation and
+`object_id`; requiring a relation also requires both known endpoints. The
+budget counts entities and relations, not the separately reported evidence and
+receipts. It is never a proof or semantic-completeness assertion.
+
+Run the new ExUnit suite on the bundled **actual exported** P02B JSON files
+under `fixtures/upstream/beamcompass-p02b` during local G02B. No Mix tests were
+run in G02A authoring; a separate Python contract check was executed instead.

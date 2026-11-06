@@ -10,7 +10,7 @@ defmodule Grand.Core.Store do
 
   alias Grand.Core.JSON
   @max_file 4_000_000
-  @categories ~w(snapshots requirements)
+  @categories ~w(snapshots snapshots_v2 requirements)
 
   @spec put(binary(), binary(), binary(), map()) :: {:ok, binary()} | {:error, term()}
   def put(root, category, key, value)
@@ -60,6 +60,9 @@ defmodule Grand.Core.Store do
   end
 
   defp valid_key?("snapshots", key), do: Grand.Core.valid_id?(key)
+
+  defp valid_key?("snapshots_v2", key),
+    do: Regex.match?(~r/\A[0-9a-f]{64}\z/, key)
 
   defp size_check(%File.Stat{size: size}) when size <= @max_file, do: :ok
   defp size_check(_), do: {:error, :stored_file_too_large}

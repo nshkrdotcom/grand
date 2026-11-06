@@ -77,6 +77,12 @@ defmodule Grand.Core do
      ~w(epistemic_status limitations)}
   end
 
+  defp fields("behavior_ref_v2") do
+    {:ok,
+     ~w(schema_version provider project_id snapshot_id upstream_schema_version object_kind object_id evidence_ids),
+     ~w(epistemic_status resolution)}
+  end
+
   defp fields("requirement") do
     {:ok, ~w(schema_version id revision statement status owner approval_events),
      ~w(scope behavior_refs assumption_ids supersedes_id)}
@@ -105,6 +111,7 @@ defmodule Grand.Core do
     specs =
       case schema do
         "behavior_ref" -> ref_fields()
+        "behavior_ref_v2" -> ref_v2_fields()
         "requirement" -> requirement_fields()
         "assurance_record" -> assurance_fields()
         "verification_result" -> verification_fields()
@@ -134,6 +141,28 @@ defmodule Grand.Core do
         {"epistemic_status", &one_of?(&1, @epistemic)},
         {"limitations", &text_list?/1}
       ]
+  end
+
+  defp ref_v2_fields do
+    [
+      {"schema_version", &(&1 == 2)},
+      {"provider", &(&1 == "beamcompass")},
+      {"project_id", &v2_text?/1},
+      {"snapshot_id", &(is_binary(&1) and Regex.match?(~r/\A[0-9a-f]{64}\z/, &1))},
+      {"upstream_schema_version", &(&1 == 2)},
+      {"object_kind", &one_of?(&1, ~w(entity relation evidence))},
+      {"object_id", &v2_text?/1},
+      {"evidence_ids", &v2_evidence_ids?/1},
+      {"epistemic_status", &one_of?(&1, ~w(sourced derived proposed unresolved))},
+      {"resolution", &one_of?(&1, ~w(resolved possible unresolved))}
+    ]
+  end
+
+  defp v2_text?(value), do: is_binary(value) and byte_size(value) > 0
+
+  defp v2_evidence_ids?(values) do
+    is_list(values) and values != [] and Enum.all?(values, &v2_text?/1) and
+      values == Enum.sort(values) and values == Enum.uniq(values)
   end
 
   defp requirement_fields do
@@ -218,6 +247,23 @@ defmodule Grand.Core do
   end
 
   defp valid_event?(_), do: false
+
+  defp semantic_errors("behavior_ref_v2", data) do
+    case data["object_kind"] do
+      "evidence" ->
+        if Map.has_key?(data, "epistemic_status") or Map.has_key?(data, "resolution"),
+          do: ["evidence ref cannot assert entity epistemic status or relation resolution"],
+          else: []
+
+      "entity" ->
+        if Map.has_key?(data, "resolution"),
+          do: ["entity ref cannot assert relation resolution"],
+          else: []
+
+      _ ->
+        []
+    end
+  end
 
   defp semantic_errors("requirement", data) do
     events = Map.get(data, "approval_events", [])

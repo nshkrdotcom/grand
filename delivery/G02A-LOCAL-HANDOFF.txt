@@ -1,0 +1,23 @@
+GRAND G02A (2026-11-06) — ARTIFACTS AUTHORED; NOT LOCAL RUNTIME VERIFIED
+
+Source: /home/home/p/g/n/grand (Grand Git history)
+Docs: /home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset
+Parent docs Git: /home/home/p/g/n/brainstorms (no nested docset Git)
+
+Use both returned ZIPs to apply A updates at those paths. The user commits
+A changes in BOTH histories before starting B. Archives here carry no .git
+metadata; SHA/HEAD for the user's subsequent commits cannot be claimed.
+
+T02-T05 implemented; actual pinned P02B v2 exported fixtures and schemas are
+bundled. v1 behavior is preserved; v2 is source-only, no P03 API or target run.
+Elixir/Mix unavailable in A environment, so all new Mix runtime gates are
+UNRUN. Offline Python fixture hashes/contracts + static/docset checks are not
+runtime verification. runtime_verified_through remains G01B until B accepts.
+
+One canonical B prompt: docset/handoffs/NEXT_IMPLEMENTATION_AGENT_PROMPT.txt
+(the separately linked prompt is byte-for-byte the same file).
+
+B inspects existing committed working trees, verifies all six Mix gates in each
+of the FOUR projects and phase/security/CLI/docset checks, fixes and commits ONLY
+new B repairs/evidence in the respective histories. B returns committed paired
+ZIPs and ONE G03A prompt. No A ZIP reimport, duplicate A commit or push.

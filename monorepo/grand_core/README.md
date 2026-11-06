@@ -73,3 +73,13 @@ MIX_ENV=prod mix hex.build
 ## License
 
 MIT — Copyright (c) 2026 nshkrdotcom. See [LICENSE](LICENSE).
+
+### G02A additive v2 exact reference validation
+
+`Grand.Core.validate("behavior_ref_v2", map)` recognizes a separate Grand v2
+record with the upstream v2 snapshot SHA-256, project, typed `entity`/`relation`/
+`evidence` kind and exact, sorted nonempty evidence list. Source `observed`
+status is invalid in this contract. `behavior_ref` schema_version 1 and existing
+requirement/assurance documents are not silently migrated; a separate v2 store
+namespace preserves old v1 lookup and immutable content. Elixir acceptance is
+pending the local G02B gates.

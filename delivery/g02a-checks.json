@@ -1,0 +1,88 @@
+{
+  "delivery_id": "GRAND-G02A-20261106-A",
+  "date": "2026-11-06",
+  "activity": "G02A source and test authoring from user committed-state ZIPs",
+  "repo_origin": "user uploaded grand-repo(2).zip, extracted into sandbox staging at requested absolute path; ZIP contained no .git metadata",
+  "docset_origin": "user uploaded grand-docset(2).zip, extracted into sandbox staging at requested absolute path; parent Git not supplied",
+  "toolchain_available": {
+    "elixir": null,
+    "mix": null,
+    "erl": null
+  },
+  "checks": [
+    {
+      "name": "code_static",
+      "command": "python3 scripts/static_validate.py",
+      "cwd": "grand/",
+      "exit_code": 0,
+      "status": "passed",
+      "log": "delivery/g02a-logs/code_static.log (in Grand code archive)"
+    },
+    {
+      "name": "pinned_actual_contract",
+      "command": "python3 scripts/g02_contract_check.py",
+      "cwd": "grand/",
+      "exit_code": 0,
+      "status": "passed",
+      "log": "delivery/g02a-logs/pinned_actual_contract.log (in Grand code archive)"
+    },
+    {
+      "name": "code_python_syntax",
+      "command": "python3 -m py_compile scripts/g02_contract_check.py scripts/static_validate.py",
+      "cwd": "grand/",
+      "exit_code": 0,
+      "status": "passed",
+      "log": "delivery/g02a-logs/code_python_syntax.log (in Grand code archive)"
+    },
+    {
+      "name": "docset_structural",
+      "command": "python3 tools/docsetctl.py check",
+      "cwd": "grand-docset/",
+      "exit_code": 0,
+      "status": "passed",
+      "log": "delivery/g02a-logs/docset_structural.log (in Grand code archive)"
+    },
+    {
+      "name": "docset_unittests",
+      "command": "python3 -m unittest discover -v -s tools -p test_*.py",
+      "cwd": "grand-docset/",
+      "exit_code": 0,
+      "status": "passed",
+      "log": "delivery/g02a-logs/docset_unittests.log (in Grand code archive)"
+    }
+  ],
+  "offline_suites": "passed; not Grand-Elixir runtime validation",
+  "new_exunit_tests": "authored_unrun_no_mix",
+  "g02_tests": {
+    "G02-TEST-01": "authored_unrun_no_mix",
+    "G02-TEST-02": "authored_unrun_no_mix",
+    "G02-TEST-03": "authored_unrun_no_mix",
+    "G02-TEST-04": "authored_unrun_no_mix",
+    "G02-TEST-05": "authored_unrun_no_mix"
+  },
+  "real_grand_cli_pipeline": "authored_subprocess_regression_unrun_no_mix",
+  "mix_per_project": [
+    "grand_core",
+    "grand_beamcompass",
+    "grand_assurance",
+    "grand_cli"
+  ],
+  "mix_gates_per_project": [
+    "mix deps.get --check-locked",
+    "mix format --check-formatted",
+    "mix compile --warnings-as-errors",
+    "mix test",
+    "mix credo --strict",
+    "mix dialyzer"
+  ],
+  "new_g02a_mix_gate_status": "unrun_in_authoring_environment_not_passed",
+  "new_g02a_mix_gates_unrun_count": 24,
+  "historic_g01b_acceptance": "separate G01B evidence only; 24 Mix gates and 14 ExUnit tests previously passed",
+  "runtime_verified_through": "G01B",
+  "next_phase": "G02B",
+  "no_target_execution": true,
+  "no_beamcompass_source_changes": true,
+  "no_git_sha_claim": true,
+  "in_place_user_git_checkout_confirmed": false,
+  "next_action": "user applies A archives, commits A in code and parent-docs Git; then B inspects committed existing checkouts, verifies and commits new B repairs/evidence"
+}
