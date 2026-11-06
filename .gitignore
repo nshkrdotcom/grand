@@ -1,0 +1,14 @@
+# Independent Mix applications; no root Mix project.
+_build/
+deps/
+.elixir_ls/
+.coverage
+*.beam
+**/_build/
+**/deps/
+**/.elixir_ls/
+**/erl_crash.dump
+**/cover/
+grand-store/
+*.swp
+.DS_Store

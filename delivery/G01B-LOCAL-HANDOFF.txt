@@ -1,0 +1,21 @@
+Grand G01B local-agent handoff: GRAND-G01A-20261106-A
+
+Repository: ~/p/g/n/grand
+Docset: ~/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset
+Resolve both paths from the working directory if running elsewhere; do not
+create a competing docset. The uploaded grand-repo.zip and grand-docset.zip
+are matching portable candidates, NOT proof that the local paths were changed.
+
+Read docset/control/NEXT_AGENT.md, foundation/current-state.md, G01A cold-read
+and handoff, then G01B manifest. Verify delivery IDs and manifest hashes;
+reconcile the ZIP docset against the local authoritative tree without losing
+local history or uncommitted work. Complete G01A blockers before G01B Ready.
+Run, in each independent app, mix deps.get --check-locked, mix format
+--check-formatted, mix compile --warnings-as-errors, mix test, mix credo
+--strict and mix dialyzer. Install/pin missing tools explicitly; do not report
+an absent checker as passed. Repair issues, run negative CLI integration, and
+record exact logs and statuses in the actual docset. Obtain human approval for
+ADR-0003/0005 and real approval authentication before a public contract.
+Commit code and docset separately if separately tracked, never push without
+request. For continuation return paired ZIPs, checksums, commit message, and
+a fresh next-agent prompt.

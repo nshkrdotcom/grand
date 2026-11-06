@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "id": "synthetic-REQ-void-confirmation",
+  "revision": 1,
+  "statement": "Held capacity is not released solely because a remote void intent was emitted.",
+  "status": "pending_approval",
+  "owner": "synthetic-fixture-owner",
+  "scope": "synthetic Hold Ledger example only",
+  "behavior_refs": [],
+  "assumption_ids": [],
+  "approval_events": []
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "id": "synthetic-hold-snapshot-001",
+  "projects": [
+    {
+      "path": "fixtures/synthetic_hold",
+      "name": "synthetic_hold"
+    }
+  ],
+  "facts": [
+    {
+      "id": "synthetic-fact-void-intent-001",
+      "kind": "effect_intent_candidate",
+      "subject": "SyntheticHold.Ledger.void/2",
+      "object": "{:dispatch, {:void_remote, reference}}",
+      "status": "source",
+      "anchor": {
+        "path": "../secret.ex",
+        "line": 17,
+        "column": 3
+      },
+      "details": {
+        "fixture_only": true,
+        "limitation": "source occurrence, not a confirmed remote effect"
+      }
+    }
+  ],
+  "capsules": [
+    {
+      "subject": "SyntheticHold.Ledger.void/2",
+      "fact_ids": [
+        "synthetic-fact-void-intent-001"
+      ],
+      "scope": "function_local"
+    }
+  ],
+  "issues": []
+}
