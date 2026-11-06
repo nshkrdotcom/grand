@@ -1,0 +1,8 @@
+Checking 4 source files ...
+
+Please report incorrect results: https://github.com/rrrene/credo/issues
+
+Analysis took 0.04 seconds (0.00s to load, 0.04s running 69 checks on 4 files)
+20 mods/funs, found no issues.
+
+Use `mix credo explain` to explain issues, `mix credo --help` for options.

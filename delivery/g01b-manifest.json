@@ -11,8 +11,8 @@
   "files": [
     {
       "path": ".gitignore",
-      "bytes": 196,
-      "sha256": "c1ce2fc8c55ef13a2ed4745faf840a135115dce90304e2281fa804a96d845ea4"
+      "bytes": 323,
+      "sha256": "e2d557b921028ac11e73e2924197cb0bd1cd8a85fb2a53906231d0eed2da8f86"
     },
     {
       "path": ".tool-versions",
@@ -60,9 +60,369 @@
       "sha256": "962762b3fa905cdae307776788ac10d22ec325597a9b1c46774b8ca56f19b44c"
     },
     {
+      "path": "delivery/g01b-logs/final-grand_assurance-compile.log",
+      "bytes": 38,
+      "sha256": "9f80def38bfa8cc6770078140d063938884f312efd42b7d4f1cb196e31a00b83"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_assurance-credo.log",
+      "bytes": 288,
+      "sha256": "8bfbc920669433498ae46ebf339677c55ead5473b4a45bdc96e4bfd2f7d26e4c"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_assurance-deps-get.log",
+      "bytes": 61,
+      "sha256": "ff286dd95c3e06503504e6d390878221fb78e33552d4993bd486c1bd4c73264c"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_assurance-dialyzer.log",
+      "bytes": 637,
+      "sha256": "62b0be9be4257fef18cb558a8afef0753663c7fbaa9ef95e198f0961a40d56fb"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_assurance-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_assurance-test.log",
+      "bytes": 180,
+      "sha256": "72da7dcb8c2604239160cd9a8bce645e273c0e1c8a9400985c17ed8f91310f76"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_beamcompass-compile.log",
+      "bytes": 83,
+      "sha256": "50798ae67182fa609ab0f9d1aa31979bdcc8c0d3fc873bd99c0b0125f33a9d07"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_beamcompass-credo.log",
+      "bytes": 288,
+      "sha256": "631e6d9981f5a6d89f8166825090f483221d29621e9f814ed23981f6bcf79597"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_beamcompass-deps-get.log",
+      "bytes": 61,
+      "sha256": "d138881bc61408068b36f4cc083c2f590a1fdb5af407d5b289af6ec6af961f6e"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_beamcompass-dialyzer.log",
+      "bytes": 647,
+      "sha256": "06561bef9f63549abdb290d3176853a0f2a26f43df08e3d3a4afc540f9c849db"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_beamcompass-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_beamcompass-test.log",
+      "bytes": 206,
+      "sha256": "3e651154d8748b99d20c4fa0cfdd7e976103347ceb3198f443b01288fbbd3032"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_cli-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_cli-credo.log",
+      "bytes": 288,
+      "sha256": "262d6d4f459bbea1e803f770015c9ca14dd90b27ecf628938b15bf97876d9262"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_cli-deps-get.log",
+      "bytes": 61,
+      "sha256": "ff286dd95c3e06503504e6d390878221fb78e33552d4993bd486c1bd4c73264c"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_cli-dialyzer.log",
+      "bytes": 752,
+      "sha256": "a9b258900dcc377d6cd9aa1be4e61a6eaa15672c617bb256f7eb6873a087e398"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_cli-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_cli-test.log",
+      "bytes": 119,
+      "sha256": "ce3b8c4445964d2c3519650cd27ac9f2ada94fb07773d56cda92252cb566cdbc"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_core-compile.log",
+      "bytes": 23,
+      "sha256": "d9904e527cccaec0e854b323b04ec7f0b408ecb02771ac243d1284fc624b3205"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_core-credo.log",
+      "bytes": 289,
+      "sha256": "8b98004a55f1a729ac04ec79901d10bd84ad1f11714d85d924dfe4254ec6d114"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_core-deps-get.log",
+      "bytes": 96,
+      "sha256": "88795d2c14f669452a1f65be021afb7a34e379d2a6b3d3bff213efc99901201a"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_core-dialyzer.log",
+      "bytes": 820,
+      "sha256": "20775098bbeefd181a88765fa0af1a713c9a8b2d0b93c551f9a9db4633034ebf"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_core-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/final-grand_core-test.log",
+      "bytes": 147,
+      "sha256": "96cd0a58ccb629dd207b103b6465413ab24b4669eec5d008cadd1927e7c693ae"
+    },
+    {
       "path": "delivery/g01b-logs/final-results.json",
       "bytes": 4336,
       "sha256": "3975c8a04ef258119551549a94d588bfb70ccfd53ad6beae039c8a42489a4324"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_assurance-compile.log",
+      "bytes": 82,
+      "sha256": "61a92eba070396849ba7fbf9dddab1446470f2e7bd495bafd690bc2ca33391a5"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_assurance-credo.log",
+      "bytes": 288,
+      "sha256": "8bfbc920669433498ae46ebf339677c55ead5473b4a45bdc96e4bfd2f7d26e4c"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_assurance-deps-get.log",
+      "bytes": 61,
+      "sha256": "ff286dd95c3e06503504e6d390878221fb78e33552d4993bd486c1bd4c73264c"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_assurance-dialyzer.log",
+      "bytes": 1567,
+      "sha256": "13ec55504c26e3d11535cfb96190e97cb907095f22ac7ea6d124c4f6b6e97c68"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_assurance-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_assurance-test.log",
+      "bytes": 122,
+      "sha256": "723b4dcfc8206188bfc53825170191f5307488b062d4bf9180dba41e316e00c4"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_beamcompass-compile.log",
+      "bytes": 84,
+      "sha256": "9618555fca0cd8eb41a1f853e63a259015ea7ed367587cd26db3f3dd0e6b68aa"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_beamcompass-credo.log",
+      "bytes": 549,
+      "sha256": "d19405f88299d0a8663c170d5157da1639a100a265a10cb49df56320050cfd16"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_beamcompass-deps-get.log",
+      "bytes": 61,
+      "sha256": "ff286dd95c3e06503504e6d390878221fb78e33552d4993bd486c1bd4c73264c"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_beamcompass-dialyzer.log",
+      "bytes": 1579,
+      "sha256": "2df1590f1d32ef16fe809f74dacade7d6502e6541d6ba77c8d8199661e8369ab"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_beamcompass-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_beamcompass-test.log",
+      "bytes": 123,
+      "sha256": "44b1b28caae4af72af0e34217fcd21af43d415e1bf2209c8fb0fd77d89fde652"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_cli-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_cli-credo.log",
+      "bytes": 599,
+      "sha256": "8d7a54507261652e5d551e2c41744c6b5a665772094b7acf55cc50e560ab9341"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_cli-deps-get.log",
+      "bytes": 61,
+      "sha256": "0f967c1f6d2f1639f6c68fe8c5bdb8e08287f09ca456b0fecd721414466562f5"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_cli-dialyzer.log",
+      "bytes": 1098,
+      "sha256": "f0403609c5ddc17d16e3c0b69f1cf17ad095937f7cdf2fcad9c77a2c7905e8ed"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_cli-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_cli-test.log",
+      "bytes": 119,
+      "sha256": "a4f3120aa33705040daabd817f63dc07bdf0ff4620ac33b95655fce3ee394efc"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_core-compile.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_core-credo.log",
+      "bytes": 1559,
+      "sha256": "711901e96626795ac57602226c54187c68c6c37b8430a3f6ca85b4805387fede"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_core-deps-get.log",
+      "bytes": 96,
+      "sha256": "5b4addface2f5aa6c5b1d6b33e4613235106bfc98e0677ce3f1a5c0a6c41c1ba"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_core-dialyzer.log",
+      "bytes": 1752,
+      "sha256": "f34b6fbbec674106c9d17cd0ea9c1ddc4d7d356510d5d1d1cb431489aa6fd042"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_core-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/grand_core-test.log",
+      "bytes": 123,
+      "sha256": "0a6d71634921d245d09a431a69e4e5ee6fe8edb477b6e75668e69fa60045d7b2"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_assurance-compile.log",
+      "bytes": 39,
+      "sha256": "586cefb7957c06398bd0bbbea23328741094a32410e6dd8dc69718f611008fb2"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_assurance-credo.log",
+      "bytes": 288,
+      "sha256": "8bfbc920669433498ae46ebf339677c55ead5473b4a45bdc96e4bfd2f7d26e4c"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_assurance-deps-get.log",
+      "bytes": 61,
+      "sha256": "d4b44bedbe68317181789f6d5fb3660454bf3f5c9868092d28eb539ee1b3d96e"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_assurance-dialyzer.log",
+      "bytes": 637,
+      "sha256": "900dba8ba6e7edc39f8f60e612e04ed80d5d1a0d59199b7cfaa77c8aede74d0e"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_assurance-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_assurance-test.log",
+      "bytes": 181,
+      "sha256": "935506552a4ca8aa4f283ddcc1b44b4af0c886e7cb752111091c0beb9b57966a"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_beamcompass-compile.log",
+      "bytes": 84,
+      "sha256": "9618555fca0cd8eb41a1f853e63a259015ea7ed367587cd26db3f3dd0e6b68aa"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_beamcompass-credo.log",
+      "bytes": 549,
+      "sha256": "ee4121f70fda92320defd7d875d1b7f3c0429ab7b5b1a8d310a851ed13b504e5"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_beamcompass-deps-get.log",
+      "bytes": 61,
+      "sha256": "e4f6cc60508c946c4677d3c88d6f5d4d310d232ec04679353c5028503110559d"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_beamcompass-dialyzer.log",
+      "bytes": 647,
+      "sha256": "4f7d10e8f74c6ac5dfa2b5de0eefd11d55cb63ecb6ac44f35a21310b24122eba"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_beamcompass-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_beamcompass-test.log",
+      "bytes": 206,
+      "sha256": "115383aa218f6bd1a78f645f2d0decdf9688849e1e7a1e4064bff66f9babde3f"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_cli-compile.log",
+      "bytes": 121,
+      "sha256": "979544b777a94d1f4b3dacddcb6500feff352b1c094d1b846311b7fcb0ff6a24"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_cli-credo.log",
+      "bytes": 371,
+      "sha256": "3744b19a51be7417e0f70ada758a96976a0dffe9fbdad4869b546fa0e99b33bc"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_cli-deps-get.log",
+      "bytes": 61,
+      "sha256": "ff286dd95c3e06503504e6d390878221fb78e33552d4993bd486c1bd4c73264c"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_cli-dialyzer.log",
+      "bytes": 527,
+      "sha256": "df67eeef90bb91ba487b367ebfcf5e4b9a6d5cb94e1a1c755959fa35b3a6e1dc"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_cli-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_cli-test.log",
+      "bytes": 240,
+      "sha256": "48e425ece16a142b1bf29dc151dd3aba6c252bd091a19c7a4eb5aae9a9f7c542"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_core-compile.log",
+      "bytes": 24,
+      "sha256": "03d47c6b429a076348282533b9725f493e889974a689133db39f187fac79a634"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_core-credo.log",
+      "bytes": 539,
+      "sha256": "4308cf2f7b503ba1a64a5938157b8094b3bfeb3f12ffffafac36e4222a80b001"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_core-deps-get.log",
+      "bytes": 96,
+      "sha256": "28e54d9c532bb9dab1d342394eac3348c7c5585ce104d08fc6b15b759c3bce72"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_core-dialyzer.log",
+      "bytes": 820,
+      "sha256": "19620fb310f1f3314c92061c259ee39a6ea002ef29dc0174fdf313297aced088"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_core-format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "delivery/g01b-logs/repair-attempt/final-grand_core-test.log",
+      "bytes": 146,
+      "sha256": "77b6bc6f5cbe68ccc0378687dba06710d59688dbd60556f75f44fe6df95b1642"
     },
     {
       "path": "delivery/g01b-logs/repair-attempt/final-results.json",
@@ -73,6 +433,21 @@
       "path": "delivery/g01b-logs/results.json",
       "bytes": 4036,
       "sha256": "3e0ea8e96000855428db0e9279d43eeb2012fb46ed7b4c1db13b56498fe20dca"
+    },
+    {
+      "path": "delivery/g01b-logs/smoke.log",
+      "bytes": 5577,
+      "sha256": "484b8cc2604740fb56f851e7f9621c39b31948d71a5a5145d35b6c50053e3e02"
+    },
+    {
+      "path": "delivery/g01b-logs/static.log",
+      "bytes": 134,
+      "sha256": "d3438bbd23394f155ccce72b6aa64c773f4dab3ab21442d47070df009f229525"
+    },
+    {
+      "path": "delivery/g01b-logs/toolchain.log",
+      "bytes": 144,
+      "sha256": "f27a911c334ea661d37b3bd107a451a761b6574e06ec06963cd5074505b05a86"
     },
     {
       "path": "delivery/manifest.json",

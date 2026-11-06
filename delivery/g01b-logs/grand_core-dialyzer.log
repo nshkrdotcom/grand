@@ -1,0 +1,32 @@
+Finding suitable PLTs
+Checking PLT...
+[:compiler, :crypto, :elixir, :grand_core, :kernel, :logger, :mix, :stdlib]
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.4.plt
+Finding applications for dialyxir_erlang-29.1.2_elixir-1.20.4.plt
+Finding modules for dialyxir_erlang-29.1.2_elixir-1.20.4.plt
+Removing 6 modules from dialyxir_erlang-29.1.2_elixir-1.20.4.plt
+Checking 488 modules in dialyxir_erlang-29.1.2_elixir-1.20.4.plt
+Adding 6 modules to dialyxir_erlang-29.1.2_elixir-1.20.4.plt
+done in 0m9.35s
+Finding applications for dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt
+Finding modules for dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt
+Copying dialyxir_erlang-29.1.2_elixir-1.20.4.plt to dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt
+Checking 494 modules in dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt
+Adding 175 modules to dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt
+done in 0m27.86s
+No :ignore_warnings opt specified in mix.exs and default does not exist.
+
+Starting Dialyzer
+[
+  check_plt: false,
+  init_plt: ~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/dialyxir_erlang-29.1.2_elixir-1.20.4_deps-dev.plt",
+  files: [~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/lib/grand_core/ebin/Elixir.Grand.Core.JSON.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/lib/grand_core/ebin/Elixir.Grand.Core.Store.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/lib/grand_core/ebin/Elixir.Grand.Core.beam"],
+  warnings: [:unknown]
+]
+Total errors: 0, Skipped: 0, Unnecessary Skips: 0
+done in 0m1.42s
+done (passed successfully)
