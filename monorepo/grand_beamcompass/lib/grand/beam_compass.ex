@@ -6,7 +6,7 @@ defmodule Grand.BeamCompass do
   or evaluated. v2 source evidence is descriptive, never observed execution.
   """
 
-  alias Grand.BeamCompass.{V1, V2}
+  alias Grand.BeamCompass.{Query, V1, V2}
   alias Grand.Core.JSON
 
   @max_bytes 4_000_000
@@ -99,7 +99,7 @@ defmodule Grand.BeamCompass do
   end
 
   @doc "Bounded query over v2 imported data, not an upstream P03 projection."
-  def query(snapshot, opts), do: Grand.BeamCompass.Query.run(snapshot, opts)
+  def query(snapshot, opts), do: Query.run(snapshot, opts)
 
   defp version(%{"schema_version" => version}), do: version
   defp version(_), do: nil

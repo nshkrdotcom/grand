@@ -65,6 +65,13 @@ defmodule Grand.BeamCompass.Query do
       not is_integer(budget) or budget < 1 or budget > @max_budget ->
         {:error, {:invalid_query_budget, budget, @max_budget}}
 
+      true ->
+        validate_preservation(focus, lens, budget, preserve, entities, relations)
+    end
+  end
+
+  defp validate_preservation(focus, lens, budget, preserve, entities, relations) do
+    cond do
       not is_list(preserve) or length(preserve) > @max_preserve ->
         {:error, :invalid_preserve_list}
 
@@ -75,26 +82,28 @@ defmodule Grand.BeamCompass.Query do
         {:error, :duplicate_preserve_reference}
 
       true ->
-        unknown =
-          Enum.reject(preserve, fn ref ->
-            if ref["object_kind"] == "entity",
-              do: MapSet.member?(entities, ref["object_id"]),
-              else: MapSet.member?(relations, ref["object_id"])
-          end)
-
-        if unknown == [] do
-          {:ok,
-           %{
-             "focus" => focus,
-             "lens" => lens,
-             "budget" => budget,
-             "preserve" => Enum.sort_by(preserve, &{&1["object_kind"], &1["object_id"]})
-           }}
-        else
-          {:error, {:unresolved_preserve_references, unknown}}
-        end
+        unknown = Enum.reject(preserve, &known_preserve?(&1, entities, relations))
+        preservation_result(unknown, focus, lens, budget, preserve)
     end
   end
+
+  defp known_preserve?(%{"object_kind" => "entity", "object_id" => id}, entities, _),
+    do: MapSet.member?(entities, id)
+
+  defp known_preserve?(%{"object_id" => id}, _, relations), do: MapSet.member?(relations, id)
+
+  defp preservation_result([], focus, lens, budget, preserve) do
+    {:ok,
+     %{
+       "focus" => focus,
+       "lens" => lens,
+       "budget" => budget,
+       "preserve" => Enum.sort_by(preserve, &{&1["object_kind"], &1["object_id"]})
+     }}
+  end
+
+  defp preservation_result(unknown, _, _, _, _),
+    do: {:error, {:unresolved_preserve_references, unknown}}
 
   defp valid_preserve?(%{"object_kind" => kind, "object_id" => id} = ref) do
     map_size(ref) == 2 and kind in ~w(entity relation) and is_binary(id) and byte_size(id) > 0
@@ -103,7 +112,8 @@ defmodule Grand.BeamCompass.Query do
   defp valid_preserve?(_), do: false
 
   defp essentials(focus, preserve, relations) do
-    Enum.reduce(preserve, {MapSet.new([focus]), MapSet.new()}, fn ref, {entity_ids, relation_ids} ->
+    Enum.reduce(preserve, {MapSet.new([focus]), MapSet.new()}, fn ref,
+                                                                  {entity_ids, relation_ids} ->
       case ref do
         %{"object_kind" => "entity", "object_id" => id} ->
           {MapSet.put(entity_ids, id), relation_ids}
@@ -119,16 +129,9 @@ defmodule Grand.BeamCompass.Query do
   defp select(all_relations, entity_ids, relation_ids, request) do
     {updated_entities, updated_relations} =
       Enum.reduce(all_relations, {entity_ids, relation_ids}, fn relation, {entities, relations} ->
-        if eligible?(relation, request, entities) and not MapSet.member?(relations, relation["id"]) do
-          endpoints = Enum.reject([relation["source_id"], relation["target_id"]], &is_nil/1)
-          candidate_entities = Enum.reduce(endpoints, entities, &MapSet.put(&2, &1))
-          proposed_count = MapSet.size(candidate_entities) + MapSet.size(relations) + 1
-
-          if proposed_count <= request["budget"] do
-            {candidate_entities, MapSet.put(relations, relation["id"])}
-          else
-            {entities, relations}
-          end
+        if eligible?(relation, request, entities) and
+             not MapSet.member?(relations, relation["id"]) do
+          retain_if_budget(relation, entities, relations, request["budget"])
         else
           {entities, relations}
         end
@@ -143,6 +146,17 @@ defmodule Grand.BeamCompass.Query do
     end
   end
 
+  defp retain_if_budget(relation, entities, relations, budget) do
+    endpoints = Enum.reject([relation["source_id"], relation["target_id"]], &is_nil/1)
+    candidate_entities = Enum.reduce(endpoints, entities, &MapSet.put(&2, &1))
+
+    if MapSet.size(candidate_entities) + MapSet.size(relations) + 1 <= budget do
+      {candidate_entities, MapSet.put(relations, relation["id"])}
+    else
+      {entities, relations}
+    end
+  end
+
   defp eligible?(r, %{"lens" => "neighbors", "focus" => focus}, _entities),
     do: touches?(r, focus)
 
@@ -154,10 +168,22 @@ defmodule Grand.BeamCompass.Query do
 
   defp touches?(r, id), do: r["source_id"] == id or r["target_id"] == id
 
-  defp response(env, request, kept_entities, kept_relations, required_entities, required_relations) do
+  defp response(
+         env,
+         request,
+         kept_entities,
+         kept_relations,
+         required_entities,
+         required_relations
+       ) do
     upstream = env["upstream"]
-    selected_entities = Enum.filter(upstream["entities"], &MapSet.member?(kept_entities, &1["id"]))
-    selected_relations = Enum.filter(upstream["relations"], &MapSet.member?(kept_relations, &1["id"]))
+
+    selected_entities =
+      Enum.filter(upstream["entities"], &MapSet.member?(kept_entities, &1["id"]))
+
+    selected_relations =
+      Enum.filter(upstream["relations"], &MapSet.member?(kept_relations, &1["id"]))
+
     evidence_map = Map.new(upstream["evidence"], &{&1["id"], &1})
     seeds = Enum.flat_map(selected_entities ++ selected_relations, & &1["evidence_ids"])
     evidence_ids = evidence_closure(seeds, evidence_map, MapSet.new())
@@ -220,13 +246,16 @@ defmodule Grand.BeamCompass.Query do
       "relations" => selected_relations,
       "evidence" => selected_evidence,
       "issues" => upstream["issues"],
-      "limitations" => upstream["limitations"] ++ ["Local bounded Grand query, not an upstream P03 projection or a proof"],
+      "limitations" =>
+        upstream["limitations"] ++
+          ["Local bounded Grand query, not an upstream P03 projection or a proof"],
       "receipt" => %{
         "preserved" => preserved,
         "omitted" => omissions,
         "unresolved" => unresolved,
         "selected_counts" => selected_counts,
-        "snapshot_counts" => counts(upstream["entities"], upstream["relations"], upstream["evidence"]),
+        "snapshot_counts" =>
+          counts(upstream["entities"], upstream["relations"], upstream["evidence"]),
         "omitted_count" => length(omissions),
         "unresolved_count" => length(unresolved),
         "selected_graph_complete" => omissions == [] and unresolved == [],
@@ -235,20 +264,25 @@ defmodule Grand.BeamCompass.Query do
     }
   end
 
+  @spec evidence_closure(list(), map(), MapSet.t()) :: MapSet.t()
   defp evidence_closure([], _evidence, found), do: found
 
   defp evidence_closure([id | rest], evidence, found) do
     if MapSet.member?(found, id) do
       evidence_closure(rest, evidence, found)
     else
-      evidence_closure(evidence[id]["input_evidence_ids"] ++ rest, evidence, MapSet.put(found, id))
+      evidence_closure(
+        evidence[id]["input_evidence_ids"] ++ rest,
+        evidence,
+        MapSet.put(found, id)
+      )
     end
   end
 
   defp omission_reason(r, %{"lens" => "effects"} = request) do
-    if r["kind"] not in @effect_rels,
-      do: "excluded_by_effects_lens",
-      else: omission_reason(r, Map.put(request, "lens", "neighbors"))
+    if r["kind"] in @effect_rels,
+      do: omission_reason(r, Map.put(request, "lens", "neighbors")),
+      else: "excluded_by_effects_lens"
   end
 
   defp omission_reason(r, %{"lens" => "neighbors", "focus" => focus}) do
@@ -261,5 +295,9 @@ defmodule Grand.BeamCompass.Query do
     do: %{"object_kind" => kind, "object_id" => id, "reason" => reason}
 
   defp counts(entities, relations, evidence),
-    do: %{"entities" => length(entities), "relations" => length(relations), "evidence" => length(evidence)}
+    do: %{
+      "entities" => length(entities),
+      "relations" => length(relations),
+      "evidence" => length(evidence)
+    }
 end

@@ -44,7 +44,10 @@ defmodule Grand.BeamCompass.V2ImportTest do
     assert {:ok, _} = BeamCompass.resolve(old, ref)
     assert {:ok, _} = BeamCompass.store(old, root)
     assert {:ok, ^old} = BeamCompass.load(root, old["project_id"], old["snapshot_id"])
-    assert {:error, :v2_snapshot_required} = BeamCompass.reference(old, "entity", ref["object_id"])
+
+    assert {:error, :v2_snapshot_required} =
+             BeamCompass.reference(old, "entity", ref["object_id"])
+
     assert {:error, :v2_object_kind_required} =
              BeamCompass.reference(%{"schema_version" => 2}, ref["object_id"])
   end
@@ -66,10 +69,12 @@ defmodule Grand.BeamCompass.V2ImportTest do
             {"entity", loaded["upstream"]["entities"]},
             {"relation", loaded["upstream"]["relations"]},
             {"evidence", loaded["upstream"]["evidence"]}
-          ], object <- list do
+          ],
+          object <- list do
         assert {:ok, ref} = BeamCompass.reference(loaded, kind, object["id"])
         assert {:ok, ^object} = BeamCompass.resolve(loaded, ref)
         assert ref["schema_version"] == 2
+
         assert ref["evidence_ids"] ==
                  if(kind == "evidence", do: [object["id"]], else: object["evidence_ids"])
       end
@@ -106,6 +111,7 @@ defmodule Grand.BeamCompass.V2ImportTest do
     assert {:ok, ref} = BeamCompass.reference(env, "relation", relation["id"])
     assert {:ok, ^relation} = BeamCompass.resolve(env, ref)
     assert ref["resolution"] == "unresolved"
+
     assert {:ok, query} =
              BeamCompass.query(env,
                focus: relation["source_id"],
@@ -124,6 +130,7 @@ defmodule Grand.BeamCompass.V2ImportTest do
     relation = Enum.find(env["upstream"]["relations"], &(&1["resolution"] == "resolved"))
     preserve = [%{"object_kind" => "relation", "object_id" => relation["id"]}]
     focus = relation["source_id"]
+
     assert {:error, {:preservation_budget_exceeded, 3, 1}} =
              BeamCompass.query(env, focus: focus, budget: 1, preserve: preserve)
 
@@ -135,14 +142,21 @@ defmodule Grand.BeamCompass.V2ImportTest do
     assert query["receipt"]["selected_graph_complete"] == false
     assert query["receipt"]["semantic_completeness"] == "not_claimed"
     assert Enum.any?(query["receipt"]["preserved"], &(&1["object_id"] == relation["id"]))
+
     assert length(query["receipt"]["omitted"]) ==
              length(env["upstream"]["entities"]) + length(env["upstream"]["relations"]) +
                length(env["upstream"]["evidence"]) -
                length(query["entities"]) - length(query["relations"]) - length(query["evidence"])
+
     assert {:error, {:unresolved_preserve_references, _}} =
-             BeamCompass.query(env, focus: focus, preserve: [%{"object_kind" => "relation", "object_id" => "missing"}])
+             BeamCompass.query(env,
+               focus: focus,
+               preserve: [%{"object_kind" => "relation", "object_id" => "missing"}]
+             )
+
     assert {:error, {:invalid_query_budget, 257, 256}} =
              BeamCompass.query(env, focus: focus, budget: 257)
+
     assert {:error, {:unsupported_local_query_lens, "proof"}} =
              BeamCompass.query(env, focus: focus, lens: "proof")
   end
@@ -157,8 +171,10 @@ defmodule Grand.BeamCompass.V2ImportTest do
 
     assert {:error, {:invalid_v2_snapshot, :project_id_mismatch}} =
              BeamCompass.import_file(Path.join(@pinned, "a.json"), project_id: "other")
+
     assert {:error, :project_id_required} =
              BeamCompass.import_file(Path.join(@pinned, "a.json"), [])
+
     refute File.exists?(Path.join(root, "snapshots_v2"))
   end
 
@@ -167,47 +183,103 @@ defmodule Grand.BeamCompass.V2ImportTest do
     first_evidence = hd(a["evidence"])
     first_entity = hd(a["entities"])
     effect_intent = Enum.find(a["entities"], &(&1["kind"] == "effect_intent"))
-    effect_rel = Enum.find(a["relations"], &(&1["kind"] == "performs_effect" and &1["resolution"] == "resolved"))
+
+    effect_rel =
+      Enum.find(
+        a["relations"],
+        &(&1["kind"] == "performs_effect" and &1["resolution"] == "resolved")
+      )
 
     attacks = [
       {"duplicate entity ID", update_in(a["entities"], &List.insert_at(&1, 0, hd(&1)))},
-      {"dangling entity evidence", put_in(a["entities"], [Map.put(first_entity, "evidence_ids", ["missing"]) | tl(a["entities"])])},
-      {"missing provider", put_in(a["evidence"], [Map.put(first_evidence, "provider_id", "missing") | tl(a["evidence"])])},
-      {"evidence cycle", put_in(a["evidence"], [Map.put(first_evidence, "input_evidence_ids", [first_evidence["id"]]) | tl(a["evidence"])])},
-      {"compiled provider", put_in(a["manifest"]["providers"], [Map.put(hd(a["manifest"]["providers"]), "mode", "compiled")])},
-      {"observed evidence", put_in(a["evidence"], [Map.put(first_evidence, "mode", "observed") | tl(a["evidence"])])},
-      {"observed entity", put_in(a["entities"], [Map.put(first_entity, "epistemic_status", "observed") | tl(a["entities"])])},
-      {"traversal", put_in(a["evidence"], [put_in(first_evidence["anchor"]["path"], "../secrets") | tl(a["evidence"])])},
-      {"end before start", put_in(a["evidence"], [put_in(first_evidence["anchor"]["end_line"], 1) |> put_in(["anchor", "end_column"], 1) | tl(a["evidence"])])},
-      {"wrong typed effect", update_in(a["relations"], fn rels -> Enum.map(rels, fn r -> if r["id"] == effect_rel["id"], do: Map.put(r, "target_id", effect_intent["id"]), else: r end) end)},
+      {"dangling entity evidence",
+       put_in(a["entities"], [
+         Map.put(first_entity, "evidence_ids", ["missing"]) | tl(a["entities"])
+       ])},
+      {"missing provider",
+       put_in(a["evidence"], [
+         Map.put(first_evidence, "provider_id", "missing") | tl(a["evidence"])
+       ])},
+      {"evidence cycle",
+       put_in(a["evidence"], [
+         Map.put(first_evidence, "input_evidence_ids", [first_evidence["id"]]) | tl(a["evidence"])
+       ])},
+      {"compiled provider",
+       put_in(a["manifest"]["providers"], [
+         Map.put(hd(a["manifest"]["providers"]), "mode", "compiled")
+       ])},
+      {"observed evidence",
+       put_in(a["evidence"], [Map.put(first_evidence, "mode", "observed") | tl(a["evidence"])])},
+      {"observed entity",
+       put_in(a["entities"], [
+         Map.put(first_entity, "epistemic_status", "observed") | tl(a["entities"])
+       ])},
+      {"traversal",
+       put_in(a["evidence"], [
+         put_in(first_evidence["anchor"]["path"], "../secrets") | tl(a["evidence"])
+       ])},
+      {"end before start",
+       put_in(a["evidence"], [
+         put_in(first_evidence["anchor"]["end_line"], 1) |> put_in(["anchor", "end_column"], 1)
+         | tl(a["evidence"])
+       ])},
+      {"wrong typed effect",
+       update_in(a["relations"], fn rels ->
+         Enum.map(rels, fn r ->
+           if r["id"] == effect_rel["id"],
+             do: Map.put(r, "target_id", effect_intent["id"]),
+             else: r
+         end)
+       end)},
       {"unsorted entities", put_in(a["entities"], Enum.reverse(a["entities"]))},
-      {"dangling source", update_in(a["relations"], fn rels -> [Map.put(hd(rels), "source_id", "not-present") | tl(rels)] end)}
+      {"dangling source",
+       update_in(a["relations"], fn rels ->
+         [Map.put(hd(rels), "source_id", "not-present") | tl(rels)]
+       end)}
     ]
 
     for {label, forged} <- attacks do
       with_mutated_file(forged, root, fn path ->
-        assert {:error, {:invalid_v2_snapshot, _}} = BeamCompass.import_file(path, project_id: @project), label
+        assert {:error, {:invalid_v2_snapshot, _}} =
+                 BeamCompass.import_file(path, project_id: @project),
+               label
       end)
     end
 
     assert {:error, {:invalid_v2_snapshot, :snapshot_digest_mismatch}} =
-             V2.validate_snapshot(update_in(a["limitations"], &Enum.sort(["A changed limitation" | &1])))
+             V2.validate_snapshot(
+               update_in(a["limitations"], &Enum.sort(["A changed limitation" | &1]))
+             )
   end
 
   test "exact v2 refs reject wrong collection, evidence, state and snapshot", %{root: root} do
     {:ok, env} = BeamCompass.import_file(Path.join(@pinned, "a.json"), project_id: @project)
     relation = hd(env["upstream"]["relations"])
     {:ok, reference} = BeamCompass.reference(env, "relation", relation["id"])
+
     assert {:error, {:unresolved_reference, "evidence", _}} =
-             BeamCompass.resolve(env, Map.put(reference, "object_kind", "evidence") |> Map.delete("resolution") |> Map.delete("epistemic_status"))
+             BeamCompass.resolve(
+               env,
+               Map.put(reference, "object_kind", "evidence")
+               |> Map.delete("resolution")
+               |> Map.delete("epistemic_status")
+             )
+
     assert {:error, {:reference_evidence_mismatch, _}} =
              BeamCompass.resolve(env, Map.put(reference, "evidence_ids", ["evidence:bogus"]))
+
     assert {:error, {:reference_evidence_mismatch, _}} =
              BeamCompass.resolve(env, Map.put(reference, "resolution", "possible"))
+
     assert {:error, {:reference_scope_mismatch, _}} =
-             BeamCompass.resolve(env, Map.put(reference, "snapshot_id", String.duplicate("f", 64)))
+             BeamCompass.resolve(
+               env,
+               Map.put(reference, "snapshot_id", String.duplicate("f", 64))
+             )
+
     assert {:error, {:invalid_record, "behavior_ref_v2", _}} =
              BeamCompass.resolve(env, Map.put(reference, "object_kind", "fact"))
+
     assert {:error, {:unresolved_reference, "entity", "unknown"}} =
              BeamCompass.reference(env, "entity", "unknown")
 
@@ -217,17 +289,28 @@ defmodule Grand.BeamCompass.V2ImportTest do
     changed = Map.put(env, "source_sha256", String.duplicate("f", 64))
     assert {:error, :immutable_record_conflict} = BeamCompass.store(changed, root)
     File.write!(stored, "{}")
-    assert {:error, {:invalid_v2_snapshot, _}} = BeamCompass.load(root, @project, env["snapshot_id"], 2)
+
+    assert {:error, {:invalid_v2_snapshot, _}} =
+             BeamCompass.load(root, @project, env["snapshot_id"], 2)
   end
 
   test "hostile serialization and input size, no target code is evaluated", %{root: root} do
     input = Path.join(root, "bad.json")
     File.write!(input, "{\"schema_version\":2,\"schema_version\":2}")
+
     assert {:error, {:invalid_json, :duplicate_key}} =
              BeamCompass.import_file(input, project_id: @project)
+
     File.write!(input, String.duplicate(" ", 4_000_001))
+
     assert {:error, :invalid_project_or_oversized_input} =
              BeamCompass.import_file(input, project_id: @project)
+
+    File.write!(input, String.duplicate("[", 100) <> "0" <> String.duplicate("]", 100))
+
+    assert {:error, {:invalid_json, :depth_limit}} =
+             BeamCompass.import_file(input, project_id: @project)
+
     marker = Path.join(root, "target_exec_marker")
     File.write!(Path.join(root, "mix.exs"), "File.write!(#{inspect(marker)}, \"executed\")\n")
     assert {:ok, _} = BeamCompass.import_file(Path.join(@pinned, "a.json"), project_id: @project)

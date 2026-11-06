@@ -20,6 +20,7 @@ defmodule Grand.Core.V2ReferenceTest do
     assert {:ok, ^ref} = Core.validate("behavior_ref_v2", ref)
     entity = @ref |> Map.put("object_kind", "entity") |> Map.delete("resolution")
     assert {:ok, ^entity} = Core.validate("behavior_ref_v2", entity)
+
     evidence =
       @ref
       |> Map.put("object_kind", "evidence")
@@ -39,7 +40,8 @@ defmodule Grand.Core.V2ReferenceTest do
           Map.put(@ref, "object_kind", "fact"),
           Map.put(@ref, "unknown", true)
         ] do
-      assert {:error, {:invalid_record, "behavior_ref_v2", _}} = Core.validate("behavior_ref_v2", bad)
+      assert {:error, {:invalid_record, "behavior_ref_v2", _}} =
+               Core.validate("behavior_ref_v2", bad)
     end
 
     assert {:error, {:invalid_record, "behavior_ref", _}} = Core.validate("behavior_ref", @ref)

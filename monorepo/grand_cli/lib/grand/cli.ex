@@ -177,13 +177,7 @@ defmodule Grand.CLI do
              lens: Keyword.get(opts, :lens, "neighbors"),
              preserve: preserve
            ) do
-      case Keyword.get(opts, :out) do
-        nil -> {:ok, query}
-        path ->
-          with {:ok, _} <- write_document(path, query) do
-            {:ok, %{"command" => "query", "exported_path" => path, "receipt" => query["receipt"]}}
-          end
-      end
+      query_output(Keyword.get(opts, :out), query)
     end
   end
 
@@ -225,6 +219,14 @@ defmodule Grand.CLI do
   end
 
   defp dispatch(_, _), do: {:error, {:usage, @usage}}
+
+  defp query_output(nil, query), do: {:ok, query}
+
+  defp query_output(path, query) do
+    with {:ok, _} <- write_document(path, query) do
+      {:ok, %{"command" => "query", "exported_path" => path, "receipt" => query["receipt"]}}
+    end
+  end
 
   defp load_version(root, project, id, opts) do
     case Keyword.get(opts, :schema) do

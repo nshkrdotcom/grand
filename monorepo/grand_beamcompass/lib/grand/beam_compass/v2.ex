@@ -81,14 +81,16 @@ defmodule Grand.BeamCompass.V2 do
 
   defp validate_manifest(m) do
     with :ok <- check(keys?(m, @manifest), :manifest_fields),
-         :ok <- check(is_nil(m["source_revision"]) or nonempty?(m["source_revision"]), :source_revision),
+         :ok <-
+           check(
+             is_nil(m["source_revision"]) or nonempty?(m["source_revision"]),
+             :source_revision
+           ),
          :ok <- check(sha?(m["source_digest"]) and sha?(m["config_digest"]), :manifest_digests),
          :ok <- check(keys?(m["toolchain"], ~w(elixir otp)), :toolchain_fields),
          :ok <- check(Enum.all?(~w(elixir otp), &nonempty?(m["toolchain"][&1])), :toolchain),
          :ok <- check(collection?(m["providers"], &valid_provider?/1, 1), :providers),
-         :ok <- check(sorted_ids?(m["providers"]), :provider_order_or_duplicate) do
-      :ok
-    end
+         do: check(sorted_ids?(m["providers"]), :provider_order_or_duplicate)
   end
 
   defp valid_provider?(p) do
@@ -106,9 +108,7 @@ defmodule Grand.BeamCompass.V2 do
          :ok <- check(sorted_ids?(s["evidence"]), :evidence_order_or_duplicate),
          :ok <- check(collection?(s["issues"], &valid_issue?/1), :issues),
          :ok <- check(sorted_issues?(s["issues"]), :issue_order_or_duplicate),
-         :ok <- check(strings?(s["limitations"]), :limitations) do
-      :ok
-    end
+         do: check(strings?(s["limitations"]), :limitations)
   end
 
   defp valid_entity?(e) do
@@ -120,7 +120,7 @@ defmodule Grand.BeamCompass.V2 do
 
   defp valid_relation?(r) do
     keys?(r, @relation) and nonempty?(r["id"]) and r["kind"] in @relation_kinds and
-      nonempty?(r["source_id"]) and (is_nil(r["target_id"]) or nonempty?(r["target_id"])) and
+      nonempty?(r["source_id"]) and optional_string?(r["target_id"]) and
       r["resolution"] in @resolutions and r["epistemic_status"] in @epistemic and
       strings?(r["evidence_ids"], 1) and nonempty?(r["rationale"])
   end
@@ -157,13 +157,27 @@ defmodule Grand.BeamCompass.V2 do
     providers = MapSet.new(Enum.map(s["manifest"]["providers"], & &1["id"]))
     evidence_ids = MapSet.new(Map.keys(evidence))
 
-    with :ok <- check(Enum.all?(s["evidence"], &valid_evidence_link?(&1, providers, evidence_ids)), :evidence_links),
+    with :ok <-
+           check(
+             Enum.all?(s["evidence"], &valid_evidence_link?(&1, providers, evidence_ids)),
+             :evidence_links
+           ),
          :ok <- check(acyclic?(evidence), :evidence_cycle),
-         :ok <- check(Enum.all?(s["entities"], &subset?(&1["evidence_ids"], evidence_ids)), :entity_evidence_links),
-         :ok <- check(Enum.all?(s["relations"], &valid_relation_links?(&1, entities, evidence_ids)), :relation_links_or_type),
-         :ok <- check(Enum.all?(s["issues"], &subset?(&1["evidence_ids"], evidence_ids)), :issue_evidence_links) do
-      :ok
-    end
+         :ok <-
+           check(
+             Enum.all?(s["entities"], &subset?(&1["evidence_ids"], evidence_ids)),
+             :entity_evidence_links
+           ),
+         :ok <-
+           check(
+             Enum.all?(s["relations"], &valid_relation_links?(&1, entities, evidence_ids)),
+             :relation_links_or_type
+           ),
+         do:
+           check(
+             Enum.all?(s["issues"], &subset?(&1["evidence_ids"], evidence_ids)),
+             :issue_evidence_links
+           )
   end
 
   defp valid_evidence_link?(e, providers, ids) do
@@ -175,22 +189,29 @@ defmodule Grand.BeamCompass.V2 do
     target = if is_binary(r["target_id"]), do: Map.get(entities, r["target_id"]), else: nil
     source = Map.get(entities, r["source_id"])
 
-    resolution_ok =
-      case r["resolution"] do
-        "resolved" -> not is_nil(target)
-        "possible" -> is_nil(r["target_id"]) or not is_nil(target)
-        "unresolved" -> is_nil(r["target_id"]) and r["epistemic_status"] == "unresolved"
-      end
-
-    typed_ok =
-      case r["kind"] do
-        "performs_effect" -> is_map(source) and source["kind"] in @effects_from and (is_nil(target) or target["kind"] == "effect")
-        "describes_effect" -> is_map(source) and source["kind"] in @effects_from and (is_nil(target) or target["kind"] == "effect_intent")
-        _ -> true
-      end
-
-    not is_nil(source) and resolution_ok and typed_ok and subset?(r["evidence_ids"], ids)
+    not is_nil(source) and valid_resolution?(r, target) and
+      valid_effect_type?(r["kind"], source, target) and subset?(r["evidence_ids"], ids)
   end
+
+  defp valid_resolution?(%{"resolution" => "resolved"}, target), do: not is_nil(target)
+
+  defp valid_resolution?(%{"resolution" => "possible", "target_id" => id}, target),
+    do: is_nil(id) or not is_nil(target)
+
+  defp valid_resolution?(%{"resolution" => "unresolved"} = r, _target),
+    do: is_nil(r["target_id"]) and r["epistemic_status"] == "unresolved"
+
+  defp valid_effect_type?(kind, source, target)
+       when kind in ~w(performs_effect describes_effect) do
+    expected = if kind == "performs_effect", do: "effect", else: "effect_intent"
+
+    is_map(source) and source["kind"] in @effects_from and
+      (is_nil(target) or target["kind"] == expected)
+  end
+
+  defp valid_effect_type?(_, _, _), do: true
+
+  defp optional_string?(value), do: is_nil(value) or nonempty?(value)
 
   defp acyclic?(evidence) do
     Enum.reduce_while(Map.keys(evidence), {:ok, MapSet.new()}, fn id, {:ok, done} ->
@@ -201,6 +222,7 @@ defmodule Grand.BeamCompass.V2 do
     end) != :cycle
   end
 
+  @spec visit(term(), map(), MapSet.t(), MapSet.t()) :: {:ok, MapSet.t()} | :cycle
   defp visit(id, evidence, done, path) do
     cond do
       MapSet.member?(path, id) ->
@@ -212,12 +234,7 @@ defmodule Grand.BeamCompass.V2 do
       true ->
         next = MapSet.put(path, id)
 
-        Enum.reduce_while(evidence[id]["input_evidence_ids"], {:ok, done}, fn child, {:ok, visited} ->
-          case visit(child, evidence, visited, next) do
-            {:ok, updated} -> {:cont, {:ok, updated}}
-            :cycle -> {:halt, :cycle}
-          end
-        end)
+        visit_children(evidence[id]["input_evidence_ids"], evidence, done, next)
         |> case do
           {:ok, visited} -> {:ok, MapSet.put(visited, id)}
           :cycle -> :cycle
@@ -225,14 +242,43 @@ defmodule Grand.BeamCompass.V2 do
     end
   end
 
+  defp visit_children(children, evidence, done, path) do
+    Enum.reduce_while(children, {:ok, done}, fn child, {:ok, visited} ->
+      case visit(child, evidence, visited, path) do
+        {:ok, updated} -> {:cont, {:ok, updated}}
+        :cycle -> {:halt, :cycle}
+      end
+    end)
+  end
+
   @doc "Validate a v2 immutable Grand storage envelope after reading it."
   def validate_envelope(env) when is_map(env) do
-    with :ok <- check(keys?(env, ~w(canonical_sha256 epistemic_scope format project_id schema_version snapshot_id source_sha256 upstream)), :envelope_fields),
-         :ok <- check(env["schema_version"] == 2 and env["format"] == "grand.beamcompass.v2.import", :envelope_format),
+    with :ok <-
+           check(
+             keys?(
+               env,
+               ~w(canonical_sha256 epistemic_scope format project_id schema_version snapshot_id source_sha256 upstream)
+             ),
+             :envelope_fields
+           ),
+         :ok <-
+           check(
+             env["schema_version"] == 2 and env["format"] == "grand.beamcompass.v2.import",
+             :envelope_format
+           ),
          :ok <- check(env["epistemic_scope"] == "source_only_no_runtime_claim", :envelope_scope),
-         :ok <- check(sha?(env["source_sha256"]) and sha?(env["canonical_sha256"]), :envelope_hash_fields),
+         :ok <-
+           check(
+             sha?(env["source_sha256"]) and sha?(env["canonical_sha256"]),
+             :envelope_hash_fields
+           ),
          {:ok, upstream} <- validate_snapshot(env["upstream"]),
-         :ok <- check(env["project_id"] == upstream["project_id"] and env["snapshot_id"] == upstream["snapshot_id"], :envelope_identity),
+         :ok <-
+           check(
+             env["project_id"] == upstream["project_id"] and
+               env["snapshot_id"] == upstream["snapshot_id"],
+             :envelope_identity
+           ),
          {:ok, encoded} <- JSON.encode(upstream),
          :ok <- check(digest(encoded) == env["canonical_sha256"], :envelope_canonical_hash) do
       {:ok, env}
@@ -253,7 +299,11 @@ defmodule Grand.BeamCompass.V2 do
     with {:ok, key} <- storage_key(project, snapshot_id),
          {:ok, envelope} <- Store.get(root, "snapshots_v2", key),
          {:ok, valid} <- validate_envelope(envelope),
-         :ok <- check(valid["project_id"] == project and valid["snapshot_id"] == snapshot_id, :lookup_identity) do
+         :ok <-
+           check(
+             valid["project_id"] == project and valid["snapshot_id"] == snapshot_id,
+             :lookup_identity
+           ) do
       {:ok, valid}
     end
   end
@@ -324,7 +374,8 @@ defmodule Grand.BeamCompass.V2 do
     kind = ref["object_kind"]
 
     if ref["evidence_ids"] == object_evidence(kind, object) and
-         (not Map.has_key?(ref, "epistemic_status") or ref["epistemic_status"] == object["epistemic_status"]) and
+         (not Map.has_key?(ref, "epistemic_status") or
+            ref["epistemic_status"] == object["epistemic_status"]) and
          (not Map.has_key?(ref, "resolution") or ref["resolution"] == object["resolution"]) do
       :ok
     else
