@@ -1,3 +1,8 @@
+> Historical validation report. Its test results remain valid; the earlier
+> Partial/Draft outcome is superseded by the authoritative docset's
+> handoffs/G01B-CLOSURE.md and control/WORKFLOW.md. G01B is complete for the
+> local prototype; next is Grand G02A implementation. No repeat closure gate.
+
 # G01B local validation — 2026-11-06
 
 Delivery: `GRAND-G01A-20261106-A`; continuation: `G01B-local-20261106`.

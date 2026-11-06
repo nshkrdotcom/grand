@@ -1,24 +1,29 @@
 # Grand code-agent entry
 
-1. Read `README.md`, `delivery/manifest.json`, and the **authoritative** docset
-   at `~/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset`:
-   `control/NEXT_AGENT.md`, `foundation/current-state.md`, then G01A/G01B
-   manifests and bounded required reading. The docset is outside this repo.
-2. If those paths are absent in your environment, locate the existing Grand
-   repository from the current working directory; obtain the actual docset path
-   before modifying its state. Never treat an uploaded Repomix dump as a
-   guaranteed current in-place docset.
-3. Verify matching delivery ID `GRAND-G01A-20261106-A` and hashes. Perform
-   independent cold-read; keep phase readiness Draft until all gates and
-   approval-sensitive ADR decisions are resolved.
-4. Run local Mix gates per project. Fix errors, add tests and pin/check Credo
-   and Dialyzer as warranted. Never claim an unrun check passed.
-5. The projects are separate (`monorepo/*/mix.exs`); there is no root Mix file.
-   BeamCompass remains an independent project with JSON-only integration.
-6. Reconcile docset current-state, phase manifests, traceability, decisions,
-   risks, quality-gates, NEXT_AGENT and handoff with observed results. Do not
-   mark other phases Ready or Complete without dependency evidence.
-7. Commit completed code and docset changes independently if they have
-   separate Git histories. Do not push unless requested. For a continuing
-   cycle, return both ZIPs with matching manifests, a commit-message proposal
-   and a short next-agent prompt.
+1. Read README.md and the authoritative docset at
+   ~/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset:
+   control/WORKFLOW.md, control/NEXT_AGENT.md, control/state.json,
+   foundation/current-state.md, the active A/B phase manifest and bounded reading.
+   If elsewhere, locate the existing repo and obtain the actual docset path.
+2. Follow the user-directed cycle: ChatGPT.com IMPLEMENTS A; the user applies
+   and commits both A ZIP updates; local B verifies/fixes those already committed
+   checkouts and commits only new B repairs/evidence. B returns committed ZIPs
+   and ONE canonical next-A implementation prompt. No duplicate A import/commit.
+3. G01B's 24 Mix gates passed. It is complete for the local prototype. Proceed
+   to G02A implementation against the pinned BeamCompass P02B contract. Incoming
+   cold read is part of implementation in the same run, not a review-only stop.
+   Do not re-request authorization for the existing prototype direction. Original
+   historical ZIP availability is provenance metadata, not an implementation gate.
+4. There is no root Mix file. Run each project's deps.get --check-locked,
+   format --check-formatted, compile --warnings-as-errors, test, credo --strict,
+   and dialyzer. Record exact passed/failed/unrun evidence; repair defects.
+5. BeamCompass stays independent with JSON-only integration. Preserve v1 and
+   source-only safety. Normative requirements stay in Grand. No false proof,
+   runtime causality, production authentication or durability claims.
+6. Reconcile the full authoritative docset, traceability, phase parts and
+   runtime_verified_through with observed results. A artifacts do not establish
+   B runtime acceptance; later phase aggregates complete only after B passes.
+7. Commit code and Grand docset changes separately (docset belongs to parent
+   brainstorms Git repository). Preserve unrelated changes. Do not push.
+   Return paired ignore-respecting ZIPs and ONE canonical prompt for the next
+   owner; link its file rather than displaying a different shortened prompt.

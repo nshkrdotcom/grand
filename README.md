@@ -69,8 +69,8 @@ revision 1 remains available after explicit approval creates revision 2.
 ### Important scope boundaries
 
 * `--actor human:... --ack-human` is a **manual self-attestation**, not identity
-  authentication. It is a prototype-only approval control pending user review
-  of ADR-0003 and an actual authorization solution; AI-labeled actors are denied.
+  authentication. It is an authorized local prototype control; a production
+  authorization design remains separate; AI-labeled actors are denied.
 * Imported facts are syntactic occurrences (`source`, `proposed`, or
   `unresolved`), not observed calls or causal reachability. Capsules remain
   provisional. All object references are exact project+snapshot+fact IDs.
@@ -101,8 +101,10 @@ mix dialyzer
 A repository-wide convenience command is `./scripts/check.sh`. The local G01B
 run uses Elixir 1.20.4 / OTP 29.1.2, pinned in `.tool-versions`. Exact command
 outputs and exit codes are under `delivery/g01b-logs/`; see
-`delivery/G01B-VALIDATION.md` for results and limitations. ADR-0003/0005 remain
-Proposed pending explicit user approval; phase readiness remains Draft.
+`delivery/G01B-VALIDATION.md` for results and limitations. G01B is complete for this local prototype. Next is G02A implementation;
+see the authoritative docset `control/WORKFLOW.md` and `control/NEXT_AGENT.md`.
+Versioned references and immutable JSON storage are authorized for this scope;
+production authentication/durability and stable external API release remain separate.
 
 ## Documentation and licensing
 

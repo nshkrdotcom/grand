@@ -1,7 +1,7 @@
 {
   "delivery_id": "GRAND-G01A-20261106-A",
-  "continuation_id": "G01B-local-20261106",
-  "artifact_role": "locally_validated_prototype_approval_pending",
+  "continuation_id": "G01B-complete-next-G02A",
+  "artifact_role": "locally_verified_prototype_next_g02a",
   "hash_algorithm": "sha256",
   "excludes": [
     "delivery/g01b-manifest.json"
@@ -21,8 +21,8 @@
     },
     {
       "path": "AGENTS.md",
-      "bytes": 1573,
-      "sha256": "a12c9a3ea84edd616847f3f67999f10726de63d5787f58d42f3542c1b7afb6c2"
+      "bytes": 2089,
+      "sha256": "0c557db0dfe449fdf695fcc90a781f902208c53b9ebf4f9a88154e50d9391771"
     },
     {
       "path": "LICENSE",
@@ -31,8 +31,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 5887,
-      "sha256": "de875192d35cbd4534039c9f90c53e335fb516df9b10b43826b6d5b795967152"
+      "bytes": 6098,
+      "sha256": "4d50ac33c68bcb88ac360e321a22ebb0c3535f95186813ebce7359dc11f8aaa7"
     },
     {
       "path": "assets/grand.svg",
@@ -46,8 +46,8 @@
     },
     {
       "path": "delivery/G01B-VALIDATION.md",
-      "bytes": 2546,
-      "sha256": "432cfc58c23a1f0854abc1fb3bf7a5de39c0502f1acdaab2b26d4d0fbd18130e"
+      "bytes": 2845,
+      "sha256": "a993cf4cef1c905c8ea1353d8fd44088a11eb5daa02f3dbdae8438d78a60c326"
     },
     {
       "path": "delivery/g01b-logs/baseline-comparison.json",
@@ -724,5 +724,6 @@
       "bytes": 2433,
       "sha256": "5b64c6f81997b267b9b0894043d0612a6fe64ec6fe7d1595cac3909195df583c"
     }
-  ]
+  ],
+  "workflow": "authoritative docset control/WORKFLOW.md"
 }
