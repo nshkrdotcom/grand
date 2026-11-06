@@ -36,6 +36,7 @@ defmodule Grand.AssuranceTest do
 
   test "manual link is separate from descriptive facts and approval makes a new revision" do
     ref = reference()
+
     assert {:ok, linked} =
              Assurance.link_requirement(pending(), ref, actor: "human:submitter", at: @time)
 
@@ -82,15 +83,18 @@ defmodule Grand.AssuranceTest do
   test "append-only requirement history is available through latest view" do
     root = Path.join(System.tmp_dir!(), "grand-assurance-#{System.unique_integer([:positive])}")
     on_exit(fn -> File.rm_rf!(root) end)
+
     assert {:ok, linked} =
              Assurance.link_requirement(pending(), reference(), actor: "human:writer", at: @time)
 
     assert {:ok, _} = Assurance.save_requirement(root, linked)
+
     assert {:ok, revision2} =
              Assurance.approve(linked, actor: "human:reviewer", at: @time, ack_human: true)
 
     assert {:ok, _} = Assurance.save_requirement(root, revision2)
     assert {:ok, ^revision2} = Assurance.latest(root, linked["id"])
+
     assert {:error, :immutable_record_conflict} =
              Assurance.save_requirement(root, %{revision2 | "statement" => "silently changed"})
   end

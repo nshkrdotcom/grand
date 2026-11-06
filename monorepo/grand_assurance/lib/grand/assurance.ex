@@ -27,12 +27,14 @@ defmodule Grand.Assurance do
       linked =
         req
         |> Map.put("behavior_refs", [ref])
-        |> Map.put("approval_events", [%{
-          "actor" => actor,
-          "action" => "submit",
-          "at" => at,
-          "revision" => req["revision"]
-        }])
+        |> Map.put("approval_events", [
+          %{
+            "actor" => actor,
+            "action" => "submit",
+            "at" => at,
+            "revision" => req["revision"]
+          }
+        ])
 
       Core.validate("requirement", linked)
     else
@@ -51,7 +53,7 @@ defmodule Grand.Assurance do
          true <- acknowledgement == true,
          :ok <- human_actor(actor),
          :ok <- timestamp(at),
-         true <- req["status"] == "pending_approval", 
+         true <- req["status"] == "pending_approval",
          true <- Map.get(req, "behavior_refs", []) != [],
          true <- Enum.any?(req["approval_events"], &(&1["action"] == "submit")) do
       revision = req["revision"] + 1
@@ -61,7 +63,8 @@ defmodule Grand.Assurance do
         |> Map.put("revision", revision)
         |> Map.put("status", "approved")
         |> Map.update!("approval_events", fn events ->
-          events ++ [%{"actor" => actor, "action" => "approve", "at" => at, "revision" => revision}]
+          events ++
+            [%{"actor" => actor, "action" => "approve", "at" => at, "revision" => revision}]
         end)
 
       Core.validate("requirement", approved)
@@ -73,11 +76,20 @@ defmodule Grand.Assurance do
 
   defp human_actor(actor) do
     cond do
-      not Core.nonempty?(actor) -> {:error, :human_actor_required}
-      not String.starts_with?(actor, "human:") -> {:error, :human_identity_label_required}
-      byte_size(actor) > 160 -> {:error, :actor_label_too_long}
-      String.trim(String.replace_prefix(actor, "human:", "")) == "" -> {:error, :human_actor_required}
-      true -> :ok
+      not Core.nonempty?(actor) ->
+        {:error, :human_actor_required}
+
+      not String.starts_with?(actor, "human:") ->
+        {:error, :human_identity_label_required}
+
+      byte_size(actor) > 160 ->
+        {:error, :actor_label_too_long}
+
+      String.trim(String.replace_prefix(actor, "human:", "")) == "" ->
+        {:error, :human_actor_required}
+
+      true ->
+        :ok
     end
   end
 

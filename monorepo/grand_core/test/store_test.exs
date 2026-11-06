@@ -12,8 +12,10 @@ defmodule Grand.Core.StoreTest do
     assert {:ok, path} = Store.put(root, "snapshots", "id-1", %{"value" => 1})
     assert File.exists?(path)
     assert {:ok, ^path} = Store.put(root, "snapshots", "id-1", %{"value" => 1})
+
     assert {:error, :immutable_record_conflict} =
              Store.put(root, "snapshots", "id-1", %{"value" => 2})
+
     assert {:ok, %{"value" => 1}} = Store.get(root, "snapshots", "id-1")
   end
 end

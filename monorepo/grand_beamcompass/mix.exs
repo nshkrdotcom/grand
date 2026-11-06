@@ -6,12 +6,76 @@ defmodule GrandBeamCompass.MixProject do
       app: :grand_beamcompass,
       version: "0.1.0",
       elixir: "~> 1.15",
+      name: "Grand BeamCompass",
+      description:
+        "Bounded, read-only BeamCompass v1/v2 export adapter and BehaviorRef resolution for Grand.",
+      source_url: "https://github.com/nshkrdotcom/grand",
+      homepage_url: "https://github.com/nshkrdotcom/grand",
+      package: package(),
+      docs: docs(),
       start_permanent: Mix.env() == :prod,
-      deps: [{:grand_core, path: "../grand_core"}]
+      deps: deps(),
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
   def application do
     [extra_applications: [:logger, :crypto]]
+  end
+
+  defp package do
+    [
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/nshkrdotcom/grand"},
+      files: [
+        "lib",
+        "mix.exs",
+        ".formatter.exs",
+        "README.md",
+        "CHANGELOG.md",
+        "LICENSE",
+        "assets/*"
+      ]
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      logo: "assets/grand_beamcompass.svg",
+      assets: %{"assets" => "assets"},
+      source_ref: "main",
+      source_url_pattern:
+        "https://github.com/nshkrdotcom/grand/blob/main/monorepo/grand_beamcompass/%{path}#L%{line}",
+      extras: [
+        {"README.md", [title: "Overview"]},
+        {"CHANGELOG.md", [title: "Changelog"]},
+        {"LICENSE", [title: "License"]}
+      ],
+      groups_for_extras: [
+        {"Getting started", ["README.md"]},
+        {"Project", ["CHANGELOG.md", "LICENSE"]}
+      ],
+      groups_for_modules: [
+        {"Public API", [Grand.BeamCompass]}
+      ]
+    ]
+  end
+
+  defp core_dependency do
+    if File.dir?(Path.expand("../grand_core", __DIR__)) and System.get_env("HEX_BUILD") != "true" do
+      {:grand_core, "~> 0.1.0", path: "../grand_core"}
+    else
+      {:grand_core, "~> 0.1.0"}
+    end
+  end
+
+  defp deps do
+    [
+      core_dependency(),
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+    ]
   end
 end

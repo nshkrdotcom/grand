@@ -30,7 +30,9 @@ defmodule Grand.Core do
     case fields(schema) do
       {:ok, required, optional} ->
         errors =
-          Enum.flat_map(required, fn key -> if Map.has_key?(data, key), do: [], else: ["missing #{key}"] end) ++
+          Enum.flat_map(required, fn key ->
+            if Map.has_key?(data, key), do: [], else: ["missing #{key}"]
+          end) ++
             Enum.flat_map(Map.keys(data), fn key ->
               if key in required or key in optional, do: [], else: ["unexpected #{inspect(key)}"]
             end) ++ field_errors(schema, data)
@@ -57,7 +59,9 @@ defmodule Grand.Core do
   defp object?(value), do: is_map(value)
   defp references?(value), do: is_list(value) and Enum.all?(value, &valid_ref?/1)
   defp valid_ref?(v), do: match?({:ok, _}, validate("behavior_ref", v))
-  defp optional_field(data, field, check), do: not Map.has_key?(data, field) or check.(Map.get(data, field))
+
+  defp optional_field(data, field, check),
+    do: not Map.has_key?(data, field) or check.(Map.get(data, field))
 
   defp fields("behavior_ref") do
     {:ok,
@@ -77,7 +81,8 @@ defmodule Grand.Core do
   end
 
   defp fields("verification_result") do
-    {:ok, ~w(schema_version run_id obligation_id status input_fingerprint engine scope recorded_at),
+    {:ok,
+     ~w(schema_version run_id obligation_id status input_fingerprint engine scope recorded_at),
      ~w(engine_version source_hash model_hash artifact_hashes assumption_ids diagnostics elapsed_ms)}
   end
 
@@ -135,7 +140,8 @@ defmodule Grand.Core do
         {"behavior_refs", &references?/1},
         {"assumption_ids", &ids?/1},
         {"supersedes_id", &valid_id?/1},
-        {"approval_events", fn events -> is_list(events) and Enum.all?(events, &valid_event?/1) end}
+        {"approval_events",
+         fn events -> is_list(events) and Enum.all?(events, &valid_event?/1) end}
       ]
   end
 
@@ -151,12 +157,13 @@ defmodule Grand.Core do
         {"assumption_ids", &ids?/1},
         {"created_at", &nonempty?/1},
         {"approval_event_refs", &ids?/1},
-        {"coverage_summary", fn summary ->
-          is_map(summary) and
-            Enum.sort(Map.keys(summary)) == ~w(limitations status) and
-            one_of?(Map.get(summary, "status"), @coverage) and
-            text_list?(Map.get(summary, "limitations"))
-        end}
+        {"coverage_summary",
+         fn summary ->
+           is_map(summary) and
+             Enum.sort(Map.keys(summary)) == ~w(limitations status) and
+             one_of?(Map.get(summary, "status"), @coverage) and
+             text_list?(Map.get(summary, "limitations"))
+         end}
       ]
   end
 
@@ -208,13 +215,20 @@ defmodule Grand.Core do
     events = Map.get(data, "approval_events", [])
 
     cond do
-      not is_list(events) -> []
-      Map.get(data, "status") != "approved" -> []
+      not is_list(events) ->
+        []
+
+      Map.get(data, "status") != "approved" ->
+        []
+
       Enum.any?(events, fn event ->
         is_map(event) and Map.get(event, "action") == "approve" and
-          Map.get(event, "revision") == Map.get(data, "revision")
-      end) -> []
-      true -> ["approved requirement needs same-revision approval event"]
+            Map.get(event, "revision") == Map.get(data, "revision")
+      end) ->
+        []
+
+      true ->
+        ["approved requirement needs same-revision approval event"]
     end
   end
 

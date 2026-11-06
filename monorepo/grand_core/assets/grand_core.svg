@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Outer Hexagon Clip Path: 4px padding top and bottom -->
+    <clipPath id="coreHexClip">
+      <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52" />
+    </clipPath>
+
+    <!-- Deep Vault Obsidian/Navy Radial Background -->
+    <radialGradient id="coreBg" cx="100" cy="100" r="95" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0a192f" />
+      <stop offset="40%" stop-color="#051021" />
+      <stop offset="80%" stop-color="#020813" />
+      <stop offset="100%" stop-color="#01040a" />
+    </radialGradient>
+
+    <!-- Hexagon Outer Rim Gradient (Cyan, Sapphire, Arctic Platinum) -->
+    <linearGradient id="coreRim" x1="16.86" y1="4" x2="183.14" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="35%" stop-color="#0284c7" />
+      <stop offset="70%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#67e8f9" />
+    </linearGradient>
+
+    <!-- Isometric Vault Cube Faces -->
+    <linearGradient id="cubeTop" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#e0f2fe" />
+    </linearGradient>
+
+    <linearGradient id="cubeLeft" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0369a1" />
+      <stop offset="70%" stop-color="#0c4a6e" />
+      <stop offset="100%" stop-color="#082f49" />
+    </linearGradient>
+
+    <linearGradient id="cubeRight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0284c7" />
+      <stop offset="70%" stop-color="#075985" />
+      <stop offset="100%" stop-color="#032b44" />
+    </linearGradient>
+
+    <!-- Inner Core Jewel Gradient -->
+    <radialGradient id="jewelGlow" cx="100" cy="98" r="22" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="30%" stop-color="#67e8f9" />
+      <stop offset="70%" stop-color="#0891b2" />
+      <stop offset="100%" stop-color="#164e63" />
+    </radialGradient>
+
+    <filter id="coreGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="laserGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Hexagon Container -->
+  <g clip-path="url(#coreHexClip)">
+    <!-- Base Background -->
+    <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52" fill="url(#coreBg)" />
+
+    <!-- Isometric Storage Grid Lattice -->
+    <g stroke="#0369a1" stroke-width="0.6" opacity="0.35" stroke-dasharray="2,3">
+      <line x1="100" y1="4" x2="100" y2="196" />
+      <line x1="16.86" y1="52" x2="183.14" y2="148" />
+      <line x1="16.86" y1="148" x2="183.14" y2="52" />
+      <line x1="100" y1="52" x2="183.14" y2="100" />
+      <line x1="100" y1="52" x2="16.86" y2="100" />
+      <line x1="16.86" y1="100" x2="100" y2="148" />
+      <line x1="183.14" y1="100" x2="100" y2="148" />
+    </g>
+
+    <!-- Concentric Content-Addressed Hash Rings -->
+    <circle cx="100" cy="100" r="78" fill="none" stroke="#0284c7" stroke-width="0.75" stroke-dasharray="4,8" opacity="0.4" />
+    <circle cx="100" cy="100" r="62" fill="none" stroke="#38bdf8" stroke-width="0.8" opacity="0.3" />
+    <circle cx="100" cy="100" r="46" fill="none" stroke="#06b6d4" stroke-width="1.2" stroke-dasharray="8,4" opacity="0.5" />
+
+    <!-- Outer Crystalline Node Ring (Immutable Blocks) -->
+    <!-- Top Block -->
+    <polygon points="100,22 108,27 108,37 100,42 92,37 92,27" fill="#0c4a6e" stroke="#38bdf8" stroke-width="0.8" />
+    <!-- Top-Right Block -->
+    <polygon points="152,52 160,57 160,67 152,72 144,67 144,57" fill="#0c4a6e" stroke="#38bdf8" stroke-width="0.8" />
+    <!-- Bottom-Right Block -->
+    <polygon points="152,128 160,133 160,143 152,148 144,143 144,133" fill="#0c4a6e" stroke="#38bdf8" stroke-width="0.8" />
+    <!-- Bottom Block -->
+    <polygon points="100,158 108,163 108,173 100,178 92,173 92,163" fill="#0c4a6e" stroke="#38bdf8" stroke-width="0.8" />
+    <!-- Bottom-Left Block -->
+    <polygon points="48,128 56,133 56,143 48,148 40,143 40,133" fill="#0c4a6e" stroke="#38bdf8" stroke-width="0.8" />
+    <!-- Top-Left Block -->
+    <polygon points="48,52 56,57 56,67 48,72 40,67 40,57" fill="#0c4a6e" stroke="#38bdf8" stroke-width="0.8" />
+
+    <!-- Hard-Link Conduits from Outer Blocks to Center -->
+    <g stroke="#00f5ff" stroke-width="1" opacity="0.6" filter="url(#laserGlow)">
+      <line x1="100" y1="42" x2="100" y2="68" />
+      <line x1="144" y1="72" x2="124" y2="84" />
+      <line x1="144" y1="128" x2="124" y2="116" />
+      <line x1="100" y1="158" x2="100" y2="132" />
+      <line x1="56" y1="128" x2="76" y2="116" />
+      <line x1="56" y1="72" x2="76" y2="84" />
+    </g>
+
+    <!-- Central Isometric Vault Cube (Storage Engine & Deterministic Core) -->
+    <g filter="url(#coreGlow)">
+      <!-- Top Face -->
+      <polygon points="100,66 128,82 100,98 72,82" fill="url(#cubeTop)" />
+      <!-- Left Face -->
+      <polygon points="72,82 100,98 100,134 72,118" fill="url(#cubeLeft)" />
+      <!-- Right Face -->
+      <polygon points="128,82 100,98 100,134 128,118" fill="url(#cubeRight)" />
+    </g>
+
+    <!-- Beveled Edge Highlights on Vault Cube -->
+    <g stroke="#e0f2fe" stroke-width="1.2" stroke-linecap="round" opacity="0.85">
+      <line x1="100" y1="66" x2="100" y2="98" />
+      <line x1="72" y1="82" x2="100" y2="98" />
+      <line x1="128" y1="82" x2="100" y2="98" />
+      <line x1="100" y1="98" x2="100" y2="134" stroke="#38bdf8" stroke-width="1.5" />
+    </g>
+
+    <!-- Central Cryptographic Core Atom & Jewel -->
+    <circle cx="100" cy="98" r="10" fill="url(#jewelGlow)" filter="url(#coreGlow)" />
+    <polygon points="100,91 106,98 100,105 94,98" fill="#ffffff" opacity="0.9" />
+
+    <!-- Orbital Verification Ring -->
+    <ellipse cx="100" cy="98" rx="22" ry="7" transform="rotate(-25 100 98)"
+             fill="none" stroke="#67e8f9" stroke-width="1.5" opacity="0.85" filter="url(#laserGlow)" />
+
+    <!-- Verification Dots / Block Anchors -->
+    <circle cx="100" cy="32" r="2.5" fill="#38bdf8" filter="url(#laserGlow)" />
+    <circle cx="152" cy="62" r="2.5" fill="#38bdf8" filter="url(#laserGlow)" />
+    <circle cx="152" cy="138" r="2.5" fill="#38bdf8" filter="url(#laserGlow)" />
+    <circle cx="100" cy="168" r="2.5" fill="#38bdf8" filter="url(#laserGlow)" />
+    <circle cx="48" cy="138" r="2.5" fill="#38bdf8" filter="url(#laserGlow)" />
+    <circle cx="48" cy="62" r="2.5" fill="#38bdf8" filter="url(#laserGlow)" />
+
+    <!-- Polished Inner Bezel Border -->
+    <polygon points="100,5.5 181.84,52.8 181.84,147.2 100,194.5 18.16,147.2 18.16,52.8"
+             fill="none" stroke="url(#coreRim)" stroke-width="2.5" opacity="0.9" />
+
+    <!-- Sharp Outer Metallic Hex Rim -->
+    <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52"
+             fill="none" stroke="url(#coreRim)" stroke-width="3" />
+  </g>
+</svg>

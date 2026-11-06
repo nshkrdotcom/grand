@@ -41,7 +41,9 @@ defmodule Grand.BeamCompass do
              %{
                "index" => index,
                "confidence" => "provisional",
-               "limitations" => ["Function-local v1 capsule; no transitive process or effect claim"]
+               "limitations" => [
+                 "Function-local v1 capsule; no transitive process or effect claim"
+               ]
              }
            end)
        }}
@@ -225,7 +227,12 @@ defmodule Grand.BeamCompass do
   @spec store(map(), binary()) :: {:ok, binary()} | {:error, term()}
   def store(snapshot, root) do
     with {:ok, envelope} <- validate_envelope(snapshot) do
-      Store.put(root, "snapshots", snapshot_key(envelope["project_id"], envelope["snapshot_id"]), envelope)
+      Store.put(
+        root,
+        "snapshots",
+        snapshot_key(envelope["project_id"], envelope["snapshot_id"]),
+        envelope
+      )
     end
   end
 

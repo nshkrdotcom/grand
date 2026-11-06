@@ -35,10 +35,12 @@ defmodule Grand.Core.JSONTest do
     }
 
     assert {:ok, ^run} = Core.validate("verification_result", run)
+
     assert {:error, {:invalid_record, "verification_result", errors}} =
              Core.validate("verification_result", Map.put(run, "verified", true))
 
     assert "unexpected \"verified\"" in errors
+
     assert {:error, {:invalid_record, "verification_result", _}} =
              Core.validate("verification_result", Map.put(run, "status", "success"))
   end

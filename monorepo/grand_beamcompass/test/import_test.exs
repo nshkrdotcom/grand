@@ -17,13 +17,22 @@ defmodule Grand.BeamCompass.ImportTest do
     path = Path.join(@fixtures, "beamcompass_v1.json")
     original = File.read!(path)
     assert {:ok, snapshot} = BeamCompass.import_file(path, project_id: @project)
-    assert snapshot["source_sha256"] == Base.encode16(:crypto.hash(:sha256, original), case: :lower)
+
+    assert snapshot["source_sha256"] ==
+             Base.encode16(:crypto.hash(:sha256, original), case: :lower)
+
     assert [%{"confidence" => "provisional"}] = snapshot["capsule_assessments"]
     assert {:ok, ref} = BeamCompass.reference(snapshot, "synthetic-fact-void-intent-001")
     assert ref["epistemic_status"] == "source"
     assert ref["evidence_ids"] == [ref["object_id"]]
     assert {:ok, fact} = BeamCompass.resolve(snapshot, ref)
-    assert fact["anchor"] == %{"path" => "lib/synthetic_hold/ledger.ex", "line" => 17, "column" => 3}
+
+    assert fact["anchor"] == %{
+             "path" => "lib/synthetic_hold/ledger.ex",
+             "line" => 17,
+             "column" => 3
+           }
+
     assert {:ok, _} = BeamCompass.store(snapshot, root)
     assert {:ok, loaded} = BeamCompass.load(root, @project, snapshot["snapshot_id"])
     assert {:ok, ^fact} = BeamCompass.resolve(loaded, ref)
@@ -65,13 +74,19 @@ defmodule Grand.BeamCompass.ImportTest do
 
   test "unknown v1 fact and changed persisted JSON fail closed", %{root: root} do
     assert {:ok, snapshot} =
-             BeamCompass.import_file(Path.join(@fixtures, "beamcompass_v1.json"), project_id: @project)
-    assert {:error, {:unresolved_reference, "missing"}} = BeamCompass.reference(snapshot, "missing")
+             BeamCompass.import_file(Path.join(@fixtures, "beamcompass_v1.json"),
+               project_id: @project
+             )
+
+    assert {:error, {:unresolved_reference, "missing"}} =
+             BeamCompass.reference(snapshot, "missing")
+
     assert {:ok, path} = BeamCompass.store(snapshot, root)
     assert {:ok, json} = JSON.decode(File.read!(path))
     mutated = put_in(json["upstream"]["facts"], [])
     assert {:ok, content} = JSON.encode(mutated)
     File.write!(path, content)
+
     assert {:error, {:invalid_snapshot, :stored_envelope_invalid_or_modified}} =
              BeamCompass.load(root, @project, snapshot["snapshot_id"])
   end

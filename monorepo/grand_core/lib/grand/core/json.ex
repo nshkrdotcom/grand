@@ -13,7 +13,9 @@ defmodule Grand.Core.JSON do
   @number ~r/\A-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?/
 
   @spec decode(binary(), keyword()) :: {:ok, term()} | {:error, term()}
-  def decode(json, opts \\ []) when is_binary(json) do
+  def decode(json, opts \\ [])
+
+  def decode(json, opts) when is_binary(json) do
     max_bytes = Keyword.get(opts, :max_bytes, @default_bytes)
     max_depth = Keyword.get(opts, :max_depth, @default_depth)
     max_nodes = Keyword.get(opts, :max_nodes, @default_nodes)
@@ -31,7 +33,9 @@ defmodule Grand.Core.JSON do
       true ->
         case value(ws(json), 0, max_depth, max_nodes) do
           {:ok, parsed, trailing, _remaining} ->
-            if ws(trailing) == "", do: {:ok, parsed}, else: {:error, {:invalid_json, :trailing_data}}
+            if ws(trailing) == "",
+              do: {:ok, parsed},
+              else: {:error, {:invalid_json, :trailing_data}}
 
           {:error, reason} ->
             {:error, {:invalid_json, reason}}
@@ -279,16 +283,32 @@ defmodule Grand.Core.JSON do
       text
       |> String.to_charlist()
       |> Enum.map(fn
-        ?\" -> "\\\""
-        ?\\ -> "\\\\"
-        ?\b -> "\\b"
-        ?\f -> "\\f"
-        ?\n -> "\\n"
-        ?\r -> "\\r"
-        ?\t -> "\\t"
+        ?\" ->
+          "\\\""
+
+        ?\\ ->
+          "\\\\"
+
+        ?\b ->
+          "\\b"
+
+        ?\f ->
+          "\\f"
+
+        ?\n ->
+          "\\n"
+
+        ?\r ->
+          "\\r"
+
+        ?\t ->
+          "\\t"
+
         codepoint when codepoint < 32 ->
           "\\u" <> String.pad_leading(Integer.to_string(codepoint, 16), 4, "0")
-        codepoint -> <<codepoint::utf8>>
+
+        codepoint ->
+          <<codepoint::utf8>>
       end)
 
     ["\"", encoded, "\""]

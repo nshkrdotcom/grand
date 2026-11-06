@@ -9,6 +9,7 @@ deps/
 **/.elixir_ls/
 **/erl_crash.dump
 **/cover/
+**/doc/
 grand-store/
 *.swp
 .DS_Store

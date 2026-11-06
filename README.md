@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="assets/grand.svg" alt="Grand" width="200" />
+</p>
+
+<p align="center">
+  <a href="https://github.com/nshkrdotcom/grand"><img src="https://img.shields.io/badge/GitHub-grand-181717?logo=github" alt="GitHub repository" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+</p>
+
 # Grand — first-pass G01A implementation
 
 Grand owns **normative requirement and assurance records**. BeamCompass remains
@@ -95,3 +104,12 @@ Dialyzer are **not bundled**; installing/pinning them is a separate G01B choice.
 The ChatGPT first-pass environment lacked Mix/Elixir, so **none** of these
 runtime checks was run. Written ExUnit tests are not a claim of passing tests.
 See `delivery/manifest.json` and the docset G01A handoff for static evidence.
+
+## Documentation and licensing
+
+- [Grand Core](monorepo/grand_core/README.md) · [Core changelog](monorepo/grand_core/CHANGELOG.md)
+- [Grand BeamCompass](monorepo/grand_beamcompass/README.md) · [BeamCompass adapter changelog](monorepo/grand_beamcompass/CHANGELOG.md)
+- [Grand Assurance](monorepo/grand_assurance/README.md) · [Assurance changelog](monorepo/grand_assurance/CHANGELOG.md)
+- [Grand CLI](monorepo/grand_cli/README.md) · [CLI changelog](monorepo/grand_cli/CHANGELOG.md)
+- [MIT License](LICENSE) — Copyright (c) 2026 nshkrdotcom
+

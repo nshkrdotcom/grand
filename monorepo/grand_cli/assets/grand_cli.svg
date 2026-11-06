@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Outer Hexagon Clip Path: 4px padding top and bottom -->
+    <clipPath id="cliHexClip">
+      <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52" />
+    </clipPath>
+
+    <!-- Deep Cyber Void Radial Background -->
+    <radialGradient id="cliBg" cx="100" cy="100" r="95" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0a1f18" />
+      <stop offset="45%" stop-color="#051210" />
+      <stop offset="80%" stop-color="#020807" />
+      <stop offset="100%" stop-color="#010403" />
+    </radialGradient>
+
+    <!-- Hexagon Outer Rim Gradient (Emerald, Electric Mint, Cyan, Violet) -->
+    <linearGradient id="cliRim" x1="16.86" y1="4" x2="183.14" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="35%" stop-color="#06d6a0" />
+      <stop offset="70%" stop-color="#00f5ff" />
+      <stop offset="100%" stop-color="#8b5cf6" />
+    </linearGradient>
+
+    <!-- Iris / Blade Gradients -->
+    <linearGradient id="blade1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#065f46" />
+    </linearGradient>
+
+    <linearGradient id="blade2" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2dd4bf" />
+      <stop offset="100%" stop-color="#115e59" />
+    </linearGradient>
+
+    <linearGradient id="blade3" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#075985" />
+    </linearGradient>
+
+    <linearGradient id="blade4" x1="1" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#4c1d95" />
+    </linearGradient>
+
+    <!-- Energy Core Radial Gradient -->
+    <radialGradient id="coreEnergy" cx="100" cy="100" r="25" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="35%" stop-color="#6ee7b7" />
+      <stop offset="70%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </radialGradient>
+
+    <filter id="cliGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="vectorPulse" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Hexagon Container -->
+  <g clip-path="url(#cliHexClip)">
+    <!-- Base Background -->
+    <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52" fill="url(#cliBg)" />
+
+    <!-- Circular Radar & Orbital Tracks -->
+    <g stroke="#065f46" stroke-width="0.6" opacity="0.4" stroke-dasharray="3,3">
+      <circle cx="100" cy="100" r="76" fill="none" />
+      <circle cx="100" cy="100" r="60" fill="none" />
+      <circle cx="100" cy="100" r="44" fill="none" />
+      <line x1="100" y1="20" x2="100" y2="180" />
+      <line x1="20" y1="100" x2="180" y2="100" />
+    </g>
+
+    <!-- Dynamic Curved Data Pipeline Chevrons / Vectors -->
+    <g fill="none" stroke="#34d399" stroke-width="1.8" opacity="0.65" filter="url(#vectorPulse)">
+      <!-- Top Sector Flow -->
+      <path d="M 65,48 A 52,52 0 0,1 135,48" stroke-dasharray="8,6" />
+      <!-- Right Sector Flow -->
+      <path d="M 152,65 A 52,52 0 0,1 152,135" stroke-dasharray="8,6" />
+      <!-- Bottom Sector Flow -->
+      <path d="M 135,152 A 52,52 0 0,1 65,152" stroke-dasharray="8,6" />
+      <!-- Left Sector Flow -->
+      <path d="M 48,135 A 52,52 0 0,1 48,65" stroke-dasharray="8,6" />
+    </g>
+
+    <!-- Multi-Blade Camera/Turbine Command Aperture -->
+    <g filter="url(#cliGlow)">
+      <!-- Blade North -->
+      <path d="M 100,56 L 124,78 L 100,100 L 86,72 Z" fill="url(#blade1)" stroke="#10b981" stroke-width="0.8" opacity="0.9" />
+      <!-- Blade East -->
+      <path d="M 144,100 L 122,124 L 100,100 L 128,86 Z" fill="url(#blade2)" stroke="#2dd4bf" stroke-width="0.8" opacity="0.9" />
+      <!-- Blade South -->
+      <path d="M 100,144 L 76,122 L 100,100 L 114,128 Z" fill="url(#blade3)" stroke="#38bdf8" stroke-width="0.8" opacity="0.9" />
+      <!-- Blade West -->
+      <path d="M 56,100 L 78,76 L 100,100 L 72,114 Z" fill="url(#blade4)" stroke="#a78bfa" stroke-width="0.8" opacity="0.9" />
+    </g>
+
+    <!-- Outer Command Ring & Orbiting Terminal Nodes -->
+    <circle cx="100" cy="100" r="32" fill="none" stroke="#6ee7b7" stroke-width="1.2" stroke-dasharray="4,6" opacity="0.8" />
+
+    <!-- 5 Command Pipeline Nodes (Import, Link, Approve, Inspect, Export) -->
+    <!-- Node 1: Top-Left (Import) -->
+    <circle cx="58" cy="58" r="3.5" fill="#38bdf8" stroke="#ffffff" stroke-width="1" filter="url(#vectorPulse)" />
+    <!-- Node 2: Top-Right (Link) -->
+    <circle cx="142" cy="58" r="3.5" fill="#34d399" stroke="#ffffff" stroke-width="1" filter="url(#vectorPulse)" />
+    <!-- Node 3: Far-Right (Approve) -->
+    <circle cx="160" cy="100" r="4" fill="#fbbf24" stroke="#ffffff" stroke-width="1" filter="url(#vectorPulse)" />
+    <!-- Node 4: Bottom-Right (Inspect) -->
+    <circle cx="142" cy="142" r="3.5" fill="#a78bfa" stroke="#ffffff" stroke-width="1" filter="url(#vectorPulse)" />
+    <!-- Node 5: Bottom-Left (Export) -->
+    <circle cx="58" cy="142" r="4" fill="#06d6a0" stroke="#ffffff" stroke-width="1" filter="url(#vectorPulse)" />
+
+    <!-- Central Singularity / Command Pulse Core -->
+    <circle cx="100" cy="100" r="14" fill="url(#coreEnergy)" filter="url(#cliGlow)" />
+    <circle cx="100" cy="100" r="7" fill="#ffffff" />
+
+    <!-- Geometric Command Prompt Symbol (Chevron & Dash) inside Core -->
+    <path d="M 94,94 L 99,100 L 94,106" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <line x1="102" y1="105" x2="107" y2="105" stroke="#047857" stroke-width="2" stroke-linecap="round" />
+
+    <!-- Outer Precision Calibrated Dial Ticks -->
+    <g stroke="#10b981" stroke-width="0.9" opacity="0.6">
+      <line x1="100" y1="20" x2="100" y2="25" />
+      <line x1="130" y1="28" x2="128" y2="33" />
+      <line x1="156" y1="50" x2="152" y2="53" />
+      <line x1="172" y1="80" x2="167" y2="82" />
+      <line x1="175" y1="100" x2="170" y2="100" />
+      <line x1="172" y1="120" x2="167" y2="118" />
+      <line x1="156" y1="150" x2="152" y2="147" />
+      <line x1="130" y1="172" x2="128" y2="167" />
+      <line x1="100" y1="180" x2="100" y2="175" />
+      <line x1="70" y1="172" x2="72" y2="167" />
+      <line x1="44" y1="150" x2="48" y2="147" />
+      <line x1="28" y1="120" x2="33" y2="118" />
+      <line x1="25" y1="100" x2="30" y2="100" />
+      <line x1="28" y1="80" x2="33" y2="82" />
+      <line x1="44" y1="50" x2="48" y2="53" />
+      <line x1="70" y1="28" x2="72" y2="33" />
+    </g>
+
+    <!-- Polished Inner Bezel Border -->
+    <polygon points="100,5.5 181.84,52.8 181.84,147.2 100,194.5 18.16,147.2 18.16,52.8"
+             fill="none" stroke="url(#cliRim)" stroke-width="2.5" opacity="0.9" />
+
+    <!-- Sharp Outer Metallic Hex Rim -->
+    <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52"
+             fill="none" stroke="url(#cliRim)" stroke-width="3" />
+  </g>
+</svg>

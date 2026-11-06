@@ -75,7 +75,8 @@ defmodule Grand.CLI do
          {:ok, _fact} <- BeamCompass.resolve(snapshot, reference),
          {:ok, raw} <- safe_read(requirement_path),
          {:ok, requirement} <- Core.decode(raw, "requirement"),
-         {:ok, linked} <- Assurance.link_requirement(requirement, reference, actor_and_at(actor, opts)),
+         {:ok, linked} <-
+           Assurance.link_requirement(requirement, reference, actor_and_at(actor, opts)),
          {:ok, _path} <- Assurance.save_requirement(root, linked) do
       {:ok,
        %{
@@ -93,7 +94,8 @@ defmodule Grand.CLI do
          {:ok, actor} <- required(opts, :actor),
          true <- Keyword.get(opts, :ack_human, false) == true,
          {:ok, previous} <- Assurance.latest(root, id),
-         {:ok, updated} <- Assurance.approve(previous, actor_and_at(actor, opts) ++ [ack_human: true]),
+         {:ok, updated} <-
+           Assurance.approve(previous, actor_and_at(actor, opts) ++ [ack_human: true]),
          {:ok, _path} <- Assurance.save_requirement(root, updated) do
       {:ok,
        %{
@@ -141,7 +143,8 @@ defmodule Grand.CLI do
          true <- reference["project_id"] == project,
          {:ok, snapshot} <- BeamCompass.load(root, project, reference["snapshot_id"]),
          {:ok, _fact} <- BeamCompass.resolve(snapshot, reference),
-         {:ok, bundle} <- Assurance.unrun_bundle(requirement, reference, snapshot["source_sha256"]),
+         {:ok, bundle} <-
+           Assurance.unrun_bundle(requirement, reference, snapshot["source_sha256"]),
          {:ok, output} <- maybe_write_export(Keyword.get(opts, :out), bundle) do
       {:ok, output}
     else

@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Outer Hexagon Clip Path: 4px padding top and bottom -->
+    <clipPath id="grandHexClip">
+      <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52" />
+    </clipPath>
+
+    <!-- Deep Cosmic Void Radial Background -->
+    <radialGradient id="grandBg" cx="100" cy="100" r="95" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#141838" />
+      <stop offset="45%" stop-color="#0b0e24" />
+      <stop offset="85%" stop-color="#050713" />
+      <stop offset="100%" stop-color="#020308" />
+    </radialGradient>
+
+    <!-- Hexagon Outer Rim Gradient (Gold, Cyan, Violet, Rose) -->
+    <linearGradient id="grandRim" x1="16.86" y1="4" x2="183.14" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffd166" />
+      <stop offset="30%" stop-color="#06d6a0" />
+      <stop offset="65%" stop-color="#118ab2" />
+      <stop offset="85%" stop-color="#8338ec" />
+      <stop offset="100%" stop-color="#ff006e" />
+    </linearGradient>
+
+    <!-- Central Diamond & Crystal Gradients -->
+    <linearGradient id="prismLeft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#67e8f9" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.8" />
+    </linearGradient>
+
+    <linearGradient id="prismRight" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c084fc" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#7e22ce" stop-opacity="0.8" />
+    </linearGradient>
+
+    <linearGradient id="prismTop" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#fcd34d" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.9" />
+    </linearGradient>
+
+    <linearGradient id="prismBottom" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+
+    <!-- Ring Gradients: Gold (Human Intent) and Azure (Formal Evidence) -->
+    <linearGradient id="intentGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffe600" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+
+    <linearGradient id="evidenceCyan" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <!-- Beam & Spectral Rays -->
+    <linearGradient id="spectralRay" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8" />
+      <stop offset="35%" stop-color="#38bdf8" stop-opacity="0.5" />
+      <stop offset="70%" stop-color="#c084fc" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffd166" stop-opacity="0" />
+    </linearGradient>
+
+    <filter id="grandGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Hexagon Container -->
+  <g clip-path="url(#grandHexClip)">
+    <!-- Base Background -->
+    <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52" fill="url(#grandBg)" />
+
+    <!-- Subtle Background Assurance Lattice Grid -->
+    <g stroke="#26335a" stroke-width="0.7" stroke-dasharray="2,3" opacity="0.45">
+      <line x1="100" y1="4" x2="100" y2="196" />
+      <line x1="16.86" y1="52" x2="183.14" y2="148" />
+      <line x1="16.86" y1="148" x2="183.14" y2="52" />
+      <circle cx="100" cy="100" r="75" fill="none" />
+      <circle cx="100" cy="100" r="50" fill="none" />
+      <circle cx="100" cy="100" r="28" fill="none" />
+    </g>
+
+    <!-- Concentric Inner Nested Hexagons -->
+    <polygon points="100,20 169.28,60 169.28,140 100,180 30.72,140 30.72,60"
+             fill="none" stroke="#3b82f6" stroke-width="0.8" opacity="0.3" />
+    <polygon points="100,32 158.89,66 158.89,134 100,168 41.11,134 41.11,66"
+             fill="none" stroke="#8b5cf6" stroke-width="0.6" stroke-dasharray="3,4" opacity="0.4" />
+
+    <!-- Vertical Central Light Pillar -->
+    <polygon points="96,4 104,4 108,196 92,196" fill="url(#spectralRay)" opacity="0.6" />
+
+    <!-- Interlocking Ring 1: Evidence / Behavior (Cyan-Azure) -->
+    <ellipse cx="92" cy="100" rx="44" ry="24" transform="rotate(-30 92 100)"
+             fill="none" stroke="url(#evidenceCyan)" stroke-width="3" opacity="0.85" filter="url(#grandGlow)" />
+
+    <!-- Interlocking Ring 2: Intent / Normative Approval (Gold-Amber) -->
+    <ellipse cx="108" cy="100" rx="44" ry="24" transform="rotate(30 108 100)"
+             fill="none" stroke="url(#intentGold)" stroke-width="3" opacity="0.9" filter="url(#grandGlow)" />
+
+    <!-- Isometric Central Assurance Citadel Prism -->
+    <g filter="url(#softGlow)">
+      <!-- Top Facet (Crystalline Diamond Top) -->
+      <polygon points="100,62 126,76 100,90 74,76" fill="url(#prismTop)" />
+      <!-- Left Facet (Evidence Blue) -->
+      <polygon points="74,76 100,90 100,126 74,112" fill="url(#prismLeft)" />
+      <!-- Right Facet (Verification Purple) -->
+      <polygon points="126,76 100,90 100,126 126,112" fill="url(#prismRight)" />
+      <!-- Lower Anchor Pyramid -->
+      <polygon points="74,112 100,126 126,112 100,146" fill="url(#prismBottom)" opacity="0.9" />
+    </g>
+
+    <!-- Prism Edge Gleam Lines -->
+    <g stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="0.9">
+      <line x1="100" y1="62" x2="100" y2="90" />
+      <line x1="74" y1="76" x2="100" y2="90" />
+      <line x1="126" y1="76" x2="100" y2="90" />
+      <line x1="100" y1="90" x2="100" y2="126" />
+      <line x1="74" y1="112" x2="100" y2="146" stroke-width="0.8" opacity="0.6" />
+      <line x1="126" y1="112" x2="100" y2="146" stroke-width="0.8" opacity="0.6" />
+    </g>
+
+    <!-- Star Burst / Verification Sparkle Core -->
+    <circle cx="100" cy="90" r="3.5" fill="#ffffff" filter="url(#grandGlow)" />
+    <polygon points="100,82 102,89 109,90 102,91 100,98 98,91 91,90 98,89" fill="#ffffff" opacity="0.95" />
+
+    <!-- Constellation Node Vertices (Sub-Apps and Trust Boundaries) -->
+    <!-- Top Apex Node (Human Reviewer) -->
+    <circle cx="100" cy="24" r="3" fill="#fcd34d" stroke="#ffffff" stroke-width="1" filter="url(#grandGlow)" />
+    <!-- Upper Right Node (BeamCompass Source Import) -->
+    <circle cx="156" cy="56" r="3" fill="#38bdf8" stroke="#ffffff" stroke-width="1" filter="url(#grandGlow)" />
+    <!-- Lower Right Node (Formal Verification) -->
+    <circle cx="156" cy="144" r="3" fill="#c084fc" stroke="#ffffff" stroke-width="1" filter="url(#grandGlow)" />
+    <!-- Bottom Anchor Node (Immutable Store) -->
+    <circle cx="100" cy="176" r="3.5" fill="#06d6a0" stroke="#ffffff" stroke-width="1" filter="url(#grandGlow)" />
+    <!-- Lower Left Node (Conformance & Trace) -->
+    <circle cx="44" cy="144" r="3" fill="#f43f5e" stroke="#ffffff" stroke-width="1" filter="url(#grandGlow)" />
+    <!-- Upper Left Node (Normative Requirement) -->
+    <circle cx="44" cy="56" r="3" fill="#fbbf24" stroke="#ffffff" stroke-width="1" filter="url(#grandGlow)" />
+
+    <!-- Connecting Fiber Vectors -->
+    <g stroke="#ffffff" stroke-width="0.6" opacity="0.4">
+      <line x1="100" y1="24" x2="100" y2="62" />
+      <line x1="156" y1="56" x2="126" y2="76" />
+      <line x1="156" y1="144" x2="126" y2="112" />
+      <line x1="100" y1="176" x2="100" y2="146" />
+      <line x1="44" y1="144" x2="74" y2="112" />
+      <line x1="44" y1="56" x2="74" y2="76" />
+    </g>
+
+    <!-- Peripheral Cryptographic Ledger Ticks -->
+    <g stroke="#60a5fa" stroke-width="1" opacity="0.5">
+      <line x1="97" y1="10" x2="103" y2="10" />
+      <line x1="140" y1="35" x2="144" y2="39" />
+      <line x1="172" y1="95" x2="178" y2="95" />
+      <line x1="172" y1="105" x2="178" y2="105" />
+      <line x1="140" y1="161" x2="144" y2="165" />
+      <line x1="97" y1="190" x2="103" y2="190" />
+      <line x1="56" y1="165" x2="60" y2="161" />
+      <line x1="22" y1="105" x2="28" y2="105" />
+      <line x1="22" y1="95" x2="28" y2="95" />
+      <line x1="56" y1="39" x2="60" y2="35" />
+    </g>
+
+    <!-- Polished Inner Bezel Border -->
+    <polygon points="100,5.5 181.84,52.8 181.84,147.2 100,194.5 18.16,147.2 18.16,52.8"
+             fill="none" stroke="url(#grandRim)" stroke-width="2.5" opacity="0.9" />
+
+    <!-- Sharp Outer Metallic Hex Rim -->
+    <polygon points="100,4 183.14,52 183.14,148 100,196 16.86,148 16.86,52"
+             fill="none" stroke="url(#grandRim)" stroke-width="3" />
+  </g>
+</svg>

@@ -51,9 +51,20 @@ defmodule Grand.CLI.IntegrationTest do
 
     {0, {:ok, linked}, _} =
       mix_command([
-        "link", Path.join(@fixtures, "requirement_pending.json"),
-        "--project", @project, "--snapshot", @snapshot, "--fact", @fact,
-        "--actor", "human:fixture-submitter", "--at", @time, "--store", store
+        "link",
+        Path.join(@fixtures, "requirement_pending.json"),
+        "--project",
+        @project,
+        "--snapshot",
+        @snapshot,
+        "--fact",
+        @fact,
+        "--actor",
+        "human:fixture-submitter",
+        "--at",
+        @time,
+        "--store",
+        store
       ])
 
     assert linked["status"] == "pending_approval"
@@ -61,8 +72,15 @@ defmodule Grand.CLI.IntegrationTest do
 
     {0, {:ok, approved}, _} =
       mix_command([
-        "approve", @requirement, "--actor", "human:fixture-reviewer",
-        "--ack-human", "--at", @time, "--store", store
+        "approve",
+        @requirement,
+        "--actor",
+        "human:fixture-reviewer",
+        "--ack-human",
+        "--at",
+        @time,
+        "--store",
+        store
       ])
 
     assert approved["status"] == "approved"
@@ -82,8 +100,14 @@ defmodule Grand.CLI.IntegrationTest do
 
     {0, {:ok, exported}, _} =
       mix_command([
-        "export", @requirement, "--project", @project,
-        "--store", store, "--out", output_path
+        "export",
+        @requirement,
+        "--project",
+        @project,
+        "--store",
+        store,
+        "--out",
+        output_path
       ])
 
     assert exported["verification_status"] == "unrun"
@@ -96,8 +120,14 @@ defmodule Grand.CLI.IntegrationTest do
 
     {1, _, _} =
       mix_command([
-        "export", @requirement, "--project", @project,
-        "--store", store, "--out", output_path
+        "export",
+        @requirement,
+        "--project",
+        @project,
+        "--store",
+        store,
+        "--out",
+        output_path
       ])
   end
 
@@ -106,8 +136,12 @@ defmodule Grand.CLI.IntegrationTest do
 
     {status, _parsed, output} =
       mix_command([
-        "import", Path.join(@fixtures, "invalid_version.json"),
-        "--project", @project, "--store", store
+        "import",
+        Path.join(@fixtures, "invalid_version.json"),
+        "--project",
+        @project,
+        "--store",
+        store
       ])
 
     assert status != 0

@@ -53,7 +53,9 @@ defmodule Grand.Core.Store do
     case String.split(key, "@") do
       [id, revision] ->
         Grand.Core.valid_id?(id) and Regex.match?(~r/\A[1-9][0-9]*\z/, revision)
-      _ -> false
+
+      _ ->
+        false
     end
   end
 
@@ -78,8 +80,11 @@ defmodule Grand.Core.Store do
 
         {:ok, Enum.sort(numbers)}
 
-      {:error, :enoent} -> {:ok, []}
-      error -> error
+      {:error, :enoent} ->
+        {:ok, []}
+
+      error ->
+        error
     end
   end
 
@@ -114,7 +119,9 @@ defmodule Grand.Core.Store do
     end
   end
 
-  defp location(root, category, key), do: Path.join(parent(root, category, key), digest(key) <> ".json")
+  defp location(root, category, key),
+    do: Path.join(parent(root, category, key), digest(key) <> ".json")
+
   defp digest(value), do: :crypto.hash(:sha256, value) |> Base.encode16(case: :lower)
 
   defp publish(destination, content) do
