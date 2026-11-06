@@ -22,6 +22,15 @@ defmodule Grand.Core.JSONTest do
     assert {:error, {:invalid_json, :trailing_data}} = JSON.decode("true false")
   end
 
+  test "number and escape parsing survive codec refactoring" do
+    assert {:ok, [1, -2, 1.5, 100.0]} = JSON.decode("[1,-2,1.5,1e2]")
+    assert {:ok, "\"\\/\b\f\n\r\t"} = JSON.decode(~S("\"\\\/\b\f\n\r\t"))
+    assert {:error, {:invalid_json, :invalid_string_escape}} = JSON.decode(~S("\x"))
+    assert {:error, {:invalid_json, :invalid_number}} = JSON.decode("1e9999")
+    assert {:ok, encoded} = JSON.encode(%{"a" => [%{"b" => 1.5}]})
+    assert {:ok, %{"a" => [%{"b" => 1.5}]}} = JSON.decode(encoded)
+  end
+
   test "Grand normative schema rejects fabricated verified boolean" do
     run = %{
       "schema_version" => 1,

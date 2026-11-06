@@ -22,11 +22,10 @@ are vendored into the Grand code repository.
 ## Repository layout
 
 Each path has its own `mix.exs`, `.formatter.exs` and `mix.lock`. There is **no
-root `mix.exs`**, no umbrella, no BeamCompass source dependency, and no external
-Hex dependencies. `grand_cli` is the fourth, thin orchestration app, preserving
+root `mix.exs`**, no umbrella, no BeamCompass source dependency, and no BeamCompass implementation dependency. `grand_cli` is the fourth, thin orchestration app, preserving
 one-way dependencies: `grand_core` <- `grand_beamcompass` and
-`grand_assurance`; `grand_cli` -> all three. Empty `%{}` lockfiles explicitly
-represent no external dependency locks for this first pass.
+`grand_assurance`; `grand_cli` -> all three. Development tools are locked separately in each project: Credo 1.7.19 and
+Dialyxir 1.4.8 (plus ExDoc and their dependencies).
 
 - `monorepo/grand_core`: JSON parser, deterministic codec, v1 record validation,
   and immutable append-only local file store.
@@ -99,11 +98,11 @@ mix credo --strict
 mix dialyzer
 ```
 
-A repository-wide convenience command is `./scripts/check.sh`. Credo and
-Dialyzer are **not bundled**; installing/pinning them is a separate G01B choice.
-The ChatGPT first-pass environment lacked Mix/Elixir, so **none** of these
-runtime checks was run. Written ExUnit tests are not a claim of passing tests.
-See `delivery/manifest.json` and the docset G01A handoff for static evidence.
+A repository-wide convenience command is `./scripts/check.sh`. The local G01B
+run uses Elixir 1.20.4 / OTP 29.1.2, pinned in `.tool-versions`. Exact command
+outputs and exit codes are under `delivery/g01b-logs/`; see
+`delivery/G01B-VALIDATION.md` for results and limitations. ADR-0003/0005 remain
+Proposed pending explicit user approval; phase readiness remains Draft.
 
 ## Documentation and licensing
 

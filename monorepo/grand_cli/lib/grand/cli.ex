@@ -113,17 +113,11 @@ defmodule Grand.CLI do
   end
 
   defp dispatch(["inspect", "requirement", id], opts) do
-    with {:ok, root} <- required(opts, :store),
-         {:ok, requirement} <- Assurance.latest(root, id) do
-      {:ok, requirement}
-    end
+    with {:ok, root} <- required(opts, :store), do: Assurance.latest(root, id)
   end
 
   defp dispatch(["inspect", "snapshot", project, id], opts) do
-    with {:ok, root} <- required(opts, :store),
-         {:ok, snapshot} <- BeamCompass.load(root, project, id) do
-      {:ok, snapshot}
-    end
+    with {:ok, root} <- required(opts, :store), do: BeamCompass.load(root, project, id)
   end
 
   defp dispatch(["inspect", "fact", project, snapshot_id, fact_id], opts) do

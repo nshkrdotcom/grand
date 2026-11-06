@@ -30,12 +30,8 @@ defmodule Grand.Core do
     case fields(schema) do
       {:ok, required, optional} ->
         errors =
-          Enum.flat_map(required, fn key ->
-            if Map.has_key?(data, key), do: [], else: ["missing #{key}"]
-          end) ++
-            Enum.flat_map(Map.keys(data), fn key ->
-              if key in required or key in optional, do: [], else: ["unexpected #{inspect(key)}"]
-            end) ++ field_errors(schema, data)
+          missing_fields(data, required) ++
+            unexpected_fields(data, required ++ optional) ++ field_errors(schema, data)
 
         if errors == [],
           do: {:ok, data},
@@ -47,6 +43,18 @@ defmodule Grand.Core do
   end
 
   def validate(schema, _), do: {:error, {:invalid_record, schema, ["expected object"]}}
+
+  defp missing_fields(data, required) do
+    Enum.flat_map(required, fn key ->
+      if Map.has_key?(data, key), do: [], else: ["missing #{key}"]
+    end)
+  end
+
+  defp unexpected_fields(data, allowed) do
+    Enum.flat_map(Map.keys(data), fn key ->
+      if key in allowed, do: [], else: ["unexpected #{inspect(key)}"]
+    end)
+  end
 
   def valid_id?(value), do: is_binary(value) and Regex.match?(@id, value)
   def nonempty?(value), do: is_binary(value) and String.trim(value) != ""

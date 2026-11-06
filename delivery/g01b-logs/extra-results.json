@@ -1,0 +1,17 @@
+[
+  {
+    "command": "elixir --version",
+    "exit_code": 0,
+    "log": "delivery/g01b-logs/toolchain.log"
+  },
+  {
+    "command": "python3 scripts/static_validate.py",
+    "exit_code": 0,
+    "log": "delivery/g01b-logs/static.log"
+  },
+  {
+    "command": "sh scripts/smoke.sh <fresh temporary store>",
+    "exit_code": 0,
+    "log": "delivery/g01b-logs/smoke.log"
+  }
+]

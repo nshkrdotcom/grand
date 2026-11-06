@@ -1,0 +1,163 @@
+[
+  {
+    "app": "grand_core",
+    "command": "mix deps.get --check-locked",
+    "exit_code": 0,
+    "seconds": 1.26,
+    "log": "delivery/g01b-logs/final-grand_core-deps-get.log"
+  },
+  {
+    "app": "grand_core",
+    "command": "mix format --check-formatted",
+    "exit_code": 0,
+    "seconds": 0.65,
+    "log": "delivery/g01b-logs/final-grand_core-format.log"
+  },
+  {
+    "app": "grand_core",
+    "command": "mix compile --warnings-as-errors",
+    "exit_code": 0,
+    "seconds": 1.2,
+    "log": "delivery/g01b-logs/final-grand_core-compile.log"
+  },
+  {
+    "app": "grand_core",
+    "command": "mix test",
+    "exit_code": 0,
+    "seconds": 2.35,
+    "log": "delivery/g01b-logs/final-grand_core-test.log"
+  },
+  {
+    "app": "grand_core",
+    "command": "mix credo --strict",
+    "exit_code": 8,
+    "seconds": 2.66,
+    "log": "delivery/g01b-logs/final-grand_core-credo.log"
+  },
+  {
+    "app": "grand_core",
+    "command": "mix dialyzer",
+    "exit_code": 0,
+    "seconds": 4.35,
+    "log": "delivery/g01b-logs/final-grand_core-dialyzer.log"
+  },
+  {
+    "app": "grand_beamcompass",
+    "command": "mix deps.get --check-locked",
+    "exit_code": 0,
+    "seconds": 2.26,
+    "log": "delivery/g01b-logs/final-grand_beamcompass-deps-get.log"
+  },
+  {
+    "app": "grand_beamcompass",
+    "command": "mix format --check-formatted",
+    "exit_code": 0,
+    "seconds": 0.44,
+    "log": "delivery/g01b-logs/final-grand_beamcompass-format.log"
+  },
+  {
+    "app": "grand_beamcompass",
+    "command": "mix compile --warnings-as-errors",
+    "exit_code": 0,
+    "seconds": 0.86,
+    "log": "delivery/g01b-logs/final-grand_beamcompass-compile.log"
+  },
+  {
+    "app": "grand_beamcompass",
+    "command": "mix test",
+    "exit_code": 0,
+    "seconds": 0.84,
+    "log": "delivery/g01b-logs/final-grand_beamcompass-test.log"
+  },
+  {
+    "app": "grand_beamcompass",
+    "command": "mix credo --strict",
+    "exit_code": 8,
+    "seconds": 0.74,
+    "log": "delivery/g01b-logs/final-grand_beamcompass-credo.log"
+  },
+  {
+    "app": "grand_beamcompass",
+    "command": "mix dialyzer",
+    "exit_code": 0,
+    "seconds": 2.23,
+    "log": "delivery/g01b-logs/final-grand_beamcompass-dialyzer.log"
+  },
+  {
+    "app": "grand_assurance",
+    "command": "mix deps.get --check-locked",
+    "exit_code": 0,
+    "seconds": 0.75,
+    "log": "delivery/g01b-logs/final-grand_assurance-deps-get.log"
+  },
+  {
+    "app": "grand_assurance",
+    "command": "mix format --check-formatted",
+    "exit_code": 0,
+    "seconds": 0.39,
+    "log": "delivery/g01b-logs/final-grand_assurance-format.log"
+  },
+  {
+    "app": "grand_assurance",
+    "command": "mix compile --warnings-as-errors",
+    "exit_code": 0,
+    "seconds": 0.7,
+    "log": "delivery/g01b-logs/final-grand_assurance-compile.log"
+  },
+  {
+    "app": "grand_assurance",
+    "command": "mix test",
+    "exit_code": 0,
+    "seconds": 0.73,
+    "log": "delivery/g01b-logs/final-grand_assurance-test.log"
+  },
+  {
+    "app": "grand_assurance",
+    "command": "mix credo --strict",
+    "exit_code": 0,
+    "seconds": 0.67,
+    "log": "delivery/g01b-logs/final-grand_assurance-credo.log"
+  },
+  {
+    "app": "grand_assurance",
+    "command": "mix dialyzer",
+    "exit_code": 0,
+    "seconds": 2.17,
+    "log": "delivery/g01b-logs/final-grand_assurance-dialyzer.log"
+  },
+  {
+    "app": "grand_cli",
+    "command": "mix deps.get --check-locked",
+    "exit_code": 0,
+    "seconds": 0.74,
+    "log": "delivery/g01b-logs/final-grand_cli-deps-get.log"
+  },
+  {
+    "app": "grand_cli",
+    "command": "mix format --check-formatted",
+    "exit_code": 0,
+    "seconds": 0.37,
+    "log": "delivery/g01b-logs/final-grand_cli-format.log"
+  },
+  {
+    "app": "grand_cli",
+    "command": "mix compile --warnings-as-errors",
+    "exit_code": 0,
+    "seconds": 0.82,
+    "log": "delivery/g01b-logs/final-grand_cli-compile.log"
+  },
+  {
+    "app": "grand_cli",
+    "command": "mix test",
+    "exit_code": 0,
+    "seconds": 6.17,
+    "log": "delivery/g01b-logs/final-grand_cli-test.log"
+  },
+  {
+    "app": "grand_cli",
+    "command": "mix credo --strict",
+    "exit_code": 0,
+    "seconds": 0.82,
+    "log": "delivery/g01b-logs/final-grand_cli-credo.log"
+  }
+]

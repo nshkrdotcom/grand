@@ -71,12 +71,7 @@ defmodule Grand.Core.Store do
     case File.ls(directory) do
       {:ok, names} ->
         numbers =
-          Enum.flat_map(names, fn name ->
-            case Regex.run(~r/\A([1-9][0-9]*)\.json\z/, name) do
-              [_, value] -> [String.to_integer(value)]
-              _ -> []
-            end
-          end)
+          Enum.flat_map(names, &revision_number/1)
 
         {:ok, Enum.sort(numbers)}
 
@@ -85,6 +80,13 @@ defmodule Grand.Core.Store do
 
       error ->
         error
+    end
+  end
+
+  defp revision_number(name) do
+    case Regex.run(~r/\A([1-9][0-9]*)\.json\z/, name) do
+      [_, value] -> [String.to_integer(value)]
+      _ -> []
     end
   end
 

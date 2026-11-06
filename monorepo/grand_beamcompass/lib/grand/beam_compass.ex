@@ -88,20 +88,26 @@ defmodule Grand.BeamCompass do
       not list_of_objects?(snapshot["issues"], 10_000) ->
         {:error, {:invalid_snapshot, :invalid_issues}}
 
-      not is_list(snapshot["facts"]) or length(snapshot["facts"]) > 10_000 ->
+      not bounded_facts?(snapshot["facts"]) ->
         {:error, {:invalid_snapshot, :invalid_facts}}
 
       not Enum.all?(snapshot["facts"], &valid_fact?/1) ->
         {:error, {:invalid_snapshot, :invalid_fact_or_anchor}}
 
       true ->
-        ids = Enum.map(snapshot["facts"], & &1["id"])
-
-        if length(ids) == length(Enum.uniq(ids)),
-          do: {:ok, snapshot},
-          else: {:error, {:invalid_snapshot, :duplicate_fact_id}}
+        validate_unique_facts(snapshot)
     end
   end
+
+  defp validate_unique_facts(snapshot) do
+    ids = Enum.map(snapshot["facts"], & &1["id"])
+
+    if length(ids) == length(Enum.uniq(ids)),
+      do: {:ok, snapshot},
+      else: {:error, {:invalid_snapshot, :duplicate_fact_id}}
+  end
+
+  defp bounded_facts?(facts), do: is_list(facts) and length(facts) <= 10_000
 
   defp list_of_objects?(value, max) do
     is_list(value) and length(value) <= max and Enum.all?(value, &is_map/1)

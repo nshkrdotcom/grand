@@ -31,19 +31,21 @@ defmodule Grand.Core.JSON do
         {:error, {:invalid_json, :invalid_unicode}}
 
       true ->
-        case value(ws(json), 0, max_depth, max_nodes) do
-          {:ok, parsed, trailing, _remaining} ->
-            if ws(trailing) == "",
-              do: {:ok, parsed},
-              else: {:error, {:invalid_json, :trailing_data}}
-
-          {:error, reason} ->
-            {:error, {:invalid_json, reason}}
-        end
+        decode_value(json, max_depth, max_nodes)
     end
   end
 
   def decode(_other, _opts), do: {:error, {:invalid_json, :not_binary}}
+
+  defp decode_value(json, max_depth, max_nodes) do
+    case value(ws(json), 0, max_depth, max_nodes) do
+      {:ok, parsed, trailing, _remaining} -> finish_decode(parsed, ws(trailing))
+      {:error, reason} -> {:error, {:invalid_json, reason}}
+    end
+  end
+
+  defp finish_decode(parsed, ""), do: {:ok, parsed}
+  defp finish_decode(_, _), do: {:error, {:invalid_json, :trailing_data}}
 
   @spec encode(term()) :: {:ok, binary()} | {:error, term()}
   def encode(value) do
@@ -146,20 +148,22 @@ defmodule Grand.Core.JSON do
       [part] when byte_size(part) <= 128 ->
         trailing = binary_part(input, byte_size(part), byte_size(input) - byte_size(part))
 
-        if String.contains?(part, [".", "e", "E"]) do
-          case Float.parse(part) do
-            {parsed, ""} -> {:ok, parsed, trailing, budget}
-            _ -> {:error, :invalid_number}
-          end
-        else
-          case Integer.parse(part) do
-            {parsed, ""} -> {:ok, parsed, trailing, budget}
-            _ -> {:error, :invalid_number}
-          end
-        end
+        parse_number(part, trailing, budget)
 
       _ ->
         {:error, :invalid_value}
+    end
+  end
+
+  defp parse_number(part, trailing, budget) do
+    result =
+      if String.contains?(part, [".", "e", "E"]),
+        do: Float.parse(part),
+        else: Integer.parse(part)
+
+    case result do
+      {parsed, ""} -> {:ok, parsed, trailing, budget}
+      _ -> {:error, :invalid_number}
     end
   end
 
@@ -174,18 +178,7 @@ defmodule Grand.Core.JSON do
   end
 
   defp string(<<?\\, escaped, rest::binary>>, acc) do
-    replacement =
-      case escaped do
-        ?\" -> "\""
-        ?\\ -> "\\"
-        ?/ -> "/"
-        ?b -> <<8>>
-        ?f -> <<12>>
-        ?n -> "\n"
-        ?r -> "\r"
-        ?t -> "\t"
-        _ -> nil
-      end
+    replacement = string_escape(escaped)
 
     if replacement == nil,
       do: {:error, :invalid_string_escape},
@@ -197,6 +190,22 @@ defmodule Grand.Core.JSON do
 
   defp string(<<cp::utf8, rest::binary>>, acc), do: string(rest, [<<cp::utf8>> | acc])
   defp string(_, _), do: {:error, :invalid_or_unterminated_string}
+
+  defp string_escape(escaped),
+    do:
+      Map.get(
+        %{
+          ?" => "\"",
+          ?\\ => "\\",
+          ?/ => "/",
+          ?b => <<8>>,
+          ?f => <<12>>,
+          ?n => "\n",
+          ?r => "\r",
+          ?t => "\t"
+        },
+        escaped
+      )
 
   defp hex4(value) do
     case Integer.parse(value, 16) do
@@ -230,7 +239,7 @@ defmodule Grand.Core.JSON do
   defp emit(v) when is_integer(v), do: {:ok, Integer.to_string(v)}
 
   defp emit(v) when is_float(v) do
-    if v == v and abs(v) < 1.0e308,
+    if abs(v) < 1.0e308,
       do: {:ok, Float.to_string(v)},
       else: {:error, :non_finite_float}
   end
@@ -247,11 +256,7 @@ defmodule Grand.Core.JSON do
 
   defp emit(map) when is_map(map) do
     if Enum.all?(Map.keys(map), &is_binary/1) do
-      keys = Enum.sort(Map.keys(map))
-
-      with {:ok, entries} <- emit_all(Enum.map(keys, fn key -> {key, Map.fetch!(map, key)} end)) do
-        {:ok, ["{", Enum.intersperse(entries, ","), "}"]}
-      end
+      emit_object(map)
     else
       {:error, :non_string_key}
     end
@@ -264,6 +269,14 @@ defmodule Grand.Core.JSON do
   end
 
   defp emit(_), do: {:error, :unsupported_type}
+
+  defp emit_object(map) do
+    entries = map |> Map.keys() |> Enum.sort() |> Enum.map(&{&1, Map.fetch!(map, &1)})
+
+    with {:ok, encoded} <- emit_all(entries) do
+      {:ok, ["{", Enum.intersperse(encoded, ","), "}"]}
+    end
+  end
 
   defp emit_all(items) do
     Enum.reduce_while(items, {:ok, []}, fn item, {:ok, acc} ->
