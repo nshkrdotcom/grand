@@ -214,29 +214,29 @@ defmodule Grand.BeamCompass.V2 do
   defp optional_string?(value), do: is_nil(value) or nonempty?(value)
 
   defp acyclic?(evidence) do
-    Enum.reduce_while(Map.keys(evidence), {:ok, MapSet.new()}, fn id, {:ok, done} ->
-      case visit(id, evidence, done, MapSet.new()) do
+    Enum.reduce_while(Map.keys(evidence), {:ok, %{}}, fn id, {:ok, done} ->
+      case visit(id, evidence, done, %{}) do
         {:ok, checked} -> {:cont, {:ok, checked}}
         :cycle -> {:halt, :cycle}
       end
     end) != :cycle
   end
 
-  @spec visit(term(), map(), MapSet.t(), MapSet.t()) :: {:ok, MapSet.t()} | :cycle
+  @spec visit(term(), map(), map(), map()) :: {:ok, map()} | :cycle
   defp visit(id, evidence, done, path) do
     cond do
-      MapSet.member?(path, id) ->
+      Map.has_key?(path, id) ->
         :cycle
 
-      MapSet.member?(done, id) ->
+      Map.has_key?(done, id) ->
         {:ok, done}
 
       true ->
-        next = MapSet.put(path, id)
+        next = Map.put(path, id, true)
 
         visit_children(evidence[id]["input_evidence_ids"], evidence, done, next)
         |> case do
-          {:ok, visited} -> {:ok, MapSet.put(visited, id)}
+          {:ok, visited} -> {:ok, Map.put(visited, id, true)}
           :cycle -> :cycle
         end
     end

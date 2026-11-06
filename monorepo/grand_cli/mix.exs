@@ -5,7 +5,7 @@ defmodule GrandCLI.MixProject do
     [
       app: :grand_cli,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.20.5",
       name: "Grand CLI",
       description:
         "Orchestration and Mix tasks for Grand normative requirements and assurance pipelines.",

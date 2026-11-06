@@ -186,8 +186,8 @@ defmodule Grand.BeamCompass.Query do
 
     evidence_map = Map.new(upstream["evidence"], &{&1["id"], &1})
     seeds = Enum.flat_map(selected_entities ++ selected_relations, & &1["evidence_ids"])
-    evidence_ids = evidence_closure(seeds, evidence_map, MapSet.new())
-    selected_evidence = Enum.filter(upstream["evidence"], &MapSet.member?(evidence_ids, &1["id"]))
+    evidence_ids = evidence_closure(seeds, evidence_map, %{})
+    selected_evidence = Enum.filter(upstream["evidence"], &Map.has_key?(evidence_ids, &1["id"]))
 
     omissions =
       Enum.flat_map(upstream["entities"], fn e ->
@@ -201,7 +201,7 @@ defmodule Grand.BeamCompass.Query do
             else: [omitted("relation", r["id"], omission_reason(r, request))]
         end) ++
         Enum.flat_map(upstream["evidence"], fn e ->
-          if MapSet.member?(evidence_ids, e["id"]),
+          if Map.has_key?(evidence_ids, e["id"]),
             do: [],
             else: [omitted("evidence", e["id"], "no_retained_claim_requires_evidence")]
         end)
@@ -264,17 +264,17 @@ defmodule Grand.BeamCompass.Query do
     }
   end
 
-  @spec evidence_closure(list(), map(), MapSet.t()) :: MapSet.t()
+  @spec evidence_closure(list(), map(), map()) :: map()
   defp evidence_closure([], _evidence, found), do: found
 
   defp evidence_closure([id | rest], evidence, found) do
-    if MapSet.member?(found, id) do
+    if Map.has_key?(found, id) do
       evidence_closure(rest, evidence, found)
     else
       evidence_closure(
         evidence[id]["input_evidence_ids"] ++ rest,
         evidence,
-        MapSet.put(found, id)
+        Map.put(found, id, true)
       )
     end
   end

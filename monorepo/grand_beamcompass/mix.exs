@@ -5,7 +5,7 @@ defmodule GrandBeamCompass.MixProject do
     [
       app: :grand_beamcompass,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.20.5",
       name: "Grand BeamCompass",
       description:
         "Bounded, read-only BeamCompass v1/v2 export adapter and BehaviorRef resolution for Grand.",

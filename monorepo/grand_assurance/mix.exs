@@ -5,7 +5,7 @@ defmodule GrandAssurance.MixProject do
     [
       app: :grand_assurance,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.20.5",
       name: "Grand Assurance",
       description:
         "Normative requirement linking, explicit human audit approvals, and unrun evidence receipts for Grand.",

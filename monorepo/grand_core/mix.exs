@@ -5,7 +5,7 @@ defmodule GrandCore.MixProject do
     [
       app: :grand_core,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.20.5",
       name: "Grand Core",
       description:
         "Deterministic JSON codec, immutable content-addressed storage, and foundational records for Grand.",
