@@ -11,9 +11,9 @@ defmodule Grand.Assurance.G05.Impact do
 
   @doc "Compare two portable source-only snapshots and explicit G03 links."
   @spec compare(map(), map(), list(), keyword()) :: {:ok, map()} | {:error, term()}
-  def compare(before, after, links, opts \\ []) do
+  def compare(before, after_snapshot, links, opts \\ []) do
     with {:ok, first, from_id, version} <- snapshot(before),
-         {:ok, last, to_id, ^version} <- snapshot(after),
+         {:ok, last, to_id, ^version} <- snapshot(after_snapshot),
          :ok <- validate_links(links) do
       from_ids = Map.keys(first) |> MapSet.new()
       to_ids = Map.keys(last) |> MapSet.new()
@@ -21,16 +21,9 @@ defmodule Grand.Assurance.G05.Impact do
       deleted = MapSet.difference(from_ids, to_ids) |> MapSet.to_list()
       added = MapSet.difference(to_ids, from_ids) |> MapSet.to_list()
 
-      exact_changes = Enum.flat_map(common, fn id ->
-        old = Map.fetch!(first, id)
-        new = Map.fetch!(last, id)
-        cond do
-          old == new -> []
-          strip_position(old) == strip_position(new) ->
-            [change("unresolved", id, "line_or_column_only; identity requires review")]
-          true -> [change("modified", id, "same id, changed source-only object")]
-        end
-      end)
+      exact_changes =
+        Enum.flat_map(common, &compare_object(&1, first, last)) ++
+          metadata_changes(before, after_snapshot)
 
       matches = probable_matches(deleted, added, first, last)
       paired_old = Enum.map(matches, & &1["from"]) |> MapSet.new()
@@ -38,54 +31,111 @@ defmodule Grand.Assurance.G05.Impact do
 
       changes =
         exact_changes ++
-          Enum.map(deleted, fn id -> change("removed", id, "not present in later source snapshot") end) ++
-          Enum.map(added, fn id -> change("added", id, "not present in earlier source snapshot") end)
+          Enum.map(deleted, fn id ->
+            change("removed", id, "not present in later source snapshot")
+          end) ++
+          Enum.map(added, fn id ->
+            change("added", id, "not present in earlier source snapshot")
+          end)
 
       impacted = MapSet.new(for c <- changes, c["kind"] != "added", do: c["object_id"])
       impacted = dependent_objects(impacted, first, last)
-      uncertain = Enum.any?(changes, &(&1["kind"] == "unresolved")) or
-        Enum.any?(deleted, &(!MapSet.member?(paired_old, &1))) or
-        Enum.any?(added, &(!MapSet.member?(paired_new, &1)))
+
+      uncertain = uncertain?(changes, deleted, added, paired_old, paired_new)
+
       graph = reverse_links(links)
-      linked = Enum.filter(links, fn link ->
-        uncertain or Enum.any?(link["source_refs"], fn ref ->
-          MapSet.member?(impacted, reference_id(ref))
-        end)
-      end)
+
+      linked = Enum.filter(links, &affected_link?(&1, impacted, uncertain))
+
       unresolved =
         for c <- changes, c["kind"] == "unresolved", do: c["object_id"]
+
       unresolved =
         unresolved ++ for id <- deleted, !MapSet.member?(paired_old, id), do: id
-      unresolved = Enum.uniq(Enum.sort(unresolved))
-      status =
-        cond do
-          changes == [] -> "unaffected"
-          uncertain -> "unresolved"
-          linked != [] -> "stale"
-          true -> "unaffected"
-        end
 
-      {:ok, %{
-        "format" => "grand.g05.impact", "schema_version" => 2,
-        "id" => Keyword.get(opts, :id, "G05-source-only-impact"),
-        "from_snapshot_id" => from_id, "to_snapshot_id" => to_id,
-        "upstream_schema_version" => version,
-        "classification" => "syntactic_source_only_no_semantic_diff_export",
-        "changes" => Enum.sort_by(changes, &{&1["object_id"], &1["kind"]}),
-        "probable_matches" => matches,
-        "affected_requirements" => linked |> Enum.map(& &1["requirement"]["id"]) |> Enum.uniq() |> Enum.sort(),
-        "affected_obligations" => linked |> Enum.map(& &1["obligation_id"]) |> Enum.uniq() |> Enum.sort(),
-        "affected_results" => linked |> Enum.flat_map(& &1["result_ids"]) |> Enum.uniq() |> Enum.sort(),
-        "unresolved_mappings" => unresolved,
-        "reverse_links" => graph,
-        "evidence_status" => status,
-        "revisit" => if(changes == [], do: [], else: ["review source/requirement link", "re-run affected law or model before asserting current"])
-      }}
+      unresolved = Enum.uniq(Enum.sort(unresolved))
+
+      status = evidence_status(changes, uncertain, linked)
+
+      {:ok,
+       %{
+         "format" => "grand.g05.impact",
+         "schema_version" => 2,
+         "id" => Keyword.get(opts, :id, "G05-source-only-impact"),
+         "from_snapshot_id" => from_id,
+         "to_snapshot_id" => to_id,
+         "upstream_schema_version" => version,
+         "classification" => "syntactic_source_only_no_semantic_diff_export",
+         "changes" => Enum.sort_by(changes, &{&1["object_id"], &1["kind"]}),
+         "probable_matches" => matches,
+         "affected_requirements" =>
+           linked |> Enum.map(& &1["requirement"]["id"]) |> Enum.uniq() |> Enum.sort(),
+         "affected_obligations" =>
+           linked |> Enum.map(& &1["obligation_id"]) |> Enum.uniq() |> Enum.sort(),
+         "affected_results" =>
+           linked |> Enum.flat_map(& &1["result_ids"]) |> Enum.uniq() |> Enum.sort(),
+         "unresolved_mappings" => unresolved,
+         "reverse_links" => graph,
+         "evidence_status" => status,
+         "revisit" =>
+           if(changes == [],
+             do: [],
+             else: [
+               "review source/requirement link",
+               "re-run affected law or model before asserting current"
+             ]
+           )
+       }}
     else
       {:error, reason} -> {:error, reason}
       _ -> {:error, :different_or_invalid_snapshot_versions}
     end
   end
+
+  defp compare_object(id, first, last) do
+    old = Map.fetch!(first, id)
+    new = Map.fetch!(last, id)
+
+    cond do
+      old == new ->
+        []
+
+      strip_position(old) == strip_position(new) ->
+        [change("unresolved", id, "line_or_column_only; identity requires review")]
+
+      true ->
+        [change("modified", id, "same id, changed source-only object")]
+    end
+  end
+
+  defp metadata_changes(before, later) do
+    if before["manifest"] == later["manifest"],
+      do: [],
+      else: [
+        change(
+          "unresolved",
+          "metadata:manifest",
+          "source/provider/tool metadata changed; review all links"
+        )
+      ]
+  end
+
+  defp uncertain?(changes, deleted, added, paired_old, paired_new) do
+    Enum.any?(changes, &(&1["kind"] == "unresolved")) or
+      Enum.any?(deleted, &(!MapSet.member?(paired_old, &1))) or
+      Enum.any?(added, &(!MapSet.member?(paired_new, &1)))
+  end
+
+  defp affected_link?(_link, _impacted, true), do: true
+
+  defp affected_link?(link, impacted, false) do
+    Enum.any?(link["source_refs"], &MapSet.member?(impacted, reference_id(&1)))
+  end
+
+  defp evidence_status([], _, _), do: "unaffected"
+  defp evidence_status(_, true, _), do: "unresolved"
+  defp evidence_status(_, false, []), do: "unaffected"
+  defp evidence_status(_, false, _), do: "stale"
 
   @doc "Reverse links retain the source -> requirement -> obligation -> run chain."
   @spec reverse_links(list()) :: map()
@@ -98,17 +148,29 @@ defmodule Grand.Assurance.G05.Impact do
         "assumptions" => link["assumptions"],
         "model_files" => link["model_files"]
       }
+
       sources = Enum.map(link["source_refs"], &reference_id/1)
-      assumptions = Enum.map(link["assumptions"], fn ref ->
-        "assumption:#{ref["id"]}@#{ref["revision"]}"
-      end)
+
+      assumptions =
+        Enum.map(link["assumptions"], fn ref ->
+          "assumption:#{ref["id"]}@#{ref["revision"]}"
+        end)
+
       models = Enum.map(link["model_files"], &"model:#{&1}")
       requirement = link["requirement"]
+
       paths =
-        for id <- Enum.uniq(sources ++ assumptions ++ models ++ [
-          "requirement:#{requirement["id"]}@#{requirement["revision"]}",
-          "obligation:#{link["obligation_id"]}"
-        ]), do: {id, path}
+        for id <-
+              Enum.uniq(
+                sources ++
+                  assumptions ++
+                  models ++
+                  [
+                    "requirement:#{requirement["id"]}@#{requirement["revision"]}",
+                    "obligation:#{link["obligation_id"]}"
+                  ]
+              ),
+            do: {id, path}
 
       Enum.reduce(paths, acc, fn {key, path}, output ->
         Map.update(output, key, [path], &[path | &1])
@@ -120,23 +182,28 @@ defmodule Grand.Assurance.G05.Impact do
   defp snapshot(%{"schema_version" => v} = data) when v in @allowed_versions do
     {collections, id} =
       case v do
-        1 -> {[{"fact", data["facts"]}], data["id"]}
-        2 -> {[{"entity", data["entities"]}, {"relation", data["relations"]},
-               {"evidence", data["evidence"]}], data["snapshot_id"]}
+        1 ->
+          {[{"fact", data["facts"]}], data["id"]}
+
+        2 ->
+          {[
+             {"entity", data["entities"]},
+             {"relation", data["relations"]},
+             {"evidence", data["evidence"]}
+           ], data["snapshot_id"]}
       end
 
-    entries = Enum.flat_map(collections, fn {kind, values} ->
-      if is_list(values) do
-        Enum.map(values, fn object -> {kind, object} end)
-      else
-        [{kind, nil}]
-      end
-    end)
+    entries = Enum.flat_map(collections, &collection_entries/1)
 
-    if is_binary(id) and id != "" and
+    if source_only?(data, entries) and is_binary(id) and id != "" and
          Enum.all?(entries, fn {_kind, object} -> is_map(object) and is_binary(object["id"]) end) and
-         (entries |> Enum.map(fn {_, object} -> object["id"] end) |> Enum.uniq() |> length()) == length(entries) do
-      records = Map.new(entries, fn {kind, object} -> {object["id"], Map.put(object, "_collection", kind)} end)
+         entries |> Enum.map(fn {_, object} -> object["id"] end) |> Enum.uniq() |> length() ==
+           length(entries) do
+      records =
+        Map.new(entries, fn {kind, object} ->
+          {object["id"], Map.put(object, "_collection", kind)}
+        end)
+
       {:ok, records, id, v}
     else
       {:error, :invalid_source_only_snapshot}
@@ -145,46 +212,87 @@ defmodule Grand.Assurance.G05.Impact do
 
   defp snapshot(%{"schema_version" => version}) when is_integer(version),
     do: {:error, :unsupported_upstream_version}
+
   defp snapshot(_), do: {:error, :invalid_source_only_snapshot}
+
+  defp collection_entries({kind, values}) when is_list(values),
+    do: Enum.map(values, &{kind, &1})
+
+  defp collection_entries({kind, _}), do: [{kind, nil}]
+
+  defp source_only?(data, entries) do
+    providers = source_providers(data)
+
+    is_list(providers) and Enum.all?(providers, &source_provider?/1) and
+      Enum.all?(entries, &source_object?/1)
+  end
+
+  defp source_providers(%{"manifest" => %{"providers" => providers}}), do: providers
+  defp source_providers(%{"manifest" => _}), do: nil
+  defp source_providers(_), do: []
+  defp source_provider?(%{"mode" => "source"}), do: true
+  defp source_provider?(_), do: false
+
+  defp source_object?({_, object}) when is_map(object) do
+    Map.get(object, "status", "source") in ~w(source proposed unresolved) and
+      Map.get(object, "mode", "source") == "source" and
+      Map.get(object, "epistemic_status", "sourced") in ~w(sourced proposed derived unresolved) and
+      list_of?(Map.get(object, "evidence_ids", []), &is_binary/1) and
+      list_of?(Map.get(object, "input_evidence_ids", []), &is_binary/1)
+  end
+
+  defp source_object?(_), do: false
 
   defp change(kind, id, reason), do: %{"kind" => kind, "object_id" => id, "reason" => reason}
 
-  defp probable_matches(deleted, added, before, after) do
+  defp probable_matches(deleted, added, before, after_snapshot) do
     for id <- deleted,
         old = Map.fetch!(before, id),
         key = old["semantic_key"],
         is_binary(key) and key != "",
-        candidates = Enum.filter(added, fn candidate ->
-          new = Map.fetch!(after, candidate)
-          new["semantic_key"] == key and
-            new["_collection"] == old["_collection"] and
-            Map.drop(strip_position(new), ["id", "evidence_ids"]) ==
-              Map.drop(strip_position(old), ["id", "evidence_ids"])
-        end),
+        candidates =
+          Enum.filter(added, fn candidate ->
+            new = Map.fetch!(after_snapshot, candidate)
+
+            new["semantic_key"] == key and
+              new["_collection"] == old["_collection"] and
+              Map.drop(strip_position(new), ["id", "evidence_ids"]) ==
+                Map.drop(strip_position(old), ["id", "evidence_ids"])
+          end),
         length(candidates) == 1 do
-      %{"from" => id, "to" => hd(candidates), "confidence" => "probable_not_verified",
-        "reason" => "unique stable semantic_key and location-insensitive source-only content"}
+      %{
+        "from" => id,
+        "to" => hd(candidates),
+        "confidence" => "probable_not_verified",
+        "reason" => "unique stable semantic_key and location-insensitive source-only content"
+      }
     end
   end
 
   # A change to evidence or a source-only relation can invalidate a linked
   # entity/function as well. This graph is conservative syntax, not call-graph
   # proof or a claim that a runtime edge actually fired.
-  defp dependent_objects(changed, before, after) do
-    expand_dependencies(changed, Map.values(before) ++ Map.values(after))
+  defp dependent_objects(changed, before, after_snapshot) do
+    expand_dependencies(changed, Map.values(before) ++ Map.values(after_snapshot))
   end
 
   defp expand_dependencies(changed, objects) do
-    found = Enum.reduce(objects, changed, fn object, seen ->
-      evidence = Map.get(object, "evidence_ids", [])
-      from_evidence =
-        is_list(evidence) and Enum.any?(evidence, &MapSet.member?(seen, &1))
-      from_relation =
-        Enum.any?([object["source_id"], object["target_id"]], fn id ->
-          is_binary(id) and MapSet.member?(seen, id)
-        end)
-      if from_evidence or from_relation, do: MapSet.put(seen, object["id"]), else: seen
-    end)
+    found =
+      Enum.reduce(objects, changed, fn object, seen ->
+        evidence =
+          Map.get(object, "evidence_ids", []) ++ Map.get(object, "input_evidence_ids", [])
+
+        from_evidence =
+          is_list(evidence) and Enum.any?(evidence, &MapSet.member?(seen, &1))
+
+        from_relation =
+          Enum.any?([object["source_id"], object["target_id"]], fn id ->
+            is_binary(id) and MapSet.member?(seen, id)
+          end)
+
+        seen = if from_evidence or from_relation, do: MapSet.put(seen, object["id"]), else: seen
+        link_endpoints(seen, object)
+      end)
 
     if MapSet.size(found) == MapSet.size(changed) do
       found
@@ -193,12 +301,28 @@ defmodule Grand.Assurance.G05.Impact do
     end
   end
 
+  defp link_endpoints(seen, %{"_collection" => "relation"} = object) do
+    if MapSet.member?(seen, object["id"]) do
+      [object["source_id"], object["target_id"]]
+      |> Enum.filter(&is_binary/1)
+      |> Enum.reduce(seen, &MapSet.put(&2, &1))
+    else
+      seen
+    end
+  end
+
+  defp link_endpoints(seen, _), do: seen
+
   defp strip_position(term) when is_map(term) do
     Enum.into(term, %{}, fn {key, value} ->
-      {key, if(key == "anchor" and is_map(value),
-        do: Map.drop(value, ["line", "column"]), else: strip_position(value))}
+      {key,
+       if(key == "anchor" and is_map(value),
+         do: Map.drop(value, ["line", "column"]),
+         else: strip_position(value)
+       )}
     end)
   end
+
   defp strip_position(term) when is_list(term), do: Enum.map(term, &strip_position/1)
   defp strip_position(term), do: term
 
@@ -207,22 +331,25 @@ defmodule Grand.Assurance.G05.Impact do
   defp reference_id(_), do: nil
 
   defp validate_links(links) when is_list(links) do
-    if Enum.all?(links, fn link ->
-      is_map(link) and is_map(link["requirement"]) and
-        is_binary(link["requirement"]["id"]) and is_binary(link["obligation_id"]) and
-        is_list(link["source_refs"]) and
-        Enum.all?(link["source_refs"], &(is_binary(reference_id(&1)))) and
-        is_list(link["result_ids"]) and Enum.all?(link["result_ids"], &is_binary/1) and
-        is_list(link["assumptions"]) and
-        Enum.all?(link["assumptions"], fn ref ->
-          is_map(ref) and is_binary(ref["id"]) and
-            is_integer(ref["revision"]) and ref["revision"] > 0
-        end) and
-        is_integer(link["requirement"]["revision"]) and
-        link["requirement"]["revision"] > 0 and
-        is_list(link["model_files"]) and
-        Enum.all?(link["model_files"], &is_binary/1)
-    end), do: :ok, else: {:error, :invalid_impact_links}
+    if Enum.all?(links, &valid_link?/1), do: :ok, else: {:error, :invalid_impact_links}
   end
+
   defp validate_links(_), do: {:error, :invalid_impact_links}
+
+  defp valid_link?(link) when is_map(link) do
+    revision_ref?(link["requirement"]) and is_binary(link["obligation_id"]) and
+      list_of?(link["source_refs"], &is_binary(reference_id(&1))) and
+      list_of?(link["result_ids"], &is_binary/1) and
+      list_of?(link["assumptions"], &revision_ref?/1) and
+      list_of?(link["model_files"], &is_binary/1)
+  end
+
+  defp valid_link?(_), do: false
+
+  defp revision_ref?(%{"id" => id, "revision" => n}),
+    do: is_binary(id) and is_integer(n) and n > 0
+
+  defp revision_ref?(_), do: false
+
+  defp list_of?(values, predicate), do: is_list(values) and Enum.all?(values, predicate)
 end

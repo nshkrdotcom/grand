@@ -16,7 +16,14 @@ defmodule Grand.Assurance.G05.Lynx do
   # Invoked ONLY from an explicitly authorized private runner workspace.
   source_files = ["Support.ex", "Source.ex", "Law.ex"]
   Code.compiler_options(debug_info: true)
-  Enum.each(source_files, &Code.compile_file/1)
+  beams = Enum.flat_map(source_files, &Code.compile_file/1)
+  File.mkdir!("beams")
+  for {name, bytes} <- beams do
+    File.write!(Path.join("beams", Atom.to_string(name) <> ".beam"), bytes)
+    :code.purge(name)
+    :code.delete(name)
+    {:module, ^name} = :code.load_abs(String.to_charlist(Path.expand(Path.join("beams", Atom.to_string(name)))))
+  end
   module = Module.concat(["Grand", "HoldLedger", "Laws"])
   # No caller-supplied Mix file or execution hook is loaded.
   reports = Lynx.Laws.verify([module], debug: :lean, debug_dir: "translated",
@@ -25,7 +32,7 @@ defmodule Grand.Assurance.G05.Lynx do
   {check_exit, check_output} =
     if all_ok do
       Lynx.Commands.lake(Path.join(System.fetch_env!("GRAND_LYNX_ROOT"), "Lean"),
-        ["check", "--from-export", Path.expand("proof.ndjson")])
+        ["check", "--from-export", Path.expand("proof.ndjson"), "--paranoid"])
     else
       {1, "translation, elaboration or kernel verification failed"}
     end
@@ -49,42 +56,63 @@ defmodule Grand.Assurance.G05.Lynx do
 
   @impl true
   def prepare(%{"law" => law}, opts) when is_map(law) do
-    with %{"file" => file, "source_file" => source_file, "support_file" => support_file,
-           "module" => "Grand.HoldLedger.Laws", "theorem" => theorem,
-           "origin" => origin, "license" => license, "hypotheses" => hypotheses} <- law,
-         true <- Regex.match?(~r/\A[a-z][a-z0-9_]*\/1\z/, theorem) and
-                   is_binary(origin) and byte_size(origin) in 1..300 and
-                   is_binary(license) and byte_size(license) in 1..120 and
-                   valid_hypotheses?(hypotheses),
+    with %{
+           "file" => file,
+           "source_file" => source_file,
+           "support_file" => support_file,
+           "module" => "Grand.HoldLedger.Laws",
+           "theorem" => theorem,
+           "origin" => origin,
+           "license" => license,
+           "hypotheses" => hypotheses
+         } <- law,
+         true <-
+           Regex.match?(~r/\A[a-z][a-z0-9_]*\/1\z/, theorem) and
+             is_binary(origin) and byte_size(origin) in 1..300 and
+             is_binary(license) and byte_size(license) in 1..120 and
+             valid_hypotheses?(hypotheses),
          {:ok, source} <- Files.load(source_file, ".ex"),
          {:ok, support} <- Files.load(support_file, ".ex"),
          {:ok, proof} <- Files.load(file, ".ex"),
-         true <- String.contains?(proof["bytes"], "use Lynx.Laws") and
-                   String.contains?(proof["bytes"], "law #{String.replace(theorem, "/1", "")}") and
-                   String.contains?(proof["bytes"], "~LEAN") and
-                   Enum.all?([source, support, proof], fn entry ->
-                     not String.contains?(entry["bytes"], "GRAND_LYNX_REPORT_V1:")
-                   end),
+         true <-
+           String.contains?(proof["bytes"], "use Lynx.Laws") and
+             String.contains?(proof["bytes"], "law #{String.replace(theorem, "/1", "")}") and
+             String.contains?(proof["bytes"], "~LEAN") and
+             Enum.all?([source, support, proof], fn entry ->
+               not String.contains?(entry["bytes"], "GRAND_LYNX_REPORT_V1:")
+             end),
          tool <- Tool.identity("lynx", opts) do
-      {:ok, %{
-        "engine" => "elixir", "args" => [],
-        "files" => %{"Source.ex" => source["bytes"], "Support.ex" => support["bytes"],
-                     "Law.ex" => proof["bytes"], "Verify.exs" => @worker},
-        "source_files" => %{"source" => source["identity"], "support" => support["identity"],
-                            "law" => proof["identity"]},
-        "tool" => tool,
-        "property" => theorem,
-        "qualifications" => %{
-          "kind" => "lynx_translated_beam_law", "origin" => origin,
-          "license" => license, "hypotheses" => hypotheses,
-          "translation" => "Lynx.Laws.verify/2 Core Erlang to Lean",
-          "lean_check" => "Lynx.Runner and lake check --from-export",
-          "axiom_audit" => "not_enumerated_by_Lynx.Laws.verify",
-          "open_axiom_gap" => true, "discharges_obligation" => false,
-          "target_runtime_checked" => false,
-          "external_effects_and_durability_unproved" => true
-        }
-      }}
+      {:ok,
+       %{
+         "engine" => "elixir",
+         "args" => [],
+         "files" => %{
+           "Source.ex" => source["bytes"],
+           "Support.ex" => support["bytes"],
+           "Law.ex" => proof["bytes"],
+           "Verify.exs" => @worker
+         },
+         "source_files" => %{
+           "source" => source["identity"],
+           "support" => support["identity"],
+           "law" => proof["identity"]
+         },
+         "tool" => tool,
+         "property" => theorem,
+         "qualifications" => %{
+           "kind" => "lynx_translated_beam_law",
+           "origin" => origin,
+           "license" => license,
+           "hypotheses" => hypotheses,
+           "translation" => "Lynx.Laws.verify/2 Core Erlang to Lean",
+           "lean_check" => "Lynx.Runner and lake check --from-export",
+           "axiom_audit" => "not_enumerated_by_Lynx.Laws.verify",
+           "open_axiom_gap" => true,
+           "discharges_obligation" => false,
+           "target_runtime_checked" => false,
+           "external_effects_and_durability_unproved" => true
+         }
+       }}
     else
       false -> {:error, :invalid_lynx_law_or_package}
       _ -> {:error, :invalid_lynx_package}
@@ -96,10 +124,15 @@ defmodule Grand.Assurance.G05.Lynx do
   @impl true
   def execute(plan, opts) do
     cond do
-      not Keyword.get(opts, :execute, false) -> {:ok, Runner.skipped("unrun")}
+      not Keyword.get(opts, :execute, false) ->
+        {:ok, Runner.skipped("unrun")}
+
       not Keyword.get(opts, :allow_law_code, false) ->
         {:error, :explicit_law_code_permission_required}
-      not plan["tool"]["available"] -> {:ok, Runner.skipped("missing_lynx_toolchain")}
+
+      not plan["tool"]["available"] ->
+        {:ok, Runner.skipped("missing_lynx_toolchain")}
+
       true ->
         ebin = Path.join(plan["tool"]["root"], "_build/dev/lib/lynx/ebin")
         Runner.execute(%{plan | "args" => ["-pa", ebin, "Verify.exs"]}, opts)
@@ -109,70 +142,145 @@ defmodule Grand.Assurance.G05.Lynx do
   @impl true
   def normalize(plan, raw) do
     case raw["reason"] do
-      "unrun" -> report("unrun", "not_qualified", ["execution was not requested"])
-      "missing_lynx_toolchain" -> report("unsupported", "not_qualified", ["pinned Lynx build unavailable"])
-      "missing_engine" -> report("unsupported", "not_qualified", ["Elixir executable unavailable"])
-      reason when reason in ["timeout", "cancelled", "output_limit"] ->
+      "unrun" ->
+        report("unrun", "not_qualified", ["execution was not requested"])
+
+      "missing_lynx_toolchain" ->
+        report("unsupported", "not_qualified", ["pinned Lynx build unavailable"])
+
+      "missing_engine" ->
+        report("unsupported", "not_qualified", ["Elixir executable unavailable"])
+
+      reason when reason in ["timeout", "cancelled", "output_limit", "artifact_limit"] ->
         report("inconclusive", "not_qualified", [reason])
-      reason when is_binary(reason) -> report("error", "not_qualified", [reason])
-      nil -> qualify(plan, raw)
+
+      reason when is_binary(reason) ->
+        report("error", "not_qualified", [reason])
+
+      nil ->
+        qualify(plan, raw)
     end
   end
 
   defp qualify(plan, raw) do
     marker = "GRAND_LYNX_REPORT_V1:"
-    matches = raw["stdout"] |> String.split("\n", trim: true) |>
-      Enum.filter(&String.starts_with?(&1, marker))
+
+    matches =
+      raw["stdout"]
+      |> String.split("\n", trim: true)
+      |> Enum.filter(&String.starts_with?(&1, marker))
 
     with [line] <- matches,
          {:ok, data} <- JSON.decode(String.replace_prefix(line, marker, "")),
-         %{"protocol" => "grand.lynx.report.v1", "module" => "Elixir.Grand.HoldLedger.Laws",
-           "reports" => reports, "independent_kernel_check" => checked,
-           "axiom_audit" => "not_enumerated_by_Lynx.Laws.verify"} <- data,
-         true <- is_list(reports) and reports != [] and
-                   Enum.all?(reports, &valid_report?/1),
-         true <- Enum.any?(reports, fn r ->
-           r["module"] in ["Grand.HoldLedger.Laws", "Elixir.Grand.HoldLedger.Laws"] and
-             plan["property"] in r["theorems"]
-         end) do
-      good = raw["exit_code"] == 0 and checked == "ok" and
-             Enum.all?(reports, &(&1["status"] == "ok" and &1["cached"] == false)) and
-             get_in(raw, ["artifacts", "proof_export"]) == true and
-             get_in(raw, ["artifacts", "translated_lean"]) == true
+         %{
+           "protocol" => "grand.lynx.report.v1",
+           "module" => "Elixir.Grand.HoldLedger.Laws",
+           "reports" => reports,
+           "independent_kernel_check" => checked,
+           "independent_check_output" => check_output,
+           "axiom_audit" => "not_enumerated_by_Lynx.Laws.verify"
+         } <- data,
+         true <-
+           is_binary(check_output) and is_list(reports) and reports != [] and
+             Enum.all?(reports, &valid_report?/1),
+         true <-
+           Enum.any?(reports, fn r ->
+             r["module"] == "Elixir.Grand.HoldLedger.Laws.laws" and
+               plan["property"] in r["theorems"]
+           end) do
+      good =
+        checked_result?(raw, reports, checked) and independent_checkers_accepted?(check_output)
+
       diagnostics =
         Enum.flat_map(reports, fn r -> Enum.map(r["diagnostics"], & &1["message"]) end)
+
       if good do
-        {:ok, %{ "status" => "proved", "engine_version" => "Lynx pinned via local build + Lean kernel",
-          "diagnostics" => ["named law translated and checked; axioms not enumerated" | diagnostics],
-          "counterexample" => nil,
-          "theorems" => Enum.flat_map(reports, & &1["theorems"]),
-          "dependencies" => Enum.map(reports, & &1["module"]),
-          "axioms" => %{"status" => "not_enumerated", "names" => nil} }}
+        {:ok,
+         %{
+           "status" => "proved",
+           "engine_version" => "Lynx pinned via local build + Lean kernel",
+           "diagnostics" => [
+             "named law translated and checked; per-theorem axioms not enumerated",
+             data["independent_check_output"] | diagnostics
+           ],
+           "counterexample" => nil,
+           "theorems" => Enum.flat_map(reports, & &1["theorems"]),
+           "dependencies" => Enum.map(reports, & &1["module"]),
+           "axioms" => %{
+             "status" => "export_closure_reported_not_per_theorem",
+             "names" => export_axioms(data["independent_check_output"])
+           }
+         }}
       else
-        report("error", "not_qualified", ["Lynx failure, missing independent kernel check or missing staged artifacts" | diagnostics])
+        report("error", "not_qualified", [
+          "Lynx failure, missing independent kernel check or missing staged artifacts"
+          | diagnostics
+        ])
       end
     else
-      _ -> report("error", "not_qualified", ["missing, forged or malformed Lynx report; no theorem accepted"])
+      _ ->
+        report("error", "not_qualified", [
+          "missing, forged or malformed Lynx report; no theorem accepted"
+        ])
     end
   end
 
-  defp valid_report?(%{"module" => m, "status" => s, "cached" => cached,
-                        "theorems" => th, "diagnostics" => ds}) do
+  defp checked_result?(raw, reports, checked) do
+    raw["exit_code"] == 0 and checked == "ok" and
+      Enum.all?(reports, &(&1["status"] == "ok" and &1["cached"] == false)) and
+      get_in(raw, ["artifacts", "proof_export"]) == true and
+      get_in(raw, ["artifacts", "translated_lean"]) == true
+  end
+
+  defp independent_checkers_accepted?(output) do
+    Enum.all?(
+      ["Lean paranoid", "lean4lean", "nanoda", "con-leche", "con-ron", "Lean default"],
+      fn checker ->
+        String.contains?(output, checker <> " kernel accepts the solution")
+      end
+    )
+  end
+
+  defp export_axioms(output) when is_binary(output) do
+    case Regex.run(~r/Uses axioms: ([^\n]+)/, output) do
+      [_, names] -> String.split(names, ", ", trim: true)
+      _ -> nil
+    end
+  end
+
+  defp export_axioms(_), do: nil
+
+  defp valid_report?(%{
+         "module" => m,
+         "status" => s,
+         "cached" => cached,
+         "theorems" => th,
+         "diagnostics" => ds
+       }) do
     is_binary(m) and s in ~w(ok error skipped) and is_boolean(cached) and
       is_list(th) and Enum.all?(th, &is_binary/1) and is_list(ds) and
       Enum.all?(ds, fn d -> is_map(d) and is_binary(d["message"]) end)
   end
+
   defp valid_report?(_), do: false
 
   defp valid_hypotheses?(values) do
-    is_list(values) and length(values) <= 12 and Enum.all?(values, fn v ->
-      is_binary(v) and byte_size(v) <= 300
-    end)
+    is_list(values) and length(values) <= 12 and
+      Enum.all?(values, fn v ->
+        is_binary(v) and byte_size(v) <= 300
+      end)
   end
 
   defp report(status, version, diagnostics) do
-    {:ok, %{"status" => status, "engine_version" => version, "diagnostics" => diagnostics,
-       "counterexample" => nil, "theorems" => [], "dependencies" => [],
-       "axioms" => %{"status" => "not_audited", "names" => nil}}}
+    {:ok,
+     %{
+       "status" => status,
+       "engine_version" => version,
+       "diagnostics" => diagnostics,
+       "counterexample" => nil,
+       "theorems" => [],
+       "dependencies" => [],
+       "axioms" => %{"status" => "not_audited", "names" => nil}
+     }}
   end
 end

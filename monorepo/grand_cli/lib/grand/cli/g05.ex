@@ -30,9 +30,9 @@ defmodule Grand.CLI.G05 do
 
   def run(["impact", first_path, last_path, links_path], opts) do
     with {:ok, before} <- load(first_path),
-         {:ok, after} <- load(last_path),
+         {:ok, after_snapshot} <- load(last_path),
          {:ok, %{"links" => links}} <- load(links_path),
-         {:ok, result} <- Impact.compare(before, after, links) do
+         {:ok, result} <- Impact.compare(before, after_snapshot, links) do
       maybe_write(result, Keyword.get(opts, :out))
     else
       {:error, reason} -> {:error, reason}
@@ -95,7 +95,8 @@ defmodule Grand.CLI.G05 do
   defp maybe_write(result, path) when is_binary(path) do
     with {:ok, json} <- JSON.encode(result),
          :ok <- File.write(path, json <> "\n", [:exclusive, :binary]) do
-      {:ok, %{"command" => "g05", "output" => path, "status" => Map.get(result, "status", "data_only")}}
+      {:ok,
+       %{"command" => "g05", "output" => path, "status" => Map.get(result, "status", "data_only")}}
     end
   end
 

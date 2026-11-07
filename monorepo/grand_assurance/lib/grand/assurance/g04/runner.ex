@@ -41,7 +41,8 @@ defmodule Grand.Assurance.G04.Runner do
   def execute(_, _), do: {:error, :invalid_runner_plan}
 
   @doc "Return a distinct data-only status without launching a process."
-  def skipped(reason) when reason in ~w(unrun missing_engine missing_tlc_jar missing_lynx_toolchain missing_veil_toolchain) do
+  def skipped(reason)
+      when reason in ~w(unrun missing_engine missing_tlc_jar missing_lynx_toolchain missing_veil_toolchain) do
     %{
       "stdout" => "",
       "stderr" => "",
@@ -159,11 +160,18 @@ defmodule Grand.Assurance.G04.Runner do
 
   defp stage(dir, files) do
     Enum.reduce_while(files, :ok, fn {name, content}, :ok ->
-      case File.write(Path.join(dir, name), content, [:exclusive, :binary]) do
-        :ok -> {:cont, :ok}
-        {:error, reason} -> {:halt, {:error, {:workspace_write_failed, reason}}}
+      case stage_file(Path.join(dir, name), content) do
+        :ok ->
+          {:cont, :ok}
+
+        {:error, reason} ->
+          {:halt, {:error, {:workspace_write_failed, reason}}}
       end
     end)
+  end
+
+  defp stage_file(path, content) do
+    with :ok <- File.write(path, content, [:exclusive, :binary]), do: File.chmod(path, 0o600)
   end
 
   defp staged_args(args, dir) do
@@ -181,7 +189,14 @@ defmodule Grand.Assurance.G04.Runner do
   end
 
   defp launch(session, shell, killer, executable, arguments, dir, opts) do
-    blocks = Integer.to_string(div(Keyword.get(opts, :output_limit_bytes, 65_536) + 511, 512))
+    # BEAM's JIT needs a larger process file limit; separately bound the
+    # workspace (64 MB) and each log stream. Lynx's export is about 27 MB.
+    file_cap =
+      if Path.basename(executable) == "elixir",
+        do: 512_000_000,
+        else: Keyword.get(opts, :output_limit_bytes, 65_536)
+
+    blocks = Integer.to_string(div(file_cap + 511, 512))
     argv = ["--wait", shell, "-c", @shell, "grand-g04", blocks, executable | arguments]
 
     port =
@@ -211,9 +226,13 @@ defmodule Grand.Assurance.G04.Runner do
     token = Keyword.get(opts, :cancel_ref)
 
     cond do
-      output_size(dir) > max_output ->
+      output_exceeded?(dir, max_output) ->
         stop(port, opts)
         {:ok, captured(dir, nil, elapsed, "output_limit", max_output)}
+
+      workspace_size(dir) > 64_000_000 ->
+        stop(port, opts)
+        {:ok, captured(dir, nil, elapsed, "artifact_limit", max_output)}
 
       elapsed >= timeout ->
         stop(port, opts)
@@ -222,7 +241,7 @@ defmodule Grand.Assurance.G04.Runner do
       true ->
         receive do
           {^port, {:exit_status, status}} ->
-            reason = if output_exceeded?(dir, max_output), do: "output_limit", else: nil
+            reason = completion_reason(dir, max_output)
             {:ok, captured(dir, status, elapsed, reason, max_output)}
 
           {^port, {:data, _launcher_diagnostic}} ->
@@ -244,6 +263,29 @@ defmodule Grand.Assurance.G04.Runner do
         _ -> false
       end
     end)
+  end
+
+  defp completion_reason(dir, cap) do
+    cond do
+      output_exceeded?(dir, cap) -> "output_limit"
+      workspace_size(dir) > 64_000_000 -> "artifact_limit"
+      true -> nil
+    end
+  end
+
+  defp workspace_size(dir) do
+    case File.ls(dir) do
+      {:ok, names} -> Enum.reduce(names, 0, &(&2 + entry_size(Path.join(dir, &1))))
+      _ -> 0
+    end
+  end
+
+  defp entry_size(path) do
+    case File.lstat(path) do
+      {:ok, %{type: :regular, size: size}} -> size
+      {:ok, %{type: :directory}} -> workspace_size(path)
+      _ -> 0
+    end
   end
 
   defp stop(port, opts) do
@@ -286,7 +328,7 @@ defmodule Grand.Assurance.G04.Runner do
 
   defp artifact?(path) do
     case File.lstat(path) do
-      {:ok, stat} -> stat.type == :regular and stat.size in 1..8_000_000
+      {:ok, stat} -> stat.type == :regular and stat.size in 1..64_000_000
       _ -> false
     end
   end
