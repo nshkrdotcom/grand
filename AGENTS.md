@@ -9,15 +9,13 @@
    and commits both A ZIP updates; local B verifies/fixes those already committed
    checkouts and commits only new B repairs/evidence. B returns committed ZIPs
    and ONE canonical next-A implementation prompt. No duplicate A import/commit.
-3. G01B's 24 Mix gates and 14 ExUnit tests passed historically. G02A has now
-   authored distinct v1/v2 adapters, source-only P02B verification, exact refs,
-   bounded local query/CLI and regressions; new Mix gates were UNRUN in A due to
-   missing toolchain. The USER applies and COMMITS both G02A ZIPs before local
-   G02B. Next owner inspects the current committed trees, verifies/repairs ALL
-   six Mix gates and phase/security/CLI/docset checks, commits only new B work,
-   and returns committed paired ZIPs plus one G03A implementation prompt.
-   No BeamCompass source changes/P03 dependency, target run, fabricated proof,
-   repeated A import, closure loop or historical ZIP gate.
+3. G01B's 24 Mix gates and 14 ExUnit tests remain historical. G02B passed
+   24 Mix gates and 27 ExUnit tests on Elixir 1.20.5 / OTP 29.1.2, with
+   actual P02B exports, real CLI and hostile controls. See delivery/ evidence
+   and the authoritative G02B handoff. Next owner IMPLEMENTS G03A source/tests
+   in the same run. Preserve v1/v2 source-only, exact refs and bounded query
+   guarantees. No BeamCompass source changes/P03 dependency, target execution,
+   fabricated proof, repeated A import or historical ZIP gate.
 4. There is no root Mix file. Run each project's deps.get --check-locked,
    format --check-formatted, compile --warnings-as-errors, test, credo --strict,
    and dialyzer. Record exact passed/failed/unrun evidence; repair defects.

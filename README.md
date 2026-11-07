@@ -7,11 +7,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
 </p>
 
-# Grand — G02A v2 evidence import authored (local G02B pending)
+# Grand — versioned source evidence and bounded local queries
 
 Grand owns **normative requirement and assurance records**. BeamCompass remains
 an independent product; Grand reads only its versioned portable JSON exports.
-This repository is a headless prototype. G01B passed its 24 local Mix gates; the new G02A source and tests are **authored but not yet Mix-verified**.
+This repository is a headless prototype. G01B passed its historical 24 local Mix gates. G02B validation and repairs are recorded in `delivery/G02B-VALIDATION.md`.
 
 **Baseline delivery:** `GRAND-G01A-20261106-A` (see `delivery/manifest.json`).
 **Authoritative docset on the user's machine:**
@@ -39,7 +39,7 @@ Dialyxir 1.4.8 (plus ExDoc and their dependencies).
 - `scripts/check.sh`: per-project complete quality gates; fails if tools absent.
 - `scripts/smoke.sh`: fixture demonstration (run only with Elixir installed).
 
-## Usage (Elixir/Mix >= 1.15 required)
+## Usage (Elixir/Mix ~> 1.20.5 and OTP 29.1.2 required)
 
 Run from `monorepo/grand_cli`. All options use long-form `--` flags:
 
@@ -102,11 +102,11 @@ mix dialyzer
 ```
 
 A repository-wide convenience command is `./scripts/check.sh`. The local G01B
-run uses Elixir 1.20.4 / OTP 29.1.2, pinned in `.tool-versions`. Exact command
+run uses Elixir 1.20.4 / OTP 29.1.2 historically. G02B uses Elixir 1.20.5 / OTP 29.1.2, pinned in `.tool-versions`. Exact command
 outputs and exit codes are under `delivery/g01b-logs/`; see
 `delivery/G01B-VALIDATION.md` for results and limitations. G01B is complete for its bounded local prototype. G02A source was authored
-without Mix runtime validation; next is local G02B verification on the user-
-committed A changes. See the authoritative docset `control/WORKFLOW.md` and
+without Mix runtime validation; G02B independently verifies the user-committed
+A trees and records repairs and exact results in `delivery/g02b-logs/`. See the authoritative docset `control/WORKFLOW.md` and
 `control/NEXT_AGENT.md`.
 Versioned references and immutable JSON storage are authorized for this scope;
 production authentication/durability and stable external API release remain separate.
@@ -120,7 +120,7 @@ production authentication/durability and stable external API release remain sepa
 - [MIT License](LICENSE) — Copyright (c) 2026 nshkrdotcom
 
 
-## G02A source-authored v2 import and local queries (awaits G02B Mix verification)
+## Versioned v2 import and local queries
 
 The pinned, **actual** BeamCompass P02B source-only snapshots and exact refs are
 bundled under `fixtures/upstream/beamcompass-p02b/` with upstream provenance
@@ -138,7 +138,7 @@ exact pointer to **entity, relation or evidence**; legacy v1 `behavior_ref`
 records and the v1 manual assurance pipeline retain their original schema.
 This stage does not silently migrate v1 normative requirements to v2 references.
 
-From `monorepo/grand_cli` after a local G02B toolchain check:
+From `monorepo/grand_cli` with the pinned toolchain:
 
 ```sh
 # Substitute ABS for the full path to this Grand checkout.
@@ -168,11 +168,10 @@ never claimed, even when a subset happens to have no omissions. Query `--out`
 and snapshot export refuse to overwrite an existing file. All imports only
 read provided JSON, never anchor paths or target configuration.
 
-G02A has authored ExUnit cases `G02-TEST-01`–`05`, hostile rehashed/typed
-inputs and real Mix subprocess CLI regressions. In this authoring sandbox,
-**Mix/Elixir were unavailable and these are UNRUN**, not passed. The independent
-`python3 scripts/g02_contract_check.py` checks pinned hashes, actual snapshots,
-exact refs and rehashed negative controls, but is not a substitute for the six
-Mix gates in each project. See the authoritative docset
-`handoffs/G02A-HANDOFF.md` and canonical standalone G02B prompt for the local
-verification and repairs. G01B's earlier verification remains unchanged.
+ExUnit cases `G02-TEST-01`–`05`, rehashed hostile inputs and real Mix
+subprocess CLI regressions exercise both pinned actual P02B exports. See
+`delivery/G02B-VALIDATION.md` and `delivery/g02b-logs/` for independent B
+results, including failures and repairs. Python contract checks supplement
+Elixir execution. They do not establish runtime target behavior. G01B's
+historical verification remains unchanged. The authoritative docset owns the
+phase ledger and canonical next-A implementation prompt.

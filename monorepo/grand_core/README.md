@@ -81,5 +81,4 @@ record with the upstream v2 snapshot SHA-256, project, typed `entity`/`relation`
 `evidence` kind and exact, sorted nonempty evidence list. Source `observed`
 status is invalid in this contract. `behavior_ref` schema_version 1 and existing
 requirement/assurance documents are not silently migrated; a separate v2 store
-namespace preserves old v1 lookup and immutable content. Elixir acceptance is
-pending the local G02B gates.
+namespace preserves old v1 lookup and immutable content. Elixir acceptance passed at G02B on Elixir 1.20.5 / OTP 29.1.2.

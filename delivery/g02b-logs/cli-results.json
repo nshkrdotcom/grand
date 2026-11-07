@@ -1,0 +1,482 @@
+[
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/a.json",
+      "--project",
+      "fixture:ledger",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-01.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "snapshot",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-02.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "entity",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "entity:01f23cead0e5cf426089bbfac5af233c0fee497c05aa3088b4e6af51a8f5c174",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-03.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "relation",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "relation:04ea01079931bc7d611039029a5602731ec6044ca33c8216fe3bb229b3f93161",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-04.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "evidence",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "evidence:01e4f84b0b875a997453c5712afe34e95463c245b0803a4b6bf4978dfec83542",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-05.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "query",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "--focus",
+      "entity:d916ed1e39c521e3d188d3b912795a9ab5527fd39474b22afbd2b654e66aa6bb",
+      "--preserve",
+      "relation=relation:04ea01079931bc7d611039029a5602731ec6044ca33c8216fe3bb229b3f93161",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2",
+      "--budget",
+      "3"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-06.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "query",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "--focus",
+      "entity:d916ed1e39c521e3d188d3b912795a9ab5527fd39474b22afbd2b654e66aa6bb",
+      "--preserve",
+      "relation=relation:04ea01079931bc7d611039029a5602731ec6044ca33c8216fe3bb229b3f93161",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2",
+      "--budget",
+      "1"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-07.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "export",
+      "snapshot",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "--out",
+      "/tmp/grand-g02b-96sj3hvn/a.json-portable.json",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-08.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/tmp/grand-g02b-96sj3hvn/a.json-portable.json",
+      "--project",
+      "fixture:ledger",
+      "--schema",
+      "2",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json-roundtrip"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-09.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "export",
+      "snapshot",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "--out",
+      "/tmp/grand-g02b-96sj3hvn/a.json-portable.json",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-10.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/a.json",
+      "--project",
+      "foreign",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-11.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/a.json",
+      "--project",
+      "fixture:ledger",
+      "--schema",
+      "1",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-12.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/a.json",
+      "--project",
+      "fixture:ledger",
+      "--no-such-flag",
+      "yes",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/a.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-13.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/mutated.json",
+      "--project",
+      "fixture:ledger",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-14.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "snapshot",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-15.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "entity",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "entity:01f23cead0e5cf426089bbfac5af233c0fee497c05aa3088b4e6af51a8f5c174",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-16.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "relation",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "relation:04ea01079931bc7d611039029a5602731ec6044ca33c8216fe3bb229b3f93161",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-17.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "inspect",
+      "evidence",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "evidence:023aa6221da513f2125f009ee878bedab4baef35e773535738a5bb4d1c94a9e1",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-18.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "query",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "--focus",
+      "entity:d916ed1e39c521e3d188d3b912795a9ab5527fd39474b22afbd2b654e66aa6bb",
+      "--preserve",
+      "relation=relation:04ea01079931bc7d611039029a5602731ec6044ca33c8216fe3bb229b3f93161",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2",
+      "--budget",
+      "3"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-19.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "query",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "--focus",
+      "entity:d916ed1e39c521e3d188d3b912795a9ab5527fd39474b22afbd2b654e66aa6bb",
+      "--preserve",
+      "relation=relation:04ea01079931bc7d611039029a5602731ec6044ca33c8216fe3bb229b3f93161",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2",
+      "--budget",
+      "1"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-20.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "export",
+      "snapshot",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "--out",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json-portable.json",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-21.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json-portable.json",
+      "--project",
+      "fixture:ledger",
+      "--schema",
+      "2",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json-roundtrip"
+    ],
+    "exit_code": 0,
+    "expected": "success",
+    "log": "delivery/g02b-logs/cli-22.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "export",
+      "snapshot",
+      "fixture:ledger",
+      "24c731c6a96ab7adfaccae71c76d8013c5035a9f9017a7611ce4ddc2641ef007",
+      "--out",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json-portable.json",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-23.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/mutated.json",
+      "--project",
+      "foreign",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-24.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/mutated.json",
+      "--project",
+      "fixture:ledger",
+      "--schema",
+      "1",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-25.log"
+  },
+  {
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/mutated.json",
+      "--project",
+      "fixture:ledger",
+      "--no-such-flag",
+      "yes",
+      "--store",
+      "/tmp/grand-g02b-96sj3hvn/mutated.json",
+      "--schema",
+      "2"
+    ],
+    "exit_code": 1,
+    "expected": "rejection",
+    "log": "delivery/g02b-logs/cli-26.log"
+  }
+]

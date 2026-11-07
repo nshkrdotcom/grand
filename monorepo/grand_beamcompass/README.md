@@ -81,7 +81,7 @@ Development uses the sibling core application when available. Standalone install
 
 MIT — Copyright (c) 2026 nshkrdotcom. See [LICENSE](LICENSE).
 
-## G02A typed P02B consumer (authored, runtime verification pending)
+## Typed P02B consumer (G02B locally verified)
 
 `Grand.BeamCompass` dispatches only on a declared JSON `schema_version`:
 separate `V1` and `V2` implementations. Version 2 requires caller-supplied
@@ -103,6 +103,6 @@ called. `preserve` entries are maps with `object_kind` entity/relation and
 budget counts entities and relations, not the separately reported evidence and
 receipts. It is never a proof or semantic-completeness assertion.
 
-Run the new ExUnit suite on the bundled **actual exported** P02B JSON files
-under `fixtures/upstream/beamcompass-p02b` during local G02B. No Mix tests were
-run in G02A authoring; a separate Python contract check was executed instead.
+G02B passed the ExUnit suite on the bundled **actual exported** P02B JSON
+under `fixtures/upstream/beamcompass-p02b`. G02A authoring was runtime UNRUN;
+see root `delivery/G02B-VALIDATION.md` for independent B acceptance.
