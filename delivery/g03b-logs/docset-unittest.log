@@ -1,0 +1,18 @@
+test_current_docset (test_docsetctl.TestDocset.test_current_docset) ... ok
+test_g02b_historical_acceptance_and_g03a_authoring_continuation (test_docsetctl.TestDocset.test_g02b_historical_acceptance_and_g03a_authoring_continuation) ... ok
+test_g03b_actual_acceptance_and_standalone_g04a_continuation (test_docsetctl.TestDocset.test_g03b_actual_acceptance_and_standalone_g04a_continuation) ... ok
+test_required_entrypoint_missing (test_docsetctl.TestDocset.test_required_entrypoint_missing) ... ok
+test_every_retained_upstream_byte_hash (test_g02_pinned.TestPinnedP02B.test_every_retained_upstream_byte_hash) ... ok
+test_negative_rehashed_mode_and_bad_effect_type (test_g02_pinned.TestPinnedP02B.test_negative_rehashed_mode_and_bad_effect_type) ... ok
+test_two_real_exports_and_exact_refs (test_g02_pinned.TestPinnedP02B.test_two_real_exports_and_exact_refs) ... ok
+test_external_attestation_undischarged (test_g03_contracts.TestG03V2Contracts.test_external_attestation_undischarged) ... ok
+test_four_v2_examples_and_legacy_preservation (test_g03_contracts.TestG03V2Contracts.test_four_v2_examples_and_legacy_preservation) ... ok
+test_human_attestation_event_is_not_authenticated_identity (test_g03_contracts.TestG03V2Contracts.test_human_attestation_event_is_not_authenticated_identity) ... ok
+test_vacuity_preconditions_and_exact_assumptions_are_not_boolean_proofs (test_g03_contracts.TestG03V2Contracts.test_vacuity_preconditions_and_exact_assumptions_are_not_boolean_proofs) ... ok
+test_examples (test_schemas.TestSchemas.test_examples) ... ok
+test_schema_meta_validation (test_schemas.TestSchemas.test_schema_meta_validation) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.143s
+
+OK

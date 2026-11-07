@@ -12,7 +12,8 @@
 3. G01B's 24 Mix gates and 14 ExUnit tests remain historical. G02B passed
    24 Mix gates and 27 ExUnit tests on Elixir 1.20.5 / OTP 29.1.2, with
    actual P02B exports, real CLI and hostile controls. See delivery/ evidence
-   and the authoritative G02B handoff. Next owner IMPLEMENTS G03A source/tests
+   and the authoritative G02B handoff. G03B passed 24 Mix gates and 55 ExUnit tests on the same pinned toolchain.
+   Next owner IMPLEMENTS G04A source/tests
    in the same run. Preserve v1/v2 source-only, exact refs and bounded query
    guarantees. No BeamCompass source changes/P03 dependency, target execution,
    fabricated proof, repeated A import or historical ZIP gate.

@@ -1,0 +1,42 @@
+Finding suitable PLTs
+Checking PLT...
+[:compiler, :crypto, :elixir, :grand_assurance, :grand_core, :kernel, :logger, :mix, :stdlib]
+PLT is up to date!
+No :ignore_warnings opt specified in mix.exs and default does not exist.
+
+Starting Dialyzer
+[
+  check_plt: false,
+  init_plt: ~c"/home/home/p/g/n/grand/monorepo/grand_assurance/_build/dev/dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt",
+  files: [~c"/home/home/p/g/n/grand/monorepo/grand_assurance/_build/dev/lib/grand_assurance/ebin/Elixir.Grand.Assurance.G03.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_assurance/_build/dev/lib/grand_assurance/ebin/Elixir.Grand.Assurance.beam"],
+  warnings: [:unknown]
+]
+Total errors: 8, Skipped: 0, Unnecessary Skips: 0
+done in 0m1.52s
+lib/grand/assurance/g03.ex:44:35:unknown_function
+Function Grand.Core.LifecycleStore.latest/3 does not exist.
+________________________________________________________________________________
+lib/grand/assurance/g03.ex:90:35:unknown_function
+Function Grand.Core.LifecycleStore.latest/3 does not exist.
+________________________________________________________________________________
+lib/grand/assurance/g03.ex:132:35:unknown_function
+Function Grand.Core.LifecycleStore.latest/3 does not exist.
+________________________________________________________________________________
+lib/grand/assurance/g03.ex:175:32:unknown_function
+Function Grand.Core.LifecycleStore.read/1 does not exist.
+________________________________________________________________________________
+lib/grand/assurance/g03.ex:212:42:unknown_function
+Function Grand.Core.LifecycleStore.history/3 does not exist.
+________________________________________________________________________________
+lib/grand/assurance/g03.ex:213:41:unknown_function
+Function Grand.Core.LifecycleStore.latest/3 does not exist.
+________________________________________________________________________________
+lib/grand/assurance/g03.ex:252:35:unknown_function
+Function Grand.Core.G3.validate/2 does not exist.
+________________________________________________________________________________
+lib/grand/assurance/g03.ex:254:18:unknown_function
+Function Grand.Core.LifecycleStore.append/4 does not exist.
+________________________________________________________________________________
+done (warnings were emitted)
+Halting VM with exit status 2

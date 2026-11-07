@@ -1,0 +1,23 @@
+==> grand_core
+Compiling 3 files (.ex)
+==> grand_beamcompass
+Compiling 1 file (.ex)
+Running ExUnit with seed: 927594, max_cases: 48
+
+.......
+
+  1) test motif receipt preserves its typed link and accounts for every source object (Grand.BeamCompass.G03MotifTest)
+     test/g03_motif_test.exs:38
+     Assertion with == failed
+     code:  assert length(receipt["preserved"]) + length(receipt["omitted"]) ==
+              length(upstream["entities"]) + length(upstream["relations"]) + length(upstream["evidence"])
+     left:  130
+     right: 133
+     stacktrace:
+       test/g03_motif_test.exs:49: (test)
+
+........
+Finished in 3.7 seconds (3.7s async, 0.00s sync)
+
+Result: 15/16 passed
+Failed: 1 test

@@ -1,0 +1,14 @@
+==> grand_core
+Compiling 3 files (.ex)
+==> grand_assurance
+Compiling 1 file (.ex)
+==> grand_beamcompass
+Compiling 1 file (.ex)
+==> grand_cli
+Compiling 2 files (.ex)
+Running ExUnit with seed: 575306, max_cases: 48
+
+.......
+Finished in 34.7 seconds (0.00s async, 34.7s sync)
+
+Result: 7 passed

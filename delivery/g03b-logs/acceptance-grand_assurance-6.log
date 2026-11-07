@@ -1,0 +1,17 @@
+Finding suitable PLTs
+Checking PLT...
+[:compiler, :crypto, :elixir, :grand_assurance, :grand_core, :kernel, :logger, :mix, :stdlib]
+PLT is up to date!
+No :ignore_warnings opt specified in mix.exs and default does not exist.
+
+Starting Dialyzer
+[
+  check_plt: false,
+  init_plt: ~c"/home/home/p/g/n/grand/monorepo/grand_assurance/_build/dev/dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt",
+  files: [~c"/home/home/p/g/n/grand/monorepo/grand_assurance/_build/dev/lib/grand_assurance/ebin/Elixir.Grand.Assurance.G03.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_assurance/_build/dev/lib/grand_assurance/ebin/Elixir.Grand.Assurance.beam"],
+  warnings: [:unknown]
+]
+Total errors: 0, Skipped: 0, Unnecessary Skips: 0
+done in 0m1.6s
+done (passed successfully)

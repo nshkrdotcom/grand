@@ -1,0 +1,13 @@
+==> grand_core
+Compiling 3 files (.ex)
+
+== Compilation error in file lib/grand/core/g03.ex ==
+** (SyntaxError) invalid syntax found on lib/grand/core/g03.ex:139:52:
+     error: syntax error before: after. "after" is a reserved word in Elixir and therefore its usage is limited. For instance, it can't be used as a variable or be defined nor invoked as a regular function
+     │
+ 139 │   defp same_immutable_fields?("candidate", before, after) do
+     │                                                    ^
+     │
+     └─ lib/grand/core/g03.ex:139:52
+    (elixir 1.20.5) lib/kernel/parallel_compiler.ex:545: anonymous fn/5 in Kernel.ParallelCompiler.spawn_workers/8
+could not compile dependency :grand_core, "mix compile" failed. Errors may have been logged above. You can recompile this dependency with "mix deps.compile grand_core --force", update it with "mix deps.update grand_core" or clean it with "mix deps.clean grand_core"

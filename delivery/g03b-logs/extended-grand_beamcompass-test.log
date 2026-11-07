@@ -1,0 +1,46 @@
+Running ExUnit with seed: 610302, max_cases: 48
+
+...........
+
+  1) test motif receipt preserves its typed link and accounts for every source object (Grand.BeamCompass.G03MotifTest)
+     test/g03_motif_test.exs:38
+     Assertion with == failed
+     code:  assert Enum.sort(Enum.map(receipt["unresolved"], & &1["relation_id"])) ==
+              Enum.sort(Enum.map(unresolved, & &1["id"]))
+     left:  ["relation:38d44b379035f97371576fa6fdce93647fa30dbd459391b3f19149adce4c1c87",
+             "relation:50b54947cc034f5536596d580aac8d26810de5fff5f6546961fcdd34fef808ed",
+             "relation:518a2502ebcd435084861819897d13596a3b670c1572b347dbed2703f3c43abe",
+             "relation:5dacd320a97afabacddad8dac1ee5455d054fb27f1c92d46ed1a5635af26e165",
+             "relation:74a335af8d163cf8edd8e13fd5ea607a7a9c9e3edb86d9405e0124b3a644b625",
+             "relation:84aa9b7d69f1da07974adccc5efcd38423db9d4786396d6194bff25566eb70d2",
+             "relation:9506cd09fe149ac830e27117ef80da20609ab8c9a764a3e692ef8549d32c552e",
+             "relation:a49556ac8e5fe5f4608e99a9381c583aa54d35c8ad5b21566a4894219d9e8263",
+             "relation:a68b20221ea2d5828de0d2f0862d90d5511c8c01a0fec63e7fabed9a9280674f",
+             "relation:b0ad769fa8bd6871ef844e6aa38d590eca44bed6370cea24ea9493b400adfb73",
+             "relation:b9ad572c7b5a26113492b744895b1c7a088242fdf320f1e3f35e8cd5206847de",
+             "relation:cb1d01a79b2c884a5836ceacb0151461515142482991b405f388b6501dd762c1",
+             "relation:ce9cb086125b36ba2d2f0d3bcf88368b916a001a5c129d5ffed0e51623c643bd",
+             "relation:df65cb9a47dfb5ad148a052b865a267aa8fa8c1b22a4a84cdc2bc55a9ca6626e",
+             "relation:fc5adb7f5192e70abd69a02b744b84cb0fc93b6086956b0411cf44da56f481ce"]
+     right: ["relation:38d44b379035f97371576fa6fdce93647fa30dbd459391b3f19149adce4c1c87",
+             "relation:50b54947cc034f5536596d580aac8d26810de5fff5f6546961fcdd34fef808ed",
+             "relation:5dacd320a97afabacddad8dac1ee5455d054fb27f1c92d46ed1a5635af26e165",
+             "relation:74a335af8d163cf8edd8e13fd5ea607a7a9c9e3edb86d9405e0124b3a644b625",
+             "relation:84aa9b7d69f1da07974adccc5efcd38423db9d4786396d6194bff25566eb70d2",
+             "relation:9506cd09fe149ac830e27117ef80da20609ab8c9a764a3e692ef8549d32c552e",
+             "relation:a49556ac8e5fe5f4608e99a9381c583aa54d35c8ad5b21566a4894219d9e8263",
+             "relation:a68b20221ea2d5828de0d2f0862d90d5511c8c01a0fec63e7fabed9a9280674f",
+             "relation:b0ad769fa8bd6871ef844e6aa38d590eca44bed6370cea24ea9493b400adfb73",
+             "relation:b9ad572c7b5a26113492b744895b1c7a088242fdf320f1e3f35e8cd5206847de",
+             "relation:cb1d01a79b2c884a5836ceacb0151461515142482991b405f388b6501dd762c1",
+             "relation:ce9cb086125b36ba2d2f0d3bcf88368b916a001a5c129d5ffed0e51623c643bd",
+             "relation:df65cb9a47dfb5ad148a052b865a267aa8fa8c1b22a4a84cdc2bc55a9ca6626e",
+             "relation:fc5adb7f5192e70abd69a02b744b84cb0fc93b6086956b0411cf44da56f481ce"]
+     stacktrace:
+       test/g03_motif_test.exs:55: (test)
+
+....
+Finished in 3.7 seconds (3.7s async, 0.00s sync)
+
+Result: 15/16 passed
+Failed: 1 test

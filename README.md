@@ -88,6 +88,20 @@ revision 1 remains available after explicit approval creates revision 2.
 * Do not use this as an authorization service or proof service. Do not export
   sensitive source content or grant untrusted principals write access to store.
 
+## G03B local acceptance
+
+G03B passed all 24 ordered Mix gates on Elixir 1.20.5-otp-29 / OTP 29.1.2.
+ExUnit: Core 15, adapter 16, Assurance 16, CLI 8: **55 passed, zero failures**.
+All six stable G03 acceptance IDs, legacy v1/G02 regressions, isolated smoke,
+Python contract/schema checks and 25 supplemental real CLI subprocesses passed.
+Exact commands, timestamps, versions, lock hashes, statuses, exit codes and
+stdout/stderr are under `delivery/g03b-logs/`, with `acceptance-matrix.json`. Earlier
+failed attempts are retained separately. The authoritative docset contains the
+G03B receiving cold read, factual handoff, current ledger and sole G04A prompt.
+No target/checker execution, authenticated identity, causality, proof or production
+durability is claimed; G03 receipts remain conditional unrun/unassessed records.
+The G03A authoring section below retains its original historical UNRUN scope.
+
 ## Quality/validation status
 
 The receiving local agent should run, from each of the four project directories:

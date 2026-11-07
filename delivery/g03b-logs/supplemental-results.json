@@ -1,0 +1,557 @@
+[
+  {
+    "cwd": "/home/home/p/g/n/grand",
+    "command": [
+      "python3",
+      "scripts/static_validate.py"
+    ],
+    "timestamp": "2026-11-07T02:15:31.635268+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/static.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand",
+    "command": [
+      "python3",
+      "scripts/g02_contract_check.py"
+    ],
+    "timestamp": "2026-11-07T02:15:31.653705+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/g02-contract.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand",
+    "command": [
+      "python3",
+      "scripts/g03_contract_check.py",
+      "--docset",
+      "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset"
+    ],
+    "timestamp": "2026-11-07T02:15:31.787966+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/g03-contract.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand",
+    "command": [
+      "sh",
+      "scripts/smoke.sh",
+      "/tmp/grand-g03b-smoke-_zt33wts"
+    ],
+    "timestamp": "2026-11-07T02:15:31.882750+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/legacy-smoke.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/g03_synthetic_retry_v2.json",
+      "--project",
+      "fixture:synthetic-retry",
+      "--schema",
+      "2",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:35.007005+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-01.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "propose",
+      "/home/home/p/g/n/grand/fixtures/g03_candidate_input.json",
+      "--actor",
+      "agent:source",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:35.662519+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-02.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "candidate",
+      "reject",
+      "g03-manual-question",
+      "--actor",
+      "agent:assistant",
+      "--ack-human",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:36.335792+00:00",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "log_path": "delivery/g03b-logs/cli-03.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "candidate",
+      "reject",
+      "g03-manual-question",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:36.950506+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-04.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "motif",
+      "propose",
+      "fixture:synthetic-retry",
+      "34939944d49cbce23b8af245f3a8343f1d447a98a17f70f2d469d6d9e8d9d75e",
+      "--actor",
+      "agent:motif",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:37.615141+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-05.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "candidate",
+      "reject",
+      "g03-motif-1e08762a900ae4cf72688221",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:38.587826+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-06.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "assumption",
+      "register",
+      "/home/home/p/g/n/grand/fixtures/g03_assumption_input.json",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:39.482571+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-07.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "requirement",
+      "draft",
+      "/home/home/p/g/n/grand/fixtures/g03_requirement_input.json",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:40.263578+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-08.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "requirement",
+      "approve",
+      "g03-confirm-once",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:41.079682+00:00",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "log_path": "delivery/g03b-logs/cli-09.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "requirement",
+      "submit",
+      "g03-confirm-once",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:41.792467+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-10.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "requirement",
+      "approve",
+      "g03-confirm-once",
+      "--actor",
+      "agent:assistant",
+      "--ack-human",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:42.579114+00:00",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "log_path": "delivery/g03b-logs/cli-11.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "requirement",
+      "approve",
+      "g03-confirm-once",
+      "--actor",
+      "human:local-b",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:43.311271+00:00",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "log_path": "delivery/g03b-logs/cli-12.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "requirement",
+      "approve",
+      "g03-confirm-once",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:44.074620+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-13.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "inspect",
+      "requirement",
+      "g03-confirm-once",
+      "--revision",
+      "1",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:44.819203+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-14.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "inspect",
+      "requirement",
+      "g03-confirm-once",
+      "--revision",
+      "3",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:45.473619+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-15.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "assumption",
+      "attest",
+      "g03-external-dedup",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:46.188585+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-16.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "obligation",
+      "create",
+      "/home/home/p/g/n/grand/fixtures/g03_obligation_input.json",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:46.933459+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-17.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "inspect",
+      "obligation",
+      "g03-obligation-once",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:47.698210+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-18.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "receipt",
+      "g03-obligation-once",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:48.309355+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-19.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "receipt",
+      "g03-obligation-once",
+      "--out",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/receipt.json",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:48.918783+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-20.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "receipt",
+      "g03-obligation-once",
+      "--out",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/receipt.json",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:49.526832+00:00",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "log_path": "delivery/g03b-logs/cli-21.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "requirement",
+      "draft",
+      "/home/home/p/g/n/grand/fixtures/g03_requirement_input.json",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store",
+      "--actor",
+      "human:local-b",
+      "--ack-human"
+    ],
+    "timestamp": "2026-11-07T02:15:50.155311+00:00",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "log_path": "delivery/g03b-logs/cli-22.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "history",
+      "requirement",
+      "g03-confirm-once",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:50.799786+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-23.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "import",
+      "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/a.json",
+      "--project",
+      "fixture:ledger",
+      "--schema",
+      "2",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:51.440410+00:00",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "log_path": "delivery/g03b-logs/cli-24.log",
+    "outcome": "PASS"
+  },
+  {
+    "cwd": "/home/home/p/g/n/grand/monorepo/grand_cli",
+    "command": [
+      "mix",
+      "grand",
+      "g03",
+      "motif",
+      "propose",
+      "fixture:ledger",
+      "bd6b9d4b212d46789cde04b465d3c1ffc06290f318f322dc62caca1d03ef42ef",
+      "--actor",
+      "agent:motif",
+      "--store",
+      "/tmp/grand-g03b-real-cli-qw6jzmei/store"
+    ],
+    "timestamp": "2026-11-07T02:15:52.123453+00:00",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "log_path": "delivery/g03b-logs/cli-25.log",
+    "outcome": "PASS"
+  }
+]

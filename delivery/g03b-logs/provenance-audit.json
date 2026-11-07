@@ -1,0 +1,150 @@
+{
+  "original_p02b_comparisons": [
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/snapshot-v2.schema.json",
+      "sha256": "41fabccf564220b5529b3cd6fa72337672a3539442486690a89b304d59b8f50a",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/contracts/snapshot-v2.schema.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/snapshot-v2.schema.json",
+      "sha256": "41fabccf564220b5529b3cd6fa72337672a3539442486690a89b304d59b8f50a",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/contracts/snapshot-v2.schema.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/behavior-reference.schema.json",
+      "sha256": "a2d2b23e3b20621e380fd1d1466908d24c1333bada6f36a92c0e000afd071e1f",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/contracts/behavior-reference.schema.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/behavior-reference.schema.json",
+      "sha256": "a2d2b23e3b20621e380fd1d1466908d24c1333bada6f36a92c0e000afd071e1f",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/contracts/behavior-reference.schema.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/behavioral-export.md",
+      "sha256": "e4740f7afbce36cfdf9e39c838afe542921d027aab6fcd2b16efebf401cf3adf",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/contracts/behavioral-export.md",
+      "match": true,
+      "current_upstream_same": false
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/P02B.md",
+      "sha256": "3954e646c3efd9934d3d697f78387de058a62fdf355735b07eabe3e79839ebb4",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B.md",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/a.json",
+      "sha256": "e67e9be5644b4492e5f2b8da4ac58514a0172a532b0b07fd2600e5d94a196321",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/a.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/a.json",
+      "sha256": "e67e9be5644b4492e5f2b8da4ac58514a0172a532b0b07fd2600e5d94a196321",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/a.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/a-inputs.json",
+      "sha256": "03ccf4e94b3327619d3ed1ef8cc9ff20dd8c658e853e17674168db384572e690",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/a-inputs.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/a-inputs.json",
+      "sha256": "03ccf4e94b3327619d3ed1ef8cc9ff20dd8c658e853e17674168db384572e690",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/a-inputs.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/mutated.json",
+      "sha256": "4804c660d84133c27e934bc131e210d8e96d9b94ab0e5d230539fb8dc02af49f",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/mutated.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/mutated.json",
+      "sha256": "4804c660d84133c27e934bc131e210d8e96d9b94ab0e5d230539fb8dc02af49f",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/mutated.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/mutated-inputs.json",
+      "sha256": "411996883b2f22eb87c4875c4b7359a7f8e958d2e1bba781e620eeeff54fdd15",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/mutated-inputs.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/mutated-inputs.json",
+      "sha256": "411996883b2f22eb87c4875c4b7359a7f8e958d2e1bba781e620eeeff54fdd15",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/mutated-inputs.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/exact-0.json",
+      "sha256": "cda4b466905710065146873fa50568f70addf8d9297b559967349add27fa6218",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/exact-0.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/exact-0.json",
+      "sha256": "cda4b466905710065146873fa50568f70addf8d9297b559967349add27fa6218",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/exact-0.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/contracts/upstream/beamcompass-p02b/exact-1.json",
+      "sha256": "b15d633acb61390b9df546fdd843ed5107f71a04c35a9ccc9fb575c853283b52",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/exact-1.json",
+      "match": true,
+      "current_upstream_same": true
+    },
+    {
+      "copy": "/home/home/p/g/n/grand/fixtures/upstream/beamcompass-p02b/exact-1.json",
+      "sha256": "b15d633acb61390b9df546fdd843ed5107f71a04c35a9ccc9fb575c853283b52",
+      "original_git_commit": "f4e1536a5064d8db5590d0c34439344ad3a13136",
+      "original_git_path": "nshkrdotcom/docs/20261106/beamcompass/impl_docs/handoffs/P02B-evidence/actual-export/exact-1.json",
+      "match": true,
+      "current_upstream_same": true
+    }
+  ],
+  "historical_G01B_G02B_unchanged": true,
+  "note": "Current upstream contracts evolved; original pinned delivery commit used, no P03 repin."
+}
