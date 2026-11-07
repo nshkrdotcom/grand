@@ -1,2 +1,0 @@
-{"command":"import","epistemic_scope":"syntactic_source_only","fact_count":2,"project_id":"synthetic-ledger","snapshot_id":"synthetic-hold-snapshot-001","source_sha256":"63e40b5284f19c3911d6aca916d06e263a21f205ef9ad0d01dbad4ecf550c56d"}
-** (Mix) Grand command rejected: :immutable_record_conflict

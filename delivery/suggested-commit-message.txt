@@ -1,8 +1,0 @@
-feat(grand): bootstrap G01A source-only assurance pipeline
-
-Add independent grand_core, grand_beamcompass, grand_assurance and
-grand_cli Mix projects for bounded BeamCompass v1 JSON import and exact
-BehaviorRef resolution, manual requirement approval, and unrun exports.
-
-Add synthetic fixtures, ExUnit and CLI integration tests, scripts and
-reproducible manifests. Record unrun local quality gates and proposed ADRs.

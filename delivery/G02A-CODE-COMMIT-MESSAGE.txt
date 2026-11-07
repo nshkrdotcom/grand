@@ -1,4 +1,0 @@
-feat(grand): import pinned P02B v2 evidence and bounded local queries
-
-Keep v1 adapters and immutable records intact; add typed exact refs,
-source-only graph validation, v2 store, CLI workflows and adversarial tests.

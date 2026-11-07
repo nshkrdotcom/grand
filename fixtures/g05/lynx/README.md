@@ -18,7 +18,3 @@ Origin: Grand G05 original fixture authored for this phase, derived in concept
 from evaluation/hold-ledger.md, without copying the separate Hold Ledger app.
 License: MIT, Grand LICENSE. Upstream translator: josevalim/lynx pinned in
 scripts/toolchains.json (Apache-2.0); external library is NOT redistributed.
-
-B must check the good and mutant using real Lynx/Lean, inspect translated
-modules and kernel/axiom evidence, and repair proof script against the pinned
-translator as needed. Neither a parser fixture nor `lean Law.lean` qualifies.

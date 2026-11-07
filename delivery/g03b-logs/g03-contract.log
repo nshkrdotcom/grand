@@ -1,4 +1,0 @@
-PASS: 4 G03 Draft 2020-12 schemas + invalid statuses
-PASS: synthetic v2 graph/source-only digest, typed retry/effect link, exact fixture refs,
-      pinned upstream negative, witness challenges, untrusted-label provenance and rehash control
-NOTE: NOT an Elixir compile, source runtime, model checker or proof

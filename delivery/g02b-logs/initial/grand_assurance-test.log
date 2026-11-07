@@ -1,9 +1,0 @@
-==> grand_core
-Compiling 2 files (.ex)
-==> grand_assurance
-Running ExUnit with seed: 326243, max_cases: 48
-
-...
-Finished in 0.04 seconds (0.04s async, 0.00s sync)
-
-Result: 3 passed

@@ -1,2 +1,0 @@
-PASS: G01A static layout, forbidden-token and JSON fixture checks
-NOTE: Elixir parsing/compile/tests/Credo/Dialyzer were NOT executed

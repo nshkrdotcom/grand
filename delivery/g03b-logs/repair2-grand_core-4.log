@@ -1,7 +1,0 @@
-Compiling 3 files (.ex)
-Running ExUnit with seed: 681805, max_cases: 48
-
-...............
-Finished in 0.09 seconds (0.09s async, 0.00s sync)
-
-Result: 15 passed

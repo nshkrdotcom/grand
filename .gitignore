@@ -13,15 +13,10 @@ deps/
 grand-store/
 *.swp
 .DS_Store
-# Validation transcripts are intentional delivery evidence.
-!delivery/g01b-logs/*.log
-!delivery/g01b-logs/repair-attempt/*.log
-!delivery/g02b-logs/**/*.log
 
 # Offline Python schema/provenance check caches are not delivery assets.
 __pycache__/
 *.pyc
-!delivery/g03b-logs/*.log
 
 # Reproducible local proof tools, Python environment and transient build reports.
 /.local/

@@ -1,4 +1,5 @@
 <p align="center">
+
   <img src="assets/grand_beamcompass.svg" alt="Grand BeamCompass" width="200" />
 </p>
 
@@ -30,7 +31,7 @@ Part of [Grand](https://github.com/nshkrdotcom/grand), consuming versioned porta
 
 ## Getting started
 
-Requires Elixir >= 1.15. From this application's directory:
+Requires Elixir 1.20.5 / OTP 29.1.2. From this application's directory:
 
 ```sh
 mix deps.get
@@ -80,35 +81,3 @@ Development uses the sibling core application when available. Standalone install
 ## License
 
 MIT — Copyright (c) 2026 nshkrdotcom. See [LICENSE](LICENSE).
-
-## Typed P02B consumer (G02B locally verified)
-
-`Grand.BeamCompass` dispatches only on a declared JSON `schema_version`:
-separate `V1` and `V2` implementations. Version 2 requires caller-supplied
-`project_id` matching the export; checks snapshot and manifest digests, source
-mode, typed effect targets, evidence DAG, canonical ordering, and safe paths;
-returns a versioned immutable envelope. `reference(snapshot, "entity" |
-"relation" | "evidence", id)` constructs an exact Grand v2 ref and
-`resolve/2` checks scope, complete evidence sets and optional status/resolution.
-Old two-argument v1 references and v1 store paths are unchanged. `load/3` is
-backwards compatible, `load/4` selects version explicitly. Source-only facts
-are neither runtime observations nor execution/causal guarantees.
-
-`Grand.BeamCompass.query(snapshot, focus: entity_id, budget: 1..256,
-lens: "neighbors" | "connected" | "effects", preserve: [typed_refs])`
-reads only a valid stored v2 envelope, returns typed objects, evidence closure
-and explicit preserved/omitted/unresolved receipts. No BeamCompass P03 API is
-called. `preserve` entries are maps with `object_kind` entity/relation and
-`object_id`; requiring a relation also requires both known endpoints. The
-budget counts entities and relations, not the separately reported evidence and
-receipts. It is never a proof or semantic-completeness assertion.
-
-G02B passed the ExUnit suite on the bundled **actual exported** P02B JSON
-under `fixtures/upstream/beamcompass-p02b`. G02A authoring was runtime UNRUN;
-see root `delivery/G02B-VALIDATION.md` for independent B acceptance.
-
-## G03A additive implementation (runtime UNRUN)
-
-Source-only `Grand.BeamCompass.Motif.retry_external_effect/1` deterministic question spike over existing typed V2 exact refs and bounded query receipts; original P02B unchanged.
-
-See root README and authoritative docset G03 design/verification. Toolchain Elixir 1.20.5-otp-29 / OTP 29.1.2 is not present in G03A, so G03B must independently execute six required Mix gates here.

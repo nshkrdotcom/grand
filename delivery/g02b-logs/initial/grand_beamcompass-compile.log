@@ -1,9 +1,0 @@
-==> grand_core
-Compiling 2 files (.ex)
-==> grand_beamcompass
-warning: mtime (modified time) for "lib/grand/beam_compass.ex" was set to the future, resetting to now
-warning: mtime (modified time) for "lib/grand/beam_compass/query.ex" was set to the future, resetting to now
-warning: mtime (modified time) for "lib/grand/beam_compass/v1.ex" was set to the future, resetting to now
-warning: mtime (modified time) for "lib/grand/beam_compass/v2.ex" was set to the future, resetting to now
-Compiling 4 files (.ex)
-Generated grand_beamcompass app
