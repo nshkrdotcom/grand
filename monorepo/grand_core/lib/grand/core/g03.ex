@@ -17,21 +17,31 @@ defmodule Grand.Core.G03 do
   @actions %{
     "candidate" => %{"propose" => "proposed", "reject" => "rejected", "supersede" => "superseded"},
     "requirement" => %{
-      "draft" => "draft", "submit" => "pending_approval", "approve" => "approved",
-      "reject" => "rejected", "supersede" => "superseded"
+      "draft" => "draft",
+      "submit" => "pending_approval",
+      "approve" => "approved",
+      "reject" => "rejected",
+      "supersede" => "superseded"
     },
     "assumption" => %{
-      "open" => "open", "attest" => "attested", "test" => "tested",
-      "discharge" => "discharged", "invalidate" => "invalidated",
+      "open" => "open",
+      "attest" => "attested",
+      "test" => "tested",
+      "discharge" => "discharged",
+      "invalidate" => "invalidated",
       "supersede" => "superseded"
     }
   }
 
   @required %{
-    "candidate" => ~w(schema_version id revision status question rationale counterhypothesis uncertainty gaps source_refs scope events context),
-    "requirement" => ~w(schema_version id revision status statement owner scope behavior_refs assumptions events),
-    "assumption" => ~w(schema_version id revision status statement category owner scope evidence gaps events),
-    "obligation" => ~w(schema_version id revision status requirement property kind scope source_refs assumptions preconditions witness precondition_challenges open_gaps created_at)
+    "candidate" =>
+      ~w(schema_version id revision status question rationale counterhypothesis uncertainty gaps source_refs scope events context),
+    "requirement" =>
+      ~w(schema_version id revision status statement owner scope behavior_refs assumptions events),
+    "assumption" =>
+      ~w(schema_version id revision status statement category owner scope evidence gaps events),
+    "obligation" =>
+      ~w(schema_version id revision status requirement property kind scope source_refs assumptions preconditions witness precondition_challenges open_gaps created_at)
   }
   @optional %{
     "candidate" => ~w(superseded_by),
@@ -65,11 +75,12 @@ defmodule Grand.Core.G03 do
 
   @doc "Validate the source scope and its distinct versioned references."
   def reference?(ref) when is_map(ref) do
-    schema = case ref["schema_version"] do
-      1 -> "behavior_ref"
-      2 -> "behavior_ref_v2"
-      _ -> "unsupported"
-    end
+    schema =
+      case ref["schema_version"] do
+        1 -> "behavior_ref"
+        2 -> "behavior_ref_v2"
+        _ -> "unsupported"
+      end
 
     match?({:ok, _}, Core.validate(schema, ref)) and
       ref["upstream_schema_version"] == ref["schema_version"]
@@ -77,11 +88,13 @@ defmodule Grand.Core.G03 do
 
   def reference?(_), do: false
 
-  def scope?(%{
-        "project_id" => project,
-        "snapshot_id" => snapshot,
-        "upstream_schema_version" => version
-      } = scope) do
+  def scope?(
+        %{
+          "project_id" => project,
+          "snapshot_id" => snapshot,
+          "upstream_schema_version" => version
+        } = scope
+      ) do
     map_size(scope) == 3 and is_binary(project) and byte_size(project) > 0 and
       ((version == 1 and Core.valid_id?(snapshot)) or
          (version == 2 and is_binary(snapshot) and
@@ -99,7 +112,9 @@ defmodule Grand.Core.G03 do
   @doc "Check immutable contiguous revisions and allowed lifecycle status changes."
   def transition(kind, nil, record) when kind in @kinds do
     first_action = %{
-      "candidate" => "propose", "requirement" => "draft", "assumption" => "open"
+      "candidate" => "propose",
+      "requirement" => "draft",
+      "assumption" => "open"
     }
 
     if record["revision"] == 1 and
@@ -112,9 +127,7 @@ defmodule Grand.Core.G03 do
 
   def transition(kind, previous, record) when kind in @kinds and is_map(previous) do
     valid =
-      record["id"] == previous["id"] and
-        record["revision"] == previous["revision"] + 1 and
-        record["scope"] == previous["scope"] and
+      contiguous_revision?(previous, record) and
         kind != "obligation" and
         revision_allowed?(kind, previous["status"], record["status"]) and
         Enum.take(record["events"], -1) != [] and
@@ -128,28 +141,42 @@ defmodule Grand.Core.G03 do
 
   defp revision_allowed?("candidate", "proposed", next), do: next in ~w(rejected superseded)
   defp revision_allowed?("requirement", "draft", "pending_approval"), do: true
-  defp revision_allowed?("requirement", "pending_approval", next), do: next in ~w(approved rejected)
+
+  defp revision_allowed?("requirement", "pending_approval", next),
+    do: next in ~w(approved rejected)
+
   defp revision_allowed?("requirement", "approved", "superseded"), do: true
-  defp revision_allowed?("assumption", "open", next), do: next in ~w(attested tested invalidated superseded)
-  defp revision_allowed?("assumption", "attested", next), do: next in ~w(tested invalidated superseded)
-  defp revision_allowed?("assumption", "tested", next), do: next in ~w(discharged invalidated superseded)
+
+  defp revision_allowed?("assumption", "open", next),
+    do: next in ~w(attested tested invalidated superseded)
+
+  defp revision_allowed?("assumption", "attested", next),
+    do: next in ~w(tested invalidated superseded)
+
+  defp revision_allowed?("assumption", "tested", next),
+    do: next in ~w(discharged invalidated superseded)
+
   defp revision_allowed?("assumption", "discharged", "superseded"), do: true
   defp revision_allowed?(_, _, _), do: false
 
-  defp same_immutable_fields?("candidate", before, after) do
-    Enum.all?(~w(question rationale counterhypothesis uncertainty gaps source_refs context),
-      &(before[&1] == after[&1]))
+  defp same_immutable_fields?("candidate", before, updated) do
+    Enum.all?(
+      ~w(question rationale counterhypothesis uncertainty gaps source_refs context),
+      &(before[&1] == updated[&1])
+    )
   end
 
-  defp same_immutable_fields?("requirement", before, after) do
-    Enum.all?(~w(statement owner behavior_refs assumptions source_candidate_id),
-      &(before[&1] == after[&1]))
+  defp same_immutable_fields?("requirement", before, updated) do
+    Enum.all?(
+      ~w(statement owner behavior_refs assumptions source_candidate_id),
+      &(before[&1] == updated[&1])
+    )
   end
 
-  defp same_immutable_fields?("assumption", before, after) do
-    Enum.all?(~w(statement category owner), &(before[&1] == after[&1])) and
-      Enum.all?(before["evidence"], &(&1 in after["evidence"])) and
-      Enum.all?(before["gaps"], &(&1 in after["gaps"]))
+  defp same_immutable_fields?("assumption", before, updated) do
+    Enum.all?(~w(statement category owner), &(before[&1] == updated[&1])) and
+      Enum.all?(before["evidence"], &(&1 in updated["evidence"])) and
+      Enum.all?(before["gaps"], &(&1 in updated["gaps"]))
   end
 
   defp same_immutable_fields?(_, _, _), do: false
@@ -163,10 +190,7 @@ defmodule Grand.Core.G03 do
   defp valid_body?("candidate", r) do
     Enum.all?(~w(question rationale counterhypothesis uncertainty), &Core.nonempty?(r[&1])) and
       Core.text_list?(r["gaps"]) and r["gaps"] != [] and refs?(r["source_refs"], r["scope"], true) and
-      is_map(r["context"]) and Enum.sort(Map.keys(r["context"])) == ~w(motif query_receipt source_mode) and
-      r["context"]["source_mode"] == "source_only" and
-      (is_nil(r["context"]["motif"]) or Core.nonempty?(r["context"]["motif"])) and
-      (is_nil(r["context"]["query_receipt"]) or is_map(r["context"]["query_receipt"])) and
+      context?(r["context"]) and
       events?("candidate", r) and superseded?(r)
   end
 
@@ -181,22 +205,56 @@ defmodule Grand.Core.G03 do
   defp valid_body?("assumption", r) do
     Core.nonempty?(r["statement"]) and Core.nonempty?(r["owner"]) and
       r["category"] in ~w(external compiler model runtime) and
-      Core.text_list?(r["gaps"]) and is_list(r["evidence"]) and
-      length(r["evidence"]) <= 128 and Enum.all?(r["evidence"], &evidence?(&1, r["scope"])) and
-      r["evidence"] == Enum.uniq(r["evidence"]) and events?("assumption", r) and superseded?(r) and
+      Core.text_list?(r["gaps"]) and evidence_list?(r["evidence"], r["scope"]) and
+      events?("assumption", r) and superseded?(r) and
       (r["status"] != "discharged" or Enum.any?(r["evidence"], &(&1["kind"] in ~w(test analysis))))
   end
 
   defp valid_body?("obligation", r) do
-    r["revision"] == 1 and r["status"] == "unrun" and
-      ref_revision?(r["requirement"]) and Core.nonempty?(r["property"]) and
-      r["kind"] in ~w(other exunit property conformance lynx lean veil tlc quint) and
+    obligation_identity?(r) and
       refs?(r["source_refs"], r["scope"], true) and revisions?(r["assumptions"]) and
-      Core.text_list?(r["preconditions"]) and r["preconditions"] != [] and
-      witness?(r["witness"], r["scope"]) and challenges?(r["precondition_challenges"]) and
+      obligation_premises?(r) and
       Core.text_list?(r["open_gaps"]) and timestamp?(r["created_at"]) and
       (r["witness"]["status"] != "missing" or
          Enum.any?(r["precondition_challenges"], &(&1["kind"] == "witness_missing")))
+  end
+
+  defp contiguous_revision?(previous, record) do
+    record["id"] == previous["id"] and
+      record["revision"] == previous["revision"] + 1 and
+      record["scope"] == previous["scope"]
+  end
+
+  defp context?(c) when is_map(c) do
+    Enum.sort(Map.keys(c)) == ~w(motif query_receipt source_mode) and
+      c["source_mode"] == "source_only" and
+      (is_nil(c["motif"]) or Core.nonempty?(c["motif"])) and
+      (is_nil(c["query_receipt"]) or is_map(c["query_receipt"]))
+  end
+
+  defp context?(_), do: false
+
+  defp evidence_list?(evidence, scope) do
+    is_list(evidence) and length(evidence) <= 128 and
+      Enum.all?(evidence, &evidence?(&1, scope)) and evidence == Enum.uniq(evidence)
+  end
+
+  defp obligation_identity?(r) do
+    r["revision"] == 1 and r["status"] == "unrun" and
+      ref_revision?(r["requirement"]) and Core.nonempty?(r["property"]) and
+      r["kind"] in ~w(other exunit property conformance lynx lean veil tlc quint)
+  end
+
+  defp obligation_premises?(r) do
+    Core.text_list?(r["preconditions"]) and r["preconditions"] != [] and
+      witness?(r["witness"], r["scope"]) and challenges?(r["precondition_challenges"])
+  end
+
+  defp event_identity?("candidate", "propose", _, "untrusted_proposer"), do: true
+
+  defp event_identity?(_, _, actor, identity) do
+    String.starts_with?(actor, "human:") and byte_size(actor) > 6 and
+      identity == "self_attested_not_authenticated"
   end
 
   defp refs?(refs, scope, required) do
@@ -216,14 +274,20 @@ defmodule Grand.Core.G03 do
 
   defp ref_revision?(_), do: false
 
-  defp evidence?(%{"kind" => kind, "description" => description, "source_refs" => refs} = e, scope) do
+  defp evidence?(
+         %{"kind" => kind, "description" => description, "source_refs" => refs} = e,
+         scope
+       ) do
     map_size(e) == 3 and kind in ~w(attestation test analysis source) and
       Core.nonempty?(description) and refs?(refs, scope, false)
   end
 
   defp evidence?(_, _), do: false
 
-  defp witness?(%{"status" => status, "description" => description, "source_refs" => refs} = w, scope) do
+  defp witness?(
+         %{"status" => status, "description" => description, "source_refs" => refs} = w,
+         scope
+       ) do
     map_size(w) == 3 and status in ~w(missing documented challenged) and
       Core.nonempty?(description) and refs?(refs, scope, false)
   end
@@ -231,12 +295,15 @@ defmodule Grand.Core.G03 do
   defp witness?(_, _), do: false
 
   defp challenges?(v) when is_list(v) do
-    length(v) <= 128 and Enum.all?(v, fn
-      %{"kind" => kind, "statement" => statement} = c ->
-        map_size(c) == 2 and kind in ~w(witness_missing vacuity contradiction unknown) and
-          Core.nonempty?(statement)
-      _ -> false
-    end) and v == Enum.uniq(v)
+    length(v) <= 128 and
+      Enum.all?(v, fn
+        %{"kind" => kind, "statement" => statement} = c ->
+          map_size(c) == 2 and kind in ~w(witness_missing vacuity contradiction unknown) and
+            Core.nonempty?(statement)
+
+        _ ->
+          false
+      end) and v == Enum.uniq(v)
   end
 
   defp challenges?(_), do: false
@@ -251,13 +318,20 @@ defmodule Grand.Core.G03 do
       Map.get(@actions[kind], last_action(r)) == r["status"]
   end
 
-  defp audit_event?(kind, %{"action" => action, "actor" => actor, "at" => at,
-                              "revision" => revision, "identity_assurance" => identity} = e, rev) do
+  defp audit_event?(
+         kind,
+         %{
+           "action" => action,
+           "actor" => actor,
+           "at" => at,
+           "revision" => revision,
+           "identity_assurance" => identity
+         } = e,
+         rev
+       ) do
     map_size(e) == 5 and revision == rev and Map.has_key?(@actions[kind], action) and
       Core.nonempty?(actor) and byte_size(actor) <= 160 and timestamp?(at) and
-      ((action == "propose" and kind == "candidate" and identity == "untrusted_proposer") or
-         (String.starts_with?(actor, "human:") and byte_size(actor) > 6 and
-            identity == "self_attested_not_authenticated"))
+      event_identity?(kind, action, actor, identity)
   end
 
   defp audit_event?(_, _, _), do: false

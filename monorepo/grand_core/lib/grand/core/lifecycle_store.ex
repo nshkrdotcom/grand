@@ -96,17 +96,15 @@ defmodule Grand.Core.LifecycleStore do
     previous = state |> Map.get(kind, %{}) |> Map.get(r["id"], []) |> List.last()
 
     with :ok <- G03.transition(kind, previous, r),
-         :ok <- validate_links(state, kind, r),
-         :ok <- validate_sources(kind, r, resolver) do
-      :ok
+         :ok <- validate_links(state, kind, r) do
+      validate_sources(kind, r, resolver)
     end
   end
 
   defp validate_links(state, "requirement", r) do
     with :ok <- require_revisions(state, "assumption", r["assumptions"], r["scope"]),
-         :ok <- optional_candidate(state, r),
-         :ok <- replacement(state, "requirement", r) do
-      :ok
+         :ok <- optional_candidate(state, r) do
+      replacement(state, "requirement", r)
     end
   end
 
@@ -116,12 +114,17 @@ defmodule Grand.Core.LifecycleStore do
     with {:ok, req} <- exact(state, "requirement", target),
          :ok <- test(req["status"] == "approved", :requirement_revision_not_approved),
          :ok <- test(req["scope"] == r["scope"], :requirement_scope_mismatch),
-         :ok <- test(Enum.all?(r["source_refs"], &(&1 in req["behavior_refs"])),
-           :obligation_reference_not_in_requirement),
-         :ok <- test(r["assumptions"] == req["assumptions"],
-           :obligation_assumption_revisions_mismatch),
-         :ok <- require_revisions(state, "assumption", r["assumptions"], r["scope"]) do
-      :ok
+         :ok <-
+           test(
+             Enum.all?(r["source_refs"], &(&1 in req["behavior_refs"])),
+             :obligation_reference_not_in_requirement
+           ),
+         :ok <-
+           test(
+             r["assumptions"] == req["assumptions"],
+             :obligation_assumption_revisions_mismatch
+           ) do
+      require_revisions(state, "assumption", r["assumptions"], r["scope"])
     end
   end
 
@@ -131,18 +134,25 @@ defmodule Grand.Core.LifecycleStore do
 
   defp optional_candidate(state, r) do
     case r["source_candidate_id"] do
-      nil -> :ok
+      nil ->
+        :ok
+
       id ->
         case get_in(state, ["candidate", id]) do
-          [_ | _] -> :ok
-          _ -> {:error, {:dangling_candidate, id}}
+          [_ | _] = versions ->
+            test(List.last(versions)["scope"] == r["scope"], :candidate_scope_mismatch)
+
+          _ ->
+            {:error, {:dangling_candidate, id}}
         end
     end
   end
 
   defp replacement(state, kind, %{"status" => "superseded", "superseded_by" => id} = r) do
     case get_in(state, [kind, id]) do
-      nil -> {:error, {:dangling_supersession, kind, id}}
+      nil ->
+        {:error, {:dangling_supersession, kind, id}}
+
       versions ->
         replacement = List.last(versions)
 
@@ -169,7 +179,9 @@ defmodule Grand.Core.LifecycleStore do
 
   defp exact(state, kind, %{"id" => id, "revision" => revision}) do
     case get_in(state, [kind, id]) do
-      nil -> {:error, {:dangling_lifecycle_revision, kind, id, revision}}
+      nil ->
+        {:error, {:dangling_lifecycle_revision, kind, id, revision}}
+
       versions ->
         case Enum.find(versions, &(&1["revision"] == revision)) do
           nil -> {:error, {:dangling_lifecycle_revision, kind, id, revision}}
@@ -179,27 +191,25 @@ defmodule Grand.Core.LifecycleStore do
   end
 
   defp validate_sources(kind, r, resolver) do
-    refs =
-      case kind do
-        "candidate" -> r["source_refs"]
-        "requirement" -> r["behavior_refs"]
-        "assumption" -> Enum.flat_map(r["evidence"], & &1["source_refs"])
-        "obligation" -> r["source_refs"] ++ r["witness"]["source_refs"]
-      end
-
-    cond do
-      refs == [] -> :ok
-      not is_function(resolver, 1) -> {:error, :exact_source_resolver_required}
-      true ->
-        Enum.reduce_while(refs, :ok, fn ref, :ok ->
-          case resolver.(ref) do
-            {:ok, _} -> {:cont, :ok}
-            {:error, reason} -> {:halt, {:error, {:unresolved_exact_source, reason}}}
-            _ -> {:halt, {:error, :invalid_exact_source_resolver_result}}
-          end
-        end)
-    end
+    resolve_sources(source_refs(kind, r), resolver)
   end
+
+  defp source_refs("candidate", r), do: r["source_refs"]
+  defp source_refs("requirement", r), do: r["behavior_refs"]
+  defp source_refs("assumption", r), do: Enum.flat_map(r["evidence"], & &1["source_refs"])
+  defp source_refs("obligation", r), do: r["source_refs"] ++ r["witness"]["source_refs"]
+
+  defp resolve_sources([], _), do: :ok
+
+  defp resolve_sources(refs, resolver) when is_function(resolver, 1) do
+    Enum.reduce_while(refs, :ok, fn ref, :ok -> resolve_source(resolver.(ref)) end)
+  end
+
+  defp resolve_sources(_, _), do: {:error, :exact_source_resolver_required}
+
+  defp resolve_source({:ok, _}), do: {:cont, :ok}
+  defp resolve_source({:error, reason}), do: {:halt, {:error, {:unresolved_exact_source, reason}}}
+  defp resolve_source(_), do: {:halt, {:error, :invalid_exact_source_resolver_result}}
 
   defp build_commit(head, kind, record) do
     payload = %{
@@ -233,18 +243,23 @@ defmodule Grand.Core.LifecycleStore do
 
   defp link_commit(temp, path, _) do
     case File.ln(temp, path) do
-      :ok -> {:ok, path}
-      {:error, :eexist} ->
-        case File.read(path) do
-          {:ok, bytes} ->
-            case File.read(temp) do
-              {:ok, ^bytes} -> {:ok, path}
-              _ -> {:error, :lifecycle_commit_conflict}
-            end
+      :ok ->
+        {:ok, path}
 
-          _ -> {:error, :lifecycle_commit_conflict}
-        end
-      {:error, reason} -> {:error, {:lifecycle_commit_publish_failed, reason}}
+      {:error, :eexist} ->
+        identical_commit(temp, path)
+
+      {:error, reason} ->
+        {:error, {:lifecycle_commit_publish_failed, reason}}
+    end
+  end
+
+  defp identical_commit(temp, path) do
+    with {:ok, bytes} <- File.read(path),
+         {:ok, ^bytes} <- File.read(temp) do
+      {:ok, path}
+    else
+      _ -> {:error, :lifecycle_commit_conflict}
     end
   end
 
@@ -252,8 +267,13 @@ defmodule Grand.Core.LifecycleStore do
 
   defp write_head(root, commit, _) do
     path = head_path(root)
-    pointer = %{"format" => "grand.g03.lifecycle.head", "schema_version" => 2,
-      "digest" => commit["digest"], "sequence" => commit["sequence"]}
+
+    pointer = %{
+      "format" => "grand.g03.lifecycle.head",
+      "schema_version" => 2,
+      "digest" => commit["digest"],
+      "sequence" => commit["sequence"]
+    }
 
     with {:ok, encoded} <- JSON.encode(pointer),
          {:ok, temp} <- stage(path, encoded) do
@@ -268,21 +288,22 @@ defmodule Grand.Core.LifecycleStore do
 
     case File.open(temp, [:write, :binary, :exclusive]) do
       {:ok, handle} ->
-        result = with :ok <- IO.binwrite(handle, bytes),
-                      :ok <- :file.sync(handle) do
-          :ok
-        end
+        result =
+          with :ok <- IO.binwrite(handle, bytes), do: :file.sync(handle)
 
         File.close(handle)
 
         case result do
-          :ok -> {:ok, temp}
+          :ok ->
+            {:ok, temp}
+
           error ->
             File.rm(temp)
             error
         end
 
-      error -> error
+      error ->
+        error
     end
   end
 
@@ -290,19 +311,25 @@ defmodule Grand.Core.LifecycleStore do
 
   defp read_head(root) do
     case read_file(head_path(root)) do
-      {:error, :enoent} -> {:ok, nil}
+      {:error, :enoent} ->
+        {:ok, nil}
+
       {:ok, json} ->
         with {:ok, head} <- JSON.decode(json),
-             :ok <- test(is_map(head) and
-               Enum.sort(Map.keys(head)) == ~w(digest format schema_version sequence) and
-               head["format"] == "grand.g03.lifecycle.head" and head["schema_version"] == 2 and
-               sha?(head["digest"]) and is_integer(head["sequence"]) and
-               head["sequence"] in 1..@max_commits, :corrupt_lifecycle_head),
+             :ok <-
+               test(
+                 is_map(head) and
+                   Enum.sort(Map.keys(head)) == ~w(digest format schema_version sequence) and
+                   head_pointer?(head),
+                 :corrupt_lifecycle_head
+               ),
              {:ok, canonical} <- JSON.encode(head),
              :ok <- test(json == canonical, :noncanonical_lifecycle_head) do
           {:ok, head}
         end
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -310,9 +337,7 @@ defmodule Grand.Core.LifecycleStore do
 
   defp load_chain(root, head) do
     with {:ok, commits} <- follow(root, head["digest"], head["sequence"], %{}, []),
-         {:ok, state} <- replay(commits) do
-      {:ok, state}
-    end
+         do: replay(commits)
   end
 
   defp follow(_root, nil, 0, _seen, commits), do: {:ok, commits}
@@ -325,25 +350,41 @@ defmodule Grand.Core.LifecycleStore do
       with {:ok, json} <- read_file(commit_path(root, digest_id)),
            {:ok, commit} <- JSON.decode(json),
            :ok <- validate_commit(commit, json, digest_id, sequence) do
-        follow(root, commit["parent"], sequence - 1, Map.put(seen, digest_id, true),
-          [commit | commits])
+        follow(root, commit["parent"], sequence - 1, Map.put(seen, digest_id, true), [
+          commit | commits
+        ])
       end
     end
   end
+
+  defp head_pointer?(head) do
+    head["format"] == "grand.g03.lifecycle.head" and head["schema_version"] == 2 and
+      sha?(head["digest"]) and is_integer(head["sequence"]) and
+      head["sequence"] in 1..@max_commits
+  end
+
+  defp valid_parent?(nil, 1), do: true
+  defp valid_parent?(parent, sequence) when sequence > 1, do: sha?(parent)
+  defp valid_parent?(_, _), do: false
 
   defp validate_commit(c, encoded, expected_hash, sequence) when is_map(c) do
     expected_keys = ~w(digest format kind parent record schema_version sequence)
     payload = Map.delete(c, "digest")
 
-    with :ok <- test(Enum.sort(Map.keys(c)) == expected_keys and
-           c["format"] == "grand.g03.lifecycle.commit" and c["schema_version"] == 2 and
-           c["kind"] in @kinds and c["sequence"] == sequence and
-           (is_nil(c["parent"]) or sha?(c["parent"])) and
-           (sequence != 1 or is_nil(c["parent"])) and
-           (sequence == 1 or not is_nil(c["parent"])), :corrupt_lifecycle_commit),
+    with :ok <-
+           test(
+             Enum.sort(Map.keys(c)) == expected_keys and
+               c["format"] == "grand.g03.lifecycle.commit" and c["schema_version"] == 2 and
+               c["kind"] in @kinds and c["sequence"] == sequence and
+               valid_parent?(c["parent"], sequence),
+             :corrupt_lifecycle_commit
+           ),
          {:ok, bytes} <- JSON.encode(payload),
-         :ok <- test(digest(bytes) == expected_hash and c["digest"] == expected_hash,
-           :lifecycle_commit_hash_mismatch),
+         :ok <-
+           test(
+             digest(bytes) == expected_hash and c["digest"] == expected_hash,
+             :lifecycle_commit_hash_mismatch
+           ),
          {:ok, canonical} <- JSON.encode(c),
          :ok <- test(canonical == encoded, :noncanonical_lifecycle_commit),
          {:ok, _} <- G03.validate(c["kind"], c["record"]) do
@@ -377,9 +418,8 @@ defmodule Grand.Core.LifecycleStore do
 
   defp read_file(path) do
     with {:ok, stat} <- File.stat(path),
-         :ok <- test(stat.type == :regular and stat.size <= @max_bytes, :invalid_lifecycle_file),
-         {:ok, bytes} <- File.read(path) do
-      {:ok, bytes}
+         :ok <- test(stat.type == :regular and stat.size <= @max_bytes, :invalid_lifecycle_file) do
+      File.read(path)
     end
   end
 

@@ -7,6 +7,7 @@ defmodule Grand.Core do
   No untrusted input is converted into an atom.
   """
 
+  alias Grand.Core.G03
   alias Grand.Core.JSON
 
   @id ~r/\A[A-Za-z0-9][A-Za-z0-9._:\/-]*\z/
@@ -26,10 +27,10 @@ defmodule Grand.Core do
   end
 
   @spec validate(String.t(), term()) :: {:ok, map()} | {:error, term()}
-  def validate("candidate_v2", data), do: Grand.Core.G03.validate("candidate", data)
-  def validate("requirement_v2", data), do: Grand.Core.G03.validate("requirement", data)
-  def validate("assumption_v2", data), do: Grand.Core.G03.validate("assumption", data)
-  def validate("obligation_v2", data), do: Grand.Core.G03.validate("obligation", data)
+  def validate("candidate_v2", data), do: G03.validate("candidate", data)
+  def validate("requirement_v2", data), do: G03.validate("requirement", data)
+  def validate("assumption_v2", data), do: G03.validate("assumption", data)
+  def validate("obligation_v2", data), do: G03.validate("obligation", data)
 
   def validate(schema, data) when is_map(data) and is_binary(schema) do
     case fields(schema) do

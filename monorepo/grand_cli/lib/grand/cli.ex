@@ -8,8 +8,8 @@ defmodule Grand.CLI do
   """
 
   alias Grand.Assurance
-  alias Grand.CLI.G03, as: G03CLI
   alias Grand.BeamCompass
+  alias Grand.CLI.G03, as: G03CLI
   alias Grand.Core
   alias Grand.Core.JSON
 

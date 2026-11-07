@@ -10,7 +10,9 @@ defmodule Grand.Assurance.G03 do
   alias Grand.Core.LifecycleStore, as: Store
 
   @doc "Propose a contextual source question; never a normative requirement."
-  def propose(root, attrs, opts \\ []) when is_map(attrs) do
+  def propose(root, attrs, opts \\ [])
+
+  def propose(root, attrs, opts) when is_map(attrs) do
     with {:ok, actor, at} <- proposer(opts) do
       record = %{
         "schema_version" => 2,
@@ -35,7 +37,9 @@ defmodule Grand.Assurance.G03 do
   def propose(_, _, _), do: {:error, :invalid_candidate_input}
 
   @doc "Reject or supersede the candidate via explicitly self-attested human review."
-  def decide_candidate(root, id, action, opts \\ []) when action in ~w(reject supersede) do
+  def decide_candidate(root, id, action, opts \\ [])
+
+  def decide_candidate(root, id, action, opts) when action in ~w(reject supersede) do
     with {:ok, actor, at} <- reviewer(opts),
          {:ok, previous} <- Store.latest(root, "candidate", id) do
       previous
@@ -48,7 +52,9 @@ defmodule Grand.Assurance.G03 do
   def decide_candidate(_, _, _, _), do: {:error, :unsupported_candidate_decision}
 
   @doc "Create explicitly human-authored draft; source candidates never call it."
-  def draft_requirement(root, attrs, opts \\ []) when is_map(attrs) do
+  def draft_requirement(root, attrs, opts \\ [])
+
+  def draft_requirement(root, attrs, opts) when is_map(attrs) do
     with {:ok, actor, at} <- reviewer(opts) do
       record = %{
         "schema_version" => 2,
@@ -63,10 +69,11 @@ defmodule Grand.Assurance.G03 do
         "events" => [event("draft", actor, at, 1)]
       }
 
-      record = case Map.fetch(attrs, "source_candidate_id") do
-        {:ok, id} -> Map.put(record, "source_candidate_id", id)
-        :error -> record
-      end
+      record =
+        case Map.fetch(attrs, "source_candidate_id") do
+          {:ok, id} -> Map.put(record, "source_candidate_id", id)
+          :error -> record
+        end
 
       persist(root, "requirement", record, opts)
     end
@@ -76,6 +83,8 @@ defmodule Grand.Assurance.G03 do
 
   @doc "Submit/approve/reject/supersede with a distinct immutable revision/event."
   def review_requirement(root, id, action, opts \\ [])
+
+  def review_requirement(root, id, action, opts)
       when action in ~w(submit approve reject supersede) do
     with {:ok, actor, at} <- reviewer(opts),
          {:ok, previous} <- Store.latest(root, "requirement", id),
@@ -90,7 +99,9 @@ defmodule Grand.Assurance.G03 do
   def review_requirement(_, _, _, _), do: {:error, :unsupported_requirement_decision}
 
   @doc "Register an assumption without claiming evidence of external truth."
-  def register_assumption(root, attrs, opts \\ []) when is_map(attrs) do
+  def register_assumption(root, attrs, opts \\ [])
+
+  def register_assumption(root, attrs, opts) when is_map(attrs) do
     with {:ok, actor, at} <- reviewer(opts) do
       record = %{
         "schema_version" => 2,
@@ -114,6 +125,8 @@ defmodule Grand.Assurance.G03 do
 
   @doc "Add evidence and transition assumption; attested is NEVER proved."
   def revise_assumption(root, id, action, opts \\ [])
+
+  def revise_assumption(root, id, action, opts)
       when action in ~w(attest test discharge invalidate supersede) do
     with {:ok, actor, at} <- reviewer(opts),
          {:ok, previous} <- Store.latest(root, "assumption", id),
@@ -129,7 +142,9 @@ defmodule Grand.Assurance.G03 do
   def revise_assumption(_, _, _, _), do: {:error, :unsupported_assumption_decision}
 
   @doc "Register an unrun obligation with explicit premises and witness challenge."
-  def record_obligation(root, attrs, opts \\ []) when is_map(attrs) do
+  def record_obligation(root, attrs, opts \\ [])
+
+  def record_obligation(root, attrs, opts) when is_map(attrs) do
     with {:ok, _actor, at} <- reviewer(opts) do
       record = %{
         "schema_version" => 2,
@@ -158,7 +173,7 @@ defmodule Grand.Assurance.G03 do
   @doc "Conditional, unrun receipt retaining pinned and current assumption revisions."
   def receipt(root, obligation_id) do
     with {:ok, state} <- Store.read(root),
-         {:ok, obligation} <- Store.latest(root, "obligation", obligation_id),
+         {:ok, obligation} <- latest_in_state(state, "obligation", obligation_id),
          {:ok, requirement} <- exact(state, "requirement", obligation["requirement"]),
          {:ok, assumptions} <- receipt_assumptions(state, obligation["assumptions"]) do
       gaps =
@@ -197,6 +212,13 @@ defmodule Grand.Assurance.G03 do
   def history(root, kind, id), do: Store.history(root, kind, id)
   def latest(root, kind, id), do: Store.latest(root, kind, id)
 
+  defp latest_in_state(state, kind, id) do
+    case get_in(state, [kind, id]) do
+      nil -> {:error, {:unresolved_g03_record, kind, id}}
+      revisions -> {:ok, List.last(revisions)}
+    end
+  end
+
   defp receipt_assumptions(state, refs) do
     Enum.reduce_while(refs, {:ok, []}, fn ref, {:ok, acc} ->
       with {:ok, pinned} <- exact(state, "assumption", ref),
@@ -215,7 +237,9 @@ defmodule Grand.Assurance.G03 do
 
   defp exact(state, kind, %{"id" => id, "revision" => revision}) do
     case get_in(state, [kind, id]) do
-      nil -> {:error, {:dangling_lifecycle_revision, kind, id, revision}}
+      nil ->
+        {:error, {:dangling_lifecycle_revision, kind, id, revision}}
+
       revisions ->
         case Enum.find(revisions, &(&1["revision"] == revision)) do
           nil -> {:error, {:dangling_lifecycle_revision, kind, id, revision}}
@@ -226,17 +250,30 @@ defmodule Grand.Assurance.G03 do
 
   defp persist(root, kind, record, opts) do
     with {:ok, value} <- Core.G03.validate(kind, record),
-         {:ok, _} <- Store.append(root, kind, value, Keyword.take(opts,
-           [:resolve_source, :expected_head, :fault])) do
+         {:ok, _} <-
+           Store.append(
+             root,
+             kind,
+             value,
+             Keyword.take(
+               opts,
+               [:resolve_source, :expected_head, :fault]
+             )
+           ) do
       {:ok, value}
     end
   end
 
   defp next(record, action, actor, at) do
     statuses = %{
-      "submit" => "pending_approval", "approve" => "approved", "reject" => "rejected",
-      "supersede" => "superseded", "attest" => "attested", "test" => "tested",
-      "discharge" => "discharged", "invalidate" => "invalidated"
+      "submit" => "pending_approval",
+      "approve" => "approved",
+      "reject" => "rejected",
+      "supersede" => "superseded",
+      "attest" => "attested",
+      "test" => "tested",
+      "discharge" => "discharged",
+      "invalidate" => "invalidated"
     }
 
     revision = record["revision"] + 1
@@ -259,8 +296,13 @@ defmodule Grand.Assurance.G03 do
   defp submission_guard(_, _), do: :ok
 
   defp event(action, actor, at, revision, identity \\ "self_attested_not_authenticated") do
-    %{"action" => action, "actor" => actor, "at" => at,
-      "revision" => revision, "identity_assurance" => identity}
+    %{
+      "action" => action,
+      "actor" => actor,
+      "at" => at,
+      "revision" => revision,
+      "identity_assurance" => identity
+    }
   end
 
   defp proposer(opts) do

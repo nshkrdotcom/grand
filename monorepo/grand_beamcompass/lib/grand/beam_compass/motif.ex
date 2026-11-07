@@ -13,7 +13,13 @@ defmodule Grand.BeamCompass.Motif do
   def retry_external_effect(snapshot) do
     with {:ok, envelope} <- V2.validate_envelope(snapshot),
          {:ok, {function, relation, effect}} <- motif(envelope["upstream"]),
-         {:ok, query} <- Query.run(envelope, focus: function["id"], lens: "effects", budget: 16),
+         {:ok, query} <-
+           Query.run(envelope,
+             focus: function["id"],
+             lens: "effects",
+             budget: 16,
+             preserve: [%{"object_kind" => "relation", "object_id" => relation["id"]}]
+           ),
          {:ok, refs} <- references(envelope, function, relation, effect) do
       hash =
         :crypto.hash(:sha256, envelope["snapshot_id"] <> function["id"] <> relation["id"])
@@ -63,9 +69,7 @@ defmodule Grand.BeamCompass.Motif do
         effect = Map.get(entities, relation["target_id"])
 
         if relation["kind"] == "performs_effect" and relation["resolution"] == "resolved" and
-             is_map(function) and function["kind"] == "function" and
-             is_map(effect) and effect["kind"] == "effect" and
-             String.contains?(String.downcase(function["label"]), "retry") do
+             retry_function?(function) and is_map(effect) and effect["kind"] == "effect" do
           [{function, relation, effect}]
         else
           []
@@ -76,6 +80,11 @@ defmodule Grand.BeamCompass.Motif do
       [] -> {:error, :unsupported_retry_effect_motif_no_source_link}
       [first | _] -> {:ok, first}
     end
+  end
+
+  defp retry_function?(function) do
+    is_map(function) and function["kind"] == "function" and
+      String.contains?(String.downcase(function["label"]), "retry")
   end
 
   defp references(envelope, function, relation, effect) do

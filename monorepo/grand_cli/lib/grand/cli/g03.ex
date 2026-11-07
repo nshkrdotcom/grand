@@ -11,10 +11,12 @@ defmodule Grand.CLI.G03 do
 
   @max_bytes 4_000_000
   @input_fields %{
-    "candidate" => ~w(id question rationale counterhypothesis uncertainty gaps scope source_refs context),
+    "candidate" =>
+      ~w(id question rationale counterhypothesis uncertainty gaps scope source_refs context),
     "requirement" => ~w(id statement owner scope behavior_refs assumptions source_candidate_id),
     "assumption" => ~w(id statement category owner scope evidence gaps),
-    "obligation" => ~w(id requirement property kind scope source_refs assumptions preconditions witness precondition_challenges open_gaps)
+    "obligation" =>
+      ~w(id requirement property kind scope source_refs assumptions preconditions witness precondition_challenges open_gaps)
   }
   @types ~w(candidate requirement assumption obligation)
 
@@ -133,10 +135,14 @@ defmodule Grand.CLI.G03 do
 
   defp resolver(root) do
     fn ref ->
-      with {:ok, snapshot} <- BeamCompass.load(root, ref["project_id"],
-             ref["snapshot_id"], ref["upstream_schema_version"]),
-           {:ok, object} <- BeamCompass.resolve(snapshot, ref) do
-        {:ok, object}
+      with {:ok, snapshot} <-
+             BeamCompass.load(
+               root,
+               ref["project_id"],
+               ref["snapshot_id"],
+               ref["upstream_schema_version"]
+             ) do
+        BeamCompass.resolve(snapshot, ref)
       end
     end
   end
@@ -144,8 +150,12 @@ defmodule Grand.CLI.G03 do
   defp review_options(opts) do
     with {:ok, actor} <- required(opts, :actor) do
       {:ok,
-       [actor: actor, ack_human: Keyword.get(opts, :ack_human, false),
-        replacement_id: Keyword.get(opts, :replacement)] ++ at(opts) ++
+       [
+         actor: actor,
+         ack_human: Keyword.get(opts, :ack_human, false),
+         replacement_id: Keyword.get(opts, :replacement)
+       ] ++
+         at(opts) ++
          [resolve_source: resolver(Keyword.get(opts, :store, ""))]}
     end
   end
@@ -159,7 +169,9 @@ defmodule Grand.CLI.G03 do
 
   defp optional_evidence(opts) do
     case Keyword.fetch(opts, :evidence) do
-      :error -> {:ok, []}
+      :error ->
+        {:ok, []}
+
       {:ok, path} ->
         with {:ok, value} <- read_document(path),
              true <- is_list(value) do
@@ -188,8 +200,13 @@ defmodule Grand.CLI.G03 do
   defp write_receipt(path, receipt) do
     with {:ok, bytes} <- JSON.encode(receipt),
          :ok <- File.write(path, bytes <> "\n", [:exclusive, :binary]) do
-      {:ok, %{"command" => "g03 receipt", "exported_path" => path,
-        "verification_status" => "unrun", "coverage_status" => "unassessed"}}
+      {:ok,
+       %{
+         "command" => "g03 receipt",
+         "exported_path" => path,
+         "verification_status" => "unrun",
+         "coverage_status" => "unassessed"
+       }}
     end
   end
 
