@@ -1,0 +1,56 @@
+{
+  "platform": "linux-x86_64",
+  "lean_toolchain": "leanprover/lean4:v4.35.0",
+  "elan": {
+    "version": "4.2.4",
+    "url": "https://github.com/leanprover/elan/releases/download/v4.2.4/elan-x86_64-unknown-linux-gnu.tar.gz",
+    "sha256": "42b94d4244e8353142c456ec0e4ca6528fd898a6c604d4059f494e706e431f63"
+  },
+  "lean": {
+    "version": "4.35.0",
+    "url": "https://github.com/leanprover/lean4/releases/download/v4.35.0/lean-4.35.0-linux.tar.zst",
+    "sha256": "7289597a44543246c9227b8cae501767e095ce17f6d448b95fc4a8dc97268f6d",
+    "directory": "lean-4.35.0-linux"
+  },
+  "lynx": {
+    "revision": "81c9f7ffa69a6b56bf5c831cd41559afd54abff2",
+    "url": "https://codeload.github.com/josevalim/lynx/tar.gz/81c9f7ffa69a6b56bf5c831cd41559afd54abff2",
+    "archive": "lynx-81c9f7f.tar.gz",
+    "directory": "lynx",
+    "sha256": "448eabb4b82a092deb3a3368508c384f83c10677956a2489151e575fb4f0f789"
+  },
+  "veil": {
+    "revision": "57447722e7f25f06c75cff8735d10d41697afc14",
+    "url": "https://codeload.github.com/verse-lab/veil/tar.gz/57447722e7f25f06c75cff8735d10d41697afc14",
+    "archive": "veil-5744772.tar.gz",
+    "directory": "veil",
+    "sha256": "fa60bae3615bc3abbc207217f9b9417f62ff9d5ce6f8d478edd3fe0cbcd20910"
+  },
+  "node": {
+    "version": "v24.22.2",
+    "directory": "node-v24.22.2-linux-x64",
+    "archive": "node-v24.22.2-linux-x64.tar.xz",
+    "url": "https://nodejs.org/dist/v24.22.2/node-v24.22.2-linux-x64.tar.xz",
+    "sha256": "48cc0e21e048790e54c0cf5749c2725005313d652651c40b7a21feb9697aaf75"
+  },
+  "tlc": {
+    "version": "2.19",
+    "release": "v1.7.4",
+    "url": "https://github.com/tlaplus/tlaplus/releases/download/v1.7.4/tla2tools.jar",
+    "archive": "tla2tools-1.7.4.jar",
+    "sha256": "936a262061c914694dfd669a543be24573c45d5aa0ff20a8b96b23d01e050e88"
+  },
+  "libcxx": {
+    "version": "21.1.8",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/llvm-project-21.1.8.src.tar.xz",
+    "archive": "llvm-project-21.1.8.src.tar.xz",
+    "sha256": "4633a23617fa31a3ea51242586ea7fb1da7140e426bd62fc164261fe036aa142",
+    "directory": "llvm-runtime-source"
+  },
+  "cvc5": {
+    "version": "1.3.2",
+    "url": "https://github.com/abdoo8080/cvc5/releases/download/cvc5-1.3.2/cvc5-Linux-x86_64-static.zip",
+    "archive": "cvc5-Linux-x86_64-static-1.3.2.zip",
+    "sha256": "c58214b797c1f276920e09d873977ecd6e7ec929b08a0c1efe5db0bd1e68fdb2"
+  }
+}

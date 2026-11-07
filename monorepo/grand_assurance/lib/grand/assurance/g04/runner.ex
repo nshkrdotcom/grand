@@ -1,6 +1,6 @@
 defmodule Grand.Assurance.G04.Runner do
   @moduledoc """
-  Small local subprocess boundary for the two supported engines only. Source
+  Small local subprocess boundary for allowlisted checker commands only. Source
   imports never use this module. Executables are found by name, arguments are
   supplied as an argv vector (never interpolated into shell text), and the
   workspace is deleted after execution. A fixed shell wrapper redirects the
@@ -10,9 +10,9 @@ defmodule Grand.Assurance.G04.Runner do
   Run only trusted checker/law files on a trusted host.
   """
 
-  @engines ~w(lean java)
-  @files ~w(Law.lean Model.tla Model.cfg)
-  @shell ~s(exec "$@" >stdout.log 2>stderr.log)
+  @engines ~w(lean java elixir lake)
+  @files ~w(Law.lean Model.tla Model.cfg Source.ex Support.ex Law.ex Verify.exs Model.lean)
+  @shell ~s(ulimit -f "$1" || exit 125; shift; echo $$ >process.pid; exec "$@" >stdout.log 2>stderr.log)
 
   @doc "Run an approved plan, or report unrun when execution was not requested."
   @spec execute(map(), keyword()) :: {:ok, map()} | {:error, term()}
@@ -24,7 +24,7 @@ defmodule Grand.Assurance.G04.Runner do
            {:ok, workspace} <- workspace() do
         try do
           with :ok <- stage(workspace, plan["files"]) do
-            start(executable, plan["args"], workspace, opts)
+            start(executable, staged_args(plan["args"], workspace), workspace, opts)
           end
         after
           File.rm_rf!(workspace)
@@ -41,7 +41,7 @@ defmodule Grand.Assurance.G04.Runner do
   def execute(_, _), do: {:error, :invalid_runner_plan}
 
   @doc "Return a distinct data-only status without launching a process."
-  def skipped(reason) when reason in ~w(unrun missing_engine missing_tlc_jar) do
+  def skipped(reason) when reason in ~w(unrun missing_engine missing_tlc_jar missing_lynx_toolchain missing_veil_toolchain) do
     %{
       "stdout" => "",
       "stderr" => "",
@@ -65,20 +65,8 @@ defmodule Grand.Assurance.G04.Runner do
   end
 
   defp valid_plan(%{"engine" => engine, "args" => args, "files" => files}) do
-    allowed_args =
-      is_list(args) and length(args) <= 20 and
-        Enum.all?(args, fn value ->
-          is_binary(value) and byte_size(value) in 1..1_024 and String.valid?(value) and
-            not String.contains?(value, [<<0>>, "\n", "\r"])
-        end)
-
-    allowed_files =
-      is_map(files) and map_size(files) <= 3 and
-        Enum.all?(files, fn {name, content} ->
-          name in @files and is_binary(content) and byte_size(content) <= 256_000
-        end)
-
-    if engine in @engines and allowed_args and allowed_files and command_allowed?(engine, args, files) do
+    if engine in @engines and valid_args?(args) and valid_files?(files) and
+         command_allowed?(engine, args, files) do
       :ok
     else
       {:error, :unsafe_runner_plan}
@@ -87,12 +75,50 @@ defmodule Grand.Assurance.G04.Runner do
 
   defp valid_plan(_), do: {:error, :unsafe_runner_plan}
 
+  defp valid_args?(args) do
+    is_list(args) and length(args) <= 20 and Enum.all?(args, &valid_arg?/1)
+  end
+
+  defp valid_arg?(value) do
+    is_binary(value) and byte_size(value) in 1..1_024 and String.valid?(value) and
+      not String.contains?(value, [<<0>>, "\n", "\r"])
+  end
+
+  defp valid_files?(files) do
+    is_map(files) and map_size(files) <= 5 and Enum.all?(files, &valid_file?/1)
+  end
+
+  defp valid_file?({name, content}) do
+    name in @files and is_binary(content) and byte_size(content) <= 256_000
+  end
+
+  defp command_allowed?("elixir", ["-pa", ebin, "Verify.exs"], files) do
+    Path.type(ebin) == :absolute and
+      String.ends_with?(ebin, "/_build/dev/lib/lynx/ebin") and
+      Enum.sort(Map.keys(files)) == ~w(Law.ex Source.ex Support.ex Verify.exs)
+  end
+
+  defp command_allowed?("lake", ["--dir", root, "env", "lean", "@WORKSPACE@/Model.lean"], files) do
+    Path.type(root) == :absolute and Path.basename(root) == "veil" and
+      Map.keys(files) == ["Model.lean"]
+  end
+
   defp command_allowed?("lean", ["--version"], files), do: map_size(files) == 0
   defp command_allowed?("lean", ["Law.lean"], files), do: Map.keys(files) == ["Law.lean"]
 
   defp command_allowed?(
          "java",
-         ["-Xmx256m", "-cp", path, "tlc2.TLC", "-config", "Model.cfg", "-workers", "1", "Model.tla"],
+         [
+           "-Xmx256m",
+           "-cp",
+           path,
+           "tlc2.TLC",
+           "-config",
+           "Model.cfg",
+           "-workers",
+           "1",
+           "Model.tla"
+         ],
          files
        ) do
     Path.type(path) == :absolute and Path.extname(path) == ".jar" and
@@ -100,7 +126,6 @@ defmodule Grand.Assurance.G04.Runner do
   end
 
   defp command_allowed?(_, _, _), do: false
-
 
   defp locate(name) do
     case System.find_executable(name) do
@@ -113,12 +138,22 @@ defmodule Grand.Assurance.G04.Runner do
     path =
       Path.join(
         System.tmp_dir!(),
-        "grand-g04-#{System.unique_integer([:positive, :monotonic])}"
+        "grand-g04-#{Base.url_encode64(:crypto.strong_rand_bytes(18), padding: false)}"
       )
 
     case File.mkdir(path) do
-      :ok -> {:ok, path}
-      {:error, reason} -> {:error, {:workspace_create_failed, reason}}
+      :ok ->
+        case File.chmod(path, 0o700) do
+          :ok ->
+            {:ok, path}
+
+          {:error, reason} ->
+            File.rm_rf!(path)
+            {:error, {:workspace_permissions_failed, reason}}
+        end
+
+      {:error, reason} ->
+        {:error, {:workspace_create_failed, reason}}
     end
   end
 
@@ -131,27 +166,42 @@ defmodule Grand.Assurance.G04.Runner do
     end)
   end
 
+  defp staged_args(args, dir) do
+    Enum.map(args, &String.replace(&1, "@WORKSPACE@", dir))
+  end
+
   defp start(executable, arguments, dir, opts) do
-    case System.find_executable("sh") do
-      nil -> {:error, :runner_shell_unavailable}
-      shell -> launch(shell, executable, arguments, dir, opts)
+    with shell when is_binary(shell) <- System.find_executable("sh"),
+         session when is_binary(session) <- System.find_executable("setsid"),
+         killer when is_binary(killer) <- System.find_executable("kill") do
+      launch(session, shell, killer, executable, arguments, dir, opts)
+    else
+      _ -> {:error, :runner_process_controls_unavailable}
     end
   end
 
-  defp launch(shell, executable, arguments, dir, opts) do
-    argv = ["-c", @shell, "grand-g04", executable | arguments]
+  defp launch(session, shell, killer, executable, arguments, dir, opts) do
+    blocks = Integer.to_string(div(Keyword.get(opts, :output_limit_bytes, 65_536) + 511, 512))
+    argv = ["--wait", shell, "-c", @shell, "grand-g04", blocks, executable | arguments]
 
     port =
-      Port.open({:spawn_executable, String.to_charlist(shell)}, [
+      Port.open({:spawn_executable, String.to_charlist(session)}, [
         :binary,
         :exit_status,
+        :stderr_to_stdout,
         :hide,
         {:cd, String.to_charlist(dir)},
         {:args, Enum.map(argv, &String.to_charlist/1)}
       ])
 
     started = System.monotonic_time(:millisecond)
-    await(port, dir, started, opts)
+    opts = opts |> Keyword.put(:process_killer, killer) |> Keyword.put(:workspace, dir)
+
+    try do
+      await(port, dir, started, opts)
+    after
+      stop(port, opts)
+    end
   end
 
   defp await(port, dir, started, opts) do
@@ -162,21 +212,24 @@ defmodule Grand.Assurance.G04.Runner do
 
     cond do
       output_size(dir) > max_output ->
-        stop(port)
+        stop(port, opts)
         {:ok, captured(dir, nil, elapsed, "output_limit", max_output)}
 
       elapsed >= timeout ->
-        stop(port)
+        stop(port, opts)
         {:ok, captured(dir, nil, elapsed, "timeout", max_output)}
 
       true ->
         receive do
           {^port, {:exit_status, status}} ->
-            reason = if output_size(dir) > max_output, do: "output_limit", else: nil
+            reason = if output_exceeded?(dir, max_output), do: "output_limit", else: nil
             {:ok, captured(dir, status, elapsed, reason, max_output)}
 
+          {^port, {:data, _launcher_diagnostic}} ->
+            await(port, dir, started, opts)
+
           {:g04_cancel, ^token} when is_reference(token) ->
-            stop(port)
+            stop(port, opts)
             {:ok, captured(dir, nil, elapsed, "cancelled", max_output)}
         after
           40 -> await(port, dir, started, opts)
@@ -184,16 +237,32 @@ defmodule Grand.Assurance.G04.Runner do
     end
   end
 
-  defp output_size(dir) do
-    Enum.reduce(["stdout.log", "stderr.log"], 0, fn name, size ->
+  defp output_exceeded?(dir, cap) do
+    Enum.any?(["stdout.log", "stderr.log"], fn name ->
       case File.stat(Path.join(dir, name)) do
-        {:ok, stat} -> size + stat.size
-        _ -> size
+        {:ok, stat} -> stat.size > cap
+        _ -> false
       end
     end)
   end
 
-  defp stop(port) do
+  defp stop(port, opts) do
+    killer = Keyword.fetch!(opts, :process_killer)
+
+    case File.read(Path.join(Keyword.fetch!(opts, :workspace), "process.pid")) do
+      {:ok, text} ->
+        case Integer.parse(String.trim(text)) do
+          {pid, ""} when pid > 1 ->
+            System.cmd(killer, ["-KILL", "--", "-#{pid}"], stderr_to_stdout: true)
+
+          _ ->
+            :ok
+        end
+
+      _ ->
+        :ok
+    end
+
     if Port.info(port) != nil, do: Port.close(port)
   end
 
@@ -203,8 +272,23 @@ defmodule Grand.Assurance.G04.Runner do
       "stderr" => read_capped(Path.join(dir, "stderr.log"), max_output),
       "exit_code" => exit_code,
       "elapsed_ms" => elapsed,
-      "reason" => reason
+      "reason" => reason,
+      "artifacts" => %{
+        "proof_export" => artifact?(Path.join(dir, "proof.ndjson")),
+        "translated_lean" =>
+          case File.ls(Path.join(dir, "translated")) do
+            {:ok, files} -> files != []
+            _ -> false
+          end
+      }
     }
+  end
+
+  defp artifact?(path) do
+    case File.lstat(path) do
+      {:ok, stat} -> stat.type == :regular and stat.size in 1..8_000_000
+      _ -> false
+    end
   end
 
   defp read_capped(path, max_output) do
@@ -212,10 +296,19 @@ defmodule Grand.Assurance.G04.Runner do
       {:ok, handle} ->
         value = IO.binread(handle, max_output)
         File.close(handle)
-        if is_binary(value) and String.valid?(value), do: value, else: "[non-UTF8 engine output]"
+
+        output_text(value)
 
       {:error, _} ->
         ""
     end
   end
+
+  defp output_text(:eof), do: ""
+
+  defp output_text(bytes) when is_binary(bytes) do
+    if String.valid?(bytes), do: bytes, else: "[non-UTF8 engine output]"
+  end
+
+  defp output_text(_), do: "[unreadable engine output]"
 end

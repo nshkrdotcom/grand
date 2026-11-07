@@ -1,0 +1,31 @@
+{
+  "links": [
+    {
+      "assumptions": [
+        {
+          "id": "g03-external-dedup",
+          "revision": 1
+        }
+      ],
+      "model_files": [
+        "fixtures/g05/veil/Safe.lean"
+      ],
+      "obligation_id": "g03-obligation-once",
+      "requirement": {
+        "id": "g03-confirm-once",
+        "revision": 3
+      },
+      "result_ids": [
+        "fixture:g05-law-requires-recheck"
+      ],
+      "source_refs": [
+        {
+          "fact_id": "hold:void-request"
+        },
+        {
+          "fact_id": "hold:void-effect"
+        }
+      ]
+    }
+  ]
+}

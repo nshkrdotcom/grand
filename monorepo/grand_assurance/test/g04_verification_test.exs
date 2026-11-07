@@ -15,7 +15,10 @@ defmodule Grand.Assurance.G04Test do
   @review [actor: "human:fixture-reviewer", at: @at, ack_human: true]
 
   setup do
-    root = Path.join(System.tmp_dir!(), "grand-g04-assurance-#{System.unique_integer([:positive])}")
+    root =
+      Path.join(System.tmp_dir!(), "grand-g04-assurance-#{System.unique_integer([:positive])}")
+
+    File.mkdir_p!(root)
     on_exit(fn -> File.rm_rf!(root) end)
     %{root: root}
   end
@@ -31,7 +34,9 @@ defmodule Grand.Assurance.G04Test do
     data = json(Path.join(@g04, "#{name}-manifest.json"))
 
     case data do
-      %{"law" => law} -> put_in(data, ["law", "file"], Path.join(@g04, law["file"]))
+      %{"law" => law} ->
+        put_in(data, ["law", "file"], Path.join(@g04, law["file"]))
+
       %{"model" => model} ->
         data
         |> put_in(["model", "file"], Path.join(@g04, model["file"]))
@@ -61,6 +66,7 @@ defmodule Grand.Assurance.G04Test do
     assert data["witness_challenge"]["status"] == "missing"
     assert {:ok, historical} = G03.receipt(root, obligation["id"])
     assert historical["verification_result"]["status"] == "unrun"
+
     assert {:error, :explicit_law_code_permission_required} =
              G04.run(root, manifest("lean"), execute: true)
   end
@@ -94,7 +100,9 @@ defmodule Grand.Assurance.G04Test do
       |> Map.put("version_output", "Lean (version 4.0.0)")
       |> Map.put("stdout", spoof["stdout"] <> "depends on axioms: [sorryAx]\n")
 
-    assert {:ok, rejected} = Lean.normalize(%{"property" => "grand_demo_reflexivity"}, conflicting)
+    assert {:ok, rejected} =
+             Lean.normalize(%{"property" => "grand_demo_reflexivity"}, conflicting)
+
     assert rejected["status"] == "error"
   end
 
@@ -116,7 +124,8 @@ defmodule Grand.Assurance.G04Test do
     good = %{
       "reason" => nil,
       "exit_code" => 0,
-      "stdout" => "TLC2 Version 2.18\n3 states generated, 3 distinct states found\nModel checking completed. No error has been found.\n",
+      "stdout" =>
+        "TLC2 Version 2.18\n3 states generated, 3 distinct states found\nModel checking completed. No error has been found.\n",
       "stderr" => ""
     }
 
@@ -135,11 +144,20 @@ defmodule Grand.Assurance.G04Test do
     assert failed["counterexample"] =~ "State 2:"
     assert {:ok, rejected_zero} = TLC.normalize(prepared, %{bad | "exit_code" => 0})
     assert rejected_zero["status"] == "error"
+    contradictory = %{good | "stdout" => good["stdout"] <> bad["stdout"]}
+    assert {:ok, rejected_contradiction} = TLC.normalize(prepared, contradictory)
+    assert rejected_contradiction["status"] == "error"
 
     forged = %{good | "exit_code" => 19}
     assert {:ok, rejected} = TLC.normalize(prepared, forged)
     assert rejected["status"] == "error"
-    assert {:ok, rejected2} = TLC.normalize(prepared, %{bad | "stdout" => "TLC2 Version 2.18\nError: Invariant Safe is violated"})
+
+    assert {:ok, rejected2} =
+             TLC.normalize(prepared, %{
+               bad
+               | "stdout" => "TLC2 Version 2.18\nError: Invariant Safe is violated"
+             })
+
     assert rejected2["status"] == "error"
   end
 
@@ -155,7 +173,11 @@ defmodule Grand.Assurance.G04Test do
     assert {:ok, result} = G04.run(root, current)
     assert {:ok, "current"} = G04.applicability(result, root, current)
 
-    File.write!(changed_path, String.replace(File.read!(changed_path), "count <= Limit", "count < Limit"))
+    File.write!(
+      changed_path,
+      String.replace(File.read!(changed_path), "count <= Limit", "count < Limit")
+    )
+
     assert {:ok, "stale"} = G04.applicability(result, root, current)
     File.cp!(original["model"]["file"], changed_path)
     assert {:ok, "current"} = G04.applicability(result, root, current)
@@ -169,6 +191,7 @@ defmodule Grand.Assurance.G04Test do
   } do
     approved(root)
     original = manifest("tlc")
+
     assert {:error, :g04_requirement_revision_mismatch} =
              G04.run(root, put_in(original, ["requirement", "revision"], 2))
 
@@ -199,10 +222,14 @@ defmodule Grand.Assurance.G04Test do
       assert raw["reason"] == "timeout"
 
       assert {:error, :unsafe_runner_plan} =
-               Runner.execute(%{plan | "args" => ["--version", "; touch /tmp/unsafe-g04"]}, execute: true)
+               Runner.execute(%{plan | "args" => ["--version", "; touch /tmp/unsafe-g04"]},
+                 execute: true
+               )
 
       assert {:error, :unsafe_runner_plan} =
-               Runner.execute(%{plan | "engine" => "sh", "args" => ["-c", "echo bad"]}, execute: true)
+               Runner.execute(%{plan | "engine" => "sh", "args" => ["-c", "echo bad"]},
+                 execute: true
+               )
 
       assert {:ok, skipped} = Runner.execute(plan, [])
       assert skipped["reason"] == "unrun"
@@ -251,6 +278,7 @@ defmodule Grand.Assurance.G04Test do
     try do
       System.put_env("PATH", root <> ":" <> old)
       token = make_ref()
+
       task =
         Task.async(fn ->
           Runner.execute(%{"engine" => "lean", "args" => ["--version"], "files" => %{}},
@@ -263,6 +291,32 @@ defmodule Grand.Assurance.G04Test do
       Process.sleep(80)
       send(task.pid, {:g04_cancel, token})
       assert {:ok, %{"reason" => "cancelled"}} = Task.await(task, 2_000)
+    after
+      System.put_env("PATH", old)
+    end
+  end
+
+  test "runner terminates descendants and separates output in a private workspace", %{root: root} do
+    bin = Path.join(root, "bin")
+    File.mkdir_p!(bin)
+    marker = Path.join(root, "escaped")
+    fake = Path.join(bin, "lean")
+    File.write!(fake, "#!/bin/sh\n(sleep 0.4; touch \"#{marker}\") &\nsleep 2\n")
+    File.chmod!(fake, 0o755)
+    old = System.get_env("PATH") || ""
+    plan = %{"engine" => "lean", "args" => ["--version"], "files" => %{}}
+
+    try do
+      System.put_env("PATH", bin <> ":" <> old)
+      assert {:ok, %{"reason" => "timeout"}} = Runner.execute(plan, execute: true, timeout_ms: 80)
+      Process.sleep(500)
+      refute File.exists?(marker)
+      File.write!(fake, "#!/bin/sh\nprintf 'out'; printf 'err' >&2; pwd; stat -c %a .\n")
+      assert {:ok, raw} = Runner.execute(plan, execute: true)
+      assert raw["stderr"] == "err"
+      assert raw["stdout"] =~ "700"
+      [workspace | _] = raw["stdout"] |> String.replace_prefix("out", "") |> String.split("\n")
+      refute File.exists?(workspace)
     after
       System.put_env("PATH", old)
     end

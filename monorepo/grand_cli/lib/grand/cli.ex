@@ -11,6 +11,7 @@ defmodule Grand.CLI do
   alias Grand.BeamCompass
   alias Grand.CLI.G03, as: G03CLI
   alias Grand.CLI.G04, as: G04CLI
+  alias Grand.CLI.G05, as: G05CLI
   alias Grand.Core
   alias Grand.Core.JSON
 
@@ -64,6 +65,10 @@ defmodule Grand.CLI do
     mix grand g04 inspect MANIFEST.json --store DIR [--out NEW_FILE]
     mix grand g04 run MANIFEST.json --store DIR --execute [--allow-law-code] [--tlc-jar JAR] [--timeout-ms N] [--out NEW_FILE]
     mix grand g04 applicability RESULT.json MANIFEST.json --store DIR
+    mix grand g05 inspect MANIFEST.json --store DIR [--out NEW_FILE]
+    mix grand g05 run MANIFEST.json --store DIR --execute --allow-law-code [--timeout-ms N] [--out NEW_FILE]
+    mix grand g05 applicability RESULT.json MANIFEST.json --store DIR
+    mix grand g05 impact BEFORE.json AFTER.json LINKS.json [--out NEW_FILE]
   """
 
   @spec run([binary()]) :: {:ok, term()} | {:error, term()}
@@ -81,6 +86,7 @@ defmodule Grand.CLI do
 
   defp dispatch(["g03" | args], opts), do: G03CLI.run(args, opts)
   defp dispatch(["g04" | args], opts), do: G04CLI.run(args, opts)
+  defp dispatch(["g05" | args], opts), do: G05CLI.run(args, opts)
 
   defp dispatch(["import", path], opts) do
     with {:ok, root} <- required(opts, :store),

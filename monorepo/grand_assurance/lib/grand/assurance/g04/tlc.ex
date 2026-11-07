@@ -20,13 +20,15 @@ defmodule Grand.Assurance.G04.TLC do
            "fairness" => fairness,
            "hypotheses" => hypotheses
          } <- model,
-         true <- Files.identifier?(property) and is_integer(limit) and limit in 1..32 and
-                   fairness in ["none", "declared_in_spec"] and is_list(hypotheses) and
-                   Enum.all?(hypotheses, &(is_binary(&1) and byte_size(&1) <= 300)),
+         true <-
+           Files.identifier?(property) and is_integer(limit) and limit in 1..32 and
+             fairness in ["none", "declared_in_spec"] and is_list(hypotheses) and
+             Enum.all?(hypotheses, &(is_binary(&1) and byte_size(&1) <= 300)),
          {:ok, source} <- Files.load(file, ".tla"),
          {:ok, config} <- Files.load(cfg, ".cfg"),
-         true <- compatible_config?(source["bytes"], config["bytes"], property, limit) and
-                   compatible_fairness?(source["bytes"], fairness) do
+         true <-
+           compatible_config?(source["bytes"], config["bytes"], property, limit) and
+             compatible_fairness?(source["bytes"], fairness) do
       {:ok,
        %{
          "engine" => "java",
@@ -87,6 +89,7 @@ defmodule Grand.Assurance.G04.TLC do
   @impl true
   def normalize(plan, raw) do
     output = (raw["stdout"] || "") <> "\n" <> (raw["stderr"] || "")
+
     version =
       case Regex.run(~r/TLC2 Version [0-9]+\.[0-9]+[^\r\n]*/, output) do
         [value] -> String.trim(value)
@@ -147,7 +150,9 @@ defmodule Grand.Assurance.G04.TLC do
     do: {"error", [reason], nil}
 
   defp classify(%{"exit_code" => exit_code}, _output, "not_qualified", _),
-    do: {"error", ["missing TLC version header; tool output not qualified (exit #{exit_code})"], nil}
+    do:
+      {"error", ["missing TLC version header; tool output not qualified (exit #{exit_code})"],
+       nil}
 
   defp classify(raw, output, _version, property) do
     violation = String.contains?(output, "Invariant #{property} is violated")
@@ -155,13 +160,10 @@ defmodule Grand.Assurance.G04.TLC do
     counts = Regex.match?(~r/\b[0-9]+ distinct states found/, output)
 
     cond do
-      violation and states and counts and is_integer(raw["exit_code"]) and
-          raw["exit_code"] != 0 ->
-        {"counterexample", ["TLC reported an invariant violation with a state trace"],
-         output}
+      violation and states and counts and failed_exit?(raw["exit_code"]) ->
+        {"counterexample", ["TLC reported an invariant violation with a state trace"], output}
 
-      raw["exit_code"] == 0 and counts and
-          String.contains?(output, "Model checking completed. No error has been found.") ->
+      not violation and completed?(raw, output, counts) ->
         {"bounded_pass", ["TLC completed finite exploration under the provided configuration"],
          nil}
 
@@ -169,4 +171,11 @@ defmodule Grand.Assurance.G04.TLC do
         {"error", ["TLC failed, emitted malformed/incomplete output or lacked a trace"], nil}
     end
   end
+
+  defp completed?(raw, output, counts) do
+    raw["exit_code"] == 0 and counts and
+      String.contains?(output, "Model checking completed. No error has been found.")
+  end
+
+  defp failed_exit?(code), do: is_integer(code) and code != 0
 end

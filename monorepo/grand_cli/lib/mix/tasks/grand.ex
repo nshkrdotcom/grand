@@ -1,5 +1,5 @@
 defmodule Mix.Tasks.Grand do
-  @shortdoc "Grand JSON import, lifecycle and explicit scoped G04 verification"
+  @shortdoc "Grand JSON import, lifecycle and explicit scoped G04/G05 verification"
   @moduledoc "See Grand.CLI and the repository README for the exact command grammar."
   use Mix.Task
 

@@ -13,12 +13,20 @@ Grand owns **normative requirement and assurance records**. BeamCompass remains
 an independent product; Grand reads only its versioned portable JSON exports.
 This repository is a headless prototype. G01B passed its historical 24 local Mix gates. G02B validation and repairs are recorded in `delivery/G02B-VALIDATION.md`.
 
-**Delivery:** The supplied `grand-repo.zip` and `grand-docset.zip` are the
-sole working inputs and outputs for G04A and all later A/B phases. Unzip both,
-work directly on the extracted source/doc files and return two updated ZIPs.
-There is no checkout, commit, archive checksum or provenance prerequisite.
-See docset `control/WORKFLOW.md` for the continuing rule. Historical G03B
-runtime acceptance remains separate from the new G04A implementation.
+**Authoritative delivery:** The paired docset `control/WORKFLOW.md` overrides
+conflicting historical/reference delivery procedures. For G04A and later A/B
+phases, use only the latest `grand-repo.zip` and `grand-docset.zip` and edit
+the extracted trees directly. Local agents write their finished archives to
+`/tmp/grand-repo.zip` and `/tmp/grand-docset.zip`; ChatGPT agents provide
+downloadable **`grand-repo.zip`** and **`grand-docset.zip`** from their available
+artifact directory. These are *output locations*. The ZIP files themselves
+must have internal roots **`grand/`** and **`grand-docset/`**, respectively.
+There is only one next-owner prompt, at
+`grand-docset/handoffs/NEXT_IMPLEMENTATION_AGENT_PROMPT.txt` inside the docset
+ZIP; link that file directly in the final response, without creating a copy.
+Exclude tools/build caches. No Grand checkout, commits, ZIP hashes or provenance
+inventories; never assume access to the user's machine. G05A authoring is not
+G05B runtime acceptance, and G03B remains the last accepted runtime baseline.
 
 ## Repository layout
 
@@ -98,7 +106,7 @@ Python contract/schema checks and 25 supplemental real CLI subprocesses passed.
 Exact commands, timestamps, versions, lock hashes, statuses, exit codes and
 stdout/stderr are under `delivery/g03b-logs/`, with `acceptance-matrix.json`. Earlier
 failed attempts are retained separately. The accompanying docset ZIP retains G03B records independently, plus the
-G04A source handoff and one G04B continuation prompt.
+G04 source history, tooling closeout and the sole current G05B continuation prompt.
 No target/checker execution, authenticated identity, causality, proof or production
 durability is claimed; G03 receipts remain conditional unrun/unassessed records.
 The G03A authoring section below retains its original historical UNRUN scope.
@@ -215,7 +223,7 @@ mix grand g03 receipt g03-obligation-once --store /tmp/grand-g03-demo --out /tmp
 mix grand g03 history requirement g03-confirm-once --store /tmp/grand-g03-demo
 ```
 
-The imported snapshot ID is the digest reported by import; all fixture exact refs point to this particular synthetic digest. You can also `mix grand g03 motif propose fixture:synthetic-retry SNAPSHOT_ID --actor agent:motif --store /tmp/grand-g03-demo`, then explicitly reject the candidate as a human. Full CLI command/field details are in `Grand.CLI` help and the authoritative docset `contracts/interfaces.md`. G03A ExUnit cases in all four projects, including a real `System.cmd("mix", ["grand", ...])` subprocess lifecycle, are authored **UNRUN here**. Static checks: `python3 scripts/static_validate.py`, `python3 scripts/g02_contract_check.py`, `python3 scripts/g03_contract_check.py --docset PATH`. Existing G01/G02 source fixture and query receipts are unchanged.
+The imported snapshot ID is the digest reported by import; all fixture exact refs point to this particular synthetic digest. You can also `mix grand g03 motif propose fixture:synthetic-retry SNAPSHOT_ID --actor agent:motif --store /tmp/grand-g03-demo`, then explicitly reject the candidate as a human. Full CLI command/field details are in `Grand.CLI` help and the authoritative docset `contracts/interfaces.md`. G03A ExUnit cases in all four projects, including a real `System.cmd("mix", ["grand", ...])` subprocess lifecycle, are authored **UNRUN here**. Static checks: `uv run --locked python scripts/static_validate.py`, `uv run --locked python scripts/g02_contract_check.py`, `uv run --locked python scripts/g03_contract_check.py --docset PATH`. Existing G01/G02 source fixture and query receipts are unchanged.
 
 ## G04A — explicit Lean and finite TLC verification (authored, not runtime accepted)
 
@@ -247,6 +255,54 @@ G04A adds `Grand.Assurance.G04` and an adapter behaviour, Lean/TLC drivers,
 `Grand.CLI.G04`, positive/negative toy fixtures, API/CLI security ExUnit tests
 and a v3 result schema in the separate docset. It also adds
 `scripts/g04_contract_check.py`. Python-only checks passed; Elixir/Mix, Lean
-and a real TLC JAR are absent in this authoring environment, so all actual
-Mix/checker acceptance is **UNRUN**. G04B must run and repair those tests
-when the toolchain is available. Synthetic fixtures are not Hold Ledger laws.
+and a real TLC JAR are absent in this authoring environment, so actual Mix/checker execution was **UNRUN in A**. G04B subsequently ran the
+Mix/TLC tests and provisioned local tools; genuine Lynx/Veil integration and
+qualification are now assigned to G05A/G05B by the user. Synthetic fixtures are not Hold Ledger laws.
+
+## Local tooling and current phase
+
+Run `./scripts/bootstrap.sh` once, then use `./scripts/local.sh` for tool-backed
+commands. Bootstrap is idempotent, uses uv for Python and installs proof/model
+tools under ignored `.local/`; it never uses apt or changes global configuration.
+See [tooling](docs/TOOLING.md) for prerequisites, exact behavior and commands.
+
+By user direction, G04B closes after tooling setup plus its already recorded
+Mix/TLC checks. Genuine Lynx source-law integration/qualification and a distinct
+Veil adapter move into G05A alongside change impact. Installation smoke checks
+are not formal acceptance. The accepted historical baseline remains G03B.
+
+## G05A source authoring: bounded source-linked verification + change impact
+
+G04B's *user-amended* accepted scope was local tooling/bootstrap and prior
+Mix/TLC finite toy checks (24 Mix gates, 70 ExUnit tests). It did not accept
+a real Lynx-translated Grand law or a Veil model. Those integrations and new
+execution controls are implemented in G05A and must be qualified/repaired by
+G05B, not sent back to G04B. Historical G03B remains the last accepted runtime
+scope (24 gates/55 tests). No G03 journal/conditional unrun receipt is changed.
+
+`Grand.Assurance.G05` and `G05.{Lynx,Veil,Tool,Impact}` implement G05-T01..09:
+portable Hold Ledger source/support/law and invalid mutant through pinned
+`Lynx.Laws.verify/2` + Lean checker; separate finite-state Veil DSL with
+safe/bad models and a TLC property counterpart; source-only BeamCompass v1/v2
+impact, G03 reverse links, ambiguous mappings, tool/model/source/assumption
+staleness and v2 manifest / v4 scoped result / v2 impact reports. The CLI
+provides `mix grand g05 inspect|run|applicability|impact`. A G05 code run
+requires **both** `--execute` and `--allow-law-code`, never imports as execution;
+only selected files are staged privately, with allowlisted argv, process-group
+bounded cleanup, separate stdout/stderr and exclusive result output. This is
+not a complete OS sandbox. Law and model files are executable/checker input;
+only run trusted packages.
+
+The source-linked portable `capacity_held_before_confirmation/1` law and the
+Veil/TLC `released => confirmed` finite property concern a Grand-created
+*analogue*, not the historical G03 retry obligation. G03 refs gate authorized
+scope but are **not** discharged by this different law. Lynx axiom enumeration
+and Veil InfoView/batch capture are explicitly open B qualification items. No
+formal verified boolean, unbounded target behavior, runtime causal observation,
+production identity or durability is inferred. See `docs/TOOLING.md`,
+`fixtures/g05/README.md`, and paired docset `contracts/g05-verification.md`.
+
+**G05A checks:** uv-backed static/contract and docset checks PASS; the four
+Mix app suites, Lynx/Lean, Veil and new TLC comparison are UNRUN because those
+tools were absent in A. G05B must bootstrap with `scripts/bootstrap.sh` and run
+the actual positive/negative engine + CLI acceptance, repairing as necessary.

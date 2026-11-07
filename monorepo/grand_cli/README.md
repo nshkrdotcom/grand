@@ -124,5 +124,33 @@ Finite TLC results do not prove unlimited correctness. The named Lean toy law
 is not a Hold Ledger source law. Unavailable checker/JAR is `unsupported`,
 nonexecution is `unrun`, timeout/cancel is `inconclusive`, malformed output is
 `error`, and G03's original unrun receipt remains unmodified. The runner is a
-bounded local process boundary, not a hardened sandbox. The authoring host had
-no Elixir/Mix/Lean/TLC JAR; ExUnit and actual engines remain unrun until G04B.
+bounded local process boundary, not a hardened sandbox. The A authoring host lacked these tools. Subsequent B results and the
+user-amended tooling/integration scope are recorded below and in the docset.
+
+## G04B tooling scope / G05A implementation
+
+Root `scripts/bootstrap.sh` installs the pinned local tools; use
+`scripts/local.sh` to expose them to a child command. All Python runs through uv.
+See root `docs/TOOLING.md`. Lynx law integration and the distinct Veil adapter
+are G05A implementation work; the existing direct Lean adapter does not fulfill
+source translation. Tool installation smoke is separate from law/model acceptance.
+
+## G05A CLI: versioned law/model checking and change impact
+
+The new commands do not mutate approved G03 revisions, journals or the
+historical conditional unrun receipt:
+
+```sh
+mix grand g05 inspect ../../fixtures/g05/lynx-good-manifest.json --store /path/to/approved-g03-store
+mix grand g05 run ../../fixtures/g05/lynx-good-manifest.json --store /path/to/approved-g03-store --execute --allow-law-code --out fresh-result.json
+mix grand g05 applicability fresh-result.json ../../fixtures/g05/lynx-good-manifest.json --store /path/to/approved-g03-store
+mix grand g05 impact ../../fixtures/g05/impact/before.json ../../fixtures/g05/impact/premature.json ../../fixtures/g05/impact/links.json --out fresh-impact.json
+```
+
+`--execute` and `--allow-law-code` must both be supplied by the user for
+execution; `inspect` is always data-only. Use the root `scripts/local.sh`
+wrapper after `scripts/bootstrap.sh`. The `--out` destination must not exist.
+Results are scoped checker evidence only, not a verified boolean or production
+behavior proof. G05A authored real subprocess tests and fixtures but could not
+run Mix/Lynx/Veil; G05B must execute and repair them, including Veil InfoView
+capture and Lynx translation/proof acceptance.

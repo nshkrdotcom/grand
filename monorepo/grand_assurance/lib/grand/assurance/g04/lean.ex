@@ -14,8 +14,9 @@ defmodule Grand.Assurance.G04.Lean do
   @impl true
   def prepare(%{"law" => law}, _opts) when is_map(law) do
     with %{"file" => file, "theorem" => theorem, "hypotheses" => hypotheses} <- law,
-         true <- Files.identifier?(theorem) and is_list(hypotheses) and
-                   Enum.all?(hypotheses, &(is_binary(&1) and byte_size(&1) <= 300)),
+         true <-
+           Files.identifier?(theorem) and is_list(hypotheses) and
+             Enum.all?(hypotheses, &(is_binary(&1) and byte_size(&1) <= 300)),
          {:ok, source} <- Files.load(file, ".lean"),
          true <- contains_law?(source["bytes"], theorem) do
       {:ok,
@@ -53,26 +54,34 @@ defmodule Grand.Assurance.G04.Lean do
 
       true ->
         with {:ok, version} <-
-               Runner.execute(%{"engine" => "lean", "args" => ["--version"], "files" => %{}}, opts) do
-          case version do
-            %{"reason" => "missing_engine"} ->
-              {:ok, version}
-
-            %{"reason" => nil, "exit_code" => 0, "stdout" => output} ->
-              if String.starts_with?(String.trim(output), "Lean (version ") do
-                with {:ok, actual} <- Runner.execute(plan, opts) do
-                  {:ok, Map.put(actual, "version_output", String.trim(output))}
-                end
-              else
-                {:ok, Map.put(version, "reason", "invalid_engine_version")}
-              end
-
-            _ ->
-              {:ok, Map.put(version, "reason", "engine_version_probe_failed")}
-          end
+               Runner.execute(
+                 %{"engine" => "lean", "args" => ["--version"], "files" => %{}},
+                 opts
+               ) do
+          execute_versioned(plan, opts, version)
         end
     end
   end
+
+  defp execute_versioned(_plan, _opts, %{"reason" => "missing_engine"} = version),
+    do: {:ok, version}
+
+  defp execute_versioned(
+         plan,
+         opts,
+         %{"reason" => nil, "exit_code" => 0, "stdout" => output} = version
+       ) do
+    if String.starts_with?(String.trim(output), "Lean (version ") do
+      with {:ok, actual} <- Runner.execute(plan, opts) do
+        {:ok, Map.put(actual, "version_output", String.trim(output))}
+      end
+    else
+      {:ok, Map.put(version, "reason", "invalid_engine_version")}
+    end
+  end
+
+  defp execute_versioned(_plan, _opts, version),
+    do: {:ok, Map.put(version, "reason", "engine_version_probe_failed")}
 
   @impl true
   def normalize(plan, raw) do
@@ -81,17 +90,7 @@ defmodule Grand.Assurance.G04.Lean do
     version = Map.get(raw, "version_output", "not_qualified")
     version_qualified = String.starts_with?(version, "Lean (version ")
 
-    {status, diagnostics} =
-      case raw do
-        %{"reason" => "unrun"} -> {"unrun", ["execution was not requested"]}
-        %{"reason" => "missing_engine"} -> {"unsupported", ["Lean executable unavailable"]}
-        %{"reason" => "timeout"} -> {"inconclusive", ["Lean timed out"]}
-        %{"reason" => "cancelled"} -> {"inconclusive", ["run cancelled"]}
-        %{"reason" => reason} when is_binary(reason) -> {"error", [reason]}
-        %{"exit_code" => 0} when version_qualified -> normalize_success(output, expected)
-        %{"exit_code" => 0} -> {"error", ["Lean version probe missing or unqualified"]}
-        _ -> {"error", ["Lean rejected the law or exited abnormally; not a counterexample"]}
-      end
+    {status, diagnostics} = classify(raw, version_qualified, output, expected)
 
     {:ok,
      %{
@@ -101,6 +100,25 @@ defmodule Grand.Assurance.G04.Lean do
        "counterexample" => nil
      }}
   end
+
+  defp classify(%{"reason" => "unrun"}, _, _, _), do: {"unrun", ["execution was not requested"]}
+
+  defp classify(%{"reason" => "missing_engine"}, _, _, _),
+    do: {"unsupported", ["Lean executable unavailable"]}
+
+  defp classify(%{"reason" => reason}, _, _, _) when reason in ["timeout", "cancelled"],
+    do: {"inconclusive", [reason]}
+
+  defp classify(%{"reason" => reason}, _, _, _) when is_binary(reason), do: {"error", [reason]}
+
+  defp classify(%{"exit_code" => 0}, true, output, expected),
+    do: normalize_success(output, expected)
+
+  defp classify(%{"exit_code" => 0}, false, _, _),
+    do: {"error", ["Lean version probe missing or unqualified"]}
+
+  defp classify(_, _, _, _),
+    do: {"error", ["Lean rejected the law or exited abnormally; not a counterexample"]}
 
   defp contains_law?(source, theorem) do
     local_name = theorem |> String.split(".") |> List.last()

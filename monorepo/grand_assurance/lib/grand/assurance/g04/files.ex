@@ -2,7 +2,7 @@ defmodule Grand.Assurance.G04.Files do
   @moduledoc false
 
   @limit 256_000
-  @extensions ~w(.lean .tla .cfg)
+  @extensions ~w(.lean .tla .cfg .ex)
 
   @spec load(binary(), binary()) :: {:ok, map()} | {:error, term()}
   def load(path, extension) when is_binary(path) and extension in @extensions do
@@ -10,8 +10,9 @@ defmodule Grand.Assurance.G04.Files do
          {:ok, stat} <- File.lstat(path),
          true <- stat.type == :regular and stat.size <= @limit,
          {:ok, content} <- File.read(path),
-         true <- byte_size(content) <= @limit and String.valid?(content) and
-                   not String.contains?(content, <<0>>) do
+         true <-
+           byte_size(content) <= @limit and String.valid?(content) and
+             not String.contains?(content, <<0>>) do
       {:ok,
        %{
          "bytes" => content,

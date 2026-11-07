@@ -42,11 +42,12 @@ defmodule Grand.CLI.G04 do
     ]
   end
 
-  defp paths(%{"law" => %{"file" => path} = law} = manifest, file) do
+  defp paths(%{"law" => %{"file" => path} = law} = manifest, file) when is_binary(path) do
     %{manifest | "law" => %{law | "file" => Path.expand(path, Path.dirname(file))}}
   end
 
-  defp paths(%{"model" => %{"file" => path, "config_file" => config} = model} = manifest, file) do
+  defp paths(%{"model" => %{"file" => path, "config_file" => config} = model} = manifest, file)
+       when is_binary(path) and is_binary(config) do
     base = Path.dirname(file)
 
     %{

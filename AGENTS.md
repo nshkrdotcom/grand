@@ -1,44 +1,48 @@
-# Current G04A onward handoff rule
+# Grand agent instructions
 
-Only the latest two ZIPs are exchanged (`grand-repo.zip` and
-`grand-docset.zip`). Work directly in their extracted trees; do not require
-Git, commits, checkout status, archive hashes, provenance manifests or
-per-command audit matrices. See the companion docset `control/WORKFLOW.md`.
-Implement code/tests first, report actual test outcomes, preserve the four
-independent Mix apps and G03 historical result limits. This rule overrides any
-older delivery procedure below.
+**Delivery authority:** Companion docset `control/WORKFLOW.md` overrides any
+conflicting historical/reference delivery instructions. Use only the latest
+`grand-repo.zip` and `grand-docset.zip`, extracted directly as `grand/` and
+`grand-docset/`. The archive-internal roots are **not** output file paths.
+Local agents write `/tmp/grand-repo.zip` and `/tmp/grand-docset.zip` on their
+own host; ChatGPT agents return downloadable `grand-repo.zip` and
+`grand-docset.zip` from their available artifact directory. Return a direct
+link to the **only** continuation prompt at
+`grand-docset/handoffs/NEXT_IMPLEMENTATION_AGENT_PROMPT.txt`, already inside
+the docset ZIP. No duplicate prompt, external handoff tree, phase-prefixed ZIP
+names or assumed access to the user's machine.
 
----
+No Grand Git checkout, commits, archive provenance, archive hashes or
+per-command audit matrices. Do not push. External tool source pins/download
+checksums and Lake's Git dependency fetching are separate from Grand delivery
+and remain required for reproducible tools.
 
-# Grand code-agent entry
+Read README.md, docs/TOOLING.md and the companion docset's control/WORKFLOW.md,
+control/NEXT_AGENT.md, control/state.json, foundation/current-state.md and the
+active phase sections. Follow handoffs/NEXT_IMPLEMENTATION_AGENT_PROMPT.txt.
 
-1. Read README.md and the authoritative docset at
-   ~/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset:
-   control/WORKFLOW.md, control/NEXT_AGENT.md, control/state.json,
-   foundation/current-state.md, the active A/B phase manifest and bounded reading.
-   If elsewhere, locate the existing repo and obtain the actual docset path.
-2. Follow the user-directed cycle: ChatGPT.com IMPLEMENTS A; the user applies
-   and commits both A ZIP updates; local B verifies/fixes those already committed
-   checkouts and commits only new B repairs/evidence. B returns committed ZIPs
-   and ONE canonical next-A implementation prompt. No duplicate A import/commit.
-3. G01B's 24 Mix gates and 14 ExUnit tests remain historical. G02B passed
-   24 Mix gates and 27 ExUnit tests on Elixir 1.20.5 / OTP 29.1.2, with
-   actual P02B exports, real CLI and hostile controls. See delivery/ evidence
-   and the authoritative G02B handoff. G03B passed 24 Mix gates and 55 ExUnit tests on the same pinned toolchain.
-   Next owner IMPLEMENTS G04A source/tests
-   in the same run. Preserve v1/v2 source-only, exact refs and bounded query
-   guarantees. No BeamCompass source changes/P03 dependency, target execution,
-   fabricated proof, repeated A import or historical ZIP gate.
-4. There is no root Mix file. Run each project's deps.get --check-locked,
-   format --check-formatted, compile --warnings-as-errors, test, credo --strict,
-   and dialyzer. Record exact passed/failed/unrun evidence; repair defects.
-5. BeamCompass stays independent with JSON-only integration. Preserve v1 and
-   source-only safety. Normative requirements stay in Grand. No false proof,
-   runtime causality, production authentication or durability claims.
-6. Reconcile the full authoritative docset, traceability, phase parts and
-   runtime_verified_through with observed results. A artifacts do not establish
-   B runtime acceptance; later phase aggregates complete only after B passes.
-7. Commit code and Grand docset changes separately (docset belongs to parent
-   brainstorms Git repository). Preserve unrelated changes. Do not push.
-   Return paired ignore-respecting ZIPs and ONE canonical prompt for the next
-   owner; link its file rather than displaying a different shortened prompt.
+All Python commands use uv. Run scripts/bootstrap.sh for local tool setup and
+scripts/local.sh for child commands. No apt, sudo, system installation or global
+configuration changes. Assume Ubuntu 26.04 x86_64, uv, existing Elixir 1.20.5
+built with OTP 29, OTP 29.1.2, compatible Java and documented native prerequisites.
+Tools/cache directories are ignored and never included in delivery ZIPs.
+
+User rescope: G04B closes tooling setup and existing Mix/TLC validation only.
+G05A implements genuine source-linked Lynx -> Lean qualification, its safe worker,
+a distinct Veil adapter/experiments, integrated CLI/contracts and original change
+impact/staleness tasks. Installation smoke is not a law/model acceptance result.
+The next A agent implements source/tests even if its environment lacks the tools;
+local B executes actual acceptance. No review-only handoff or tool-absence loop.
+
+Preserve four independent Mix apps; no root mix.exs. Direction: Core <- Assurance
+and BeamCompass; CLI -> all. BeamCompass is JSON-only v1/v2 source evidence.
+Do not alter exact G03 historical refs, approvals, journal or conditional unrun
+receipt; do not execute target mix.exs/anchors during import. No auto-approval,
+production identity/durability, runtime causality or unbounded correctness claims.
+
+Run each app's deps.get --check-locked, format --check-formatted,
+compile --warnings-as-errors, test, credo --strict and dialyzer when code changes
+require them. Repair failures; report actual PASS/FAIL/UNRUN. Historical G03B
+24 Mix gates/55 tests remain independent. Return exactly the two named,
+ignore-respecting ZIPs and link the one existing prompt in the docset; follow
+`control/WORKFLOW.md` for output locations and ZIP-open verification.

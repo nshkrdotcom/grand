@@ -22,3 +22,9 @@ grand-store/
 __pycache__/
 *.pyc
 !delivery/g03b-logs/*.log
+
+# Reproducible local proof tools, Python environment and transient build reports.
+/.local/
+/.venv/
+/tmp/
+/.pytest_cache/

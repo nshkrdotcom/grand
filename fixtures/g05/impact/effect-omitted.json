@@ -1,0 +1,30 @@
+{
+  "capsules": [],
+  "facts": [
+    {
+      "anchor": {
+        "column": 3,
+        "line": 17,
+        "path": "lib/hold_ledger/ledger.ex"
+      },
+      "details": {
+        "guarantee": "not_runtime",
+        "model": "synthetic_portable_source_only"
+      },
+      "id": "hold:void-request",
+      "kind": "transition_candidate",
+      "object": "free_capacity unchanged until terminal confirmation",
+      "status": "source",
+      "subject": "HoldLedger.Ledger.void/2"
+    }
+  ],
+  "id": "g05-hold-source-missing-effect",
+  "issues": [],
+  "projects": [
+    {
+      "name": "grand-g05",
+      "path": "fixtures/g05/lynx"
+    }
+  ],
+  "schema_version": 1
+}

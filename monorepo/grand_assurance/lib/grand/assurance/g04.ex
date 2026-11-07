@@ -74,8 +74,7 @@ defmodule Grand.Assurance.G04 do
       m["obligation_id"] != actual["id"] ->
         {:error, :g04_obligation_mismatch}
 
-      m["requirement"] != actual["requirement"] or
-          m["requirement"] != Map.take(r["requirement"], ["id", "revision"]) ->
+      not same_requirement?(m, actual, r) ->
         {:error, :g04_requirement_revision_mismatch}
 
       m["scope"] != actual["scope"] or m["source_refs"] != actual["source_refs"] ->
@@ -87,6 +86,11 @@ defmodule Grand.Assurance.G04 do
       true ->
         :ok
     end
+  end
+
+  defp same_requirement?(manifest, obligation, receipt) do
+    manifest["requirement"] == obligation["requirement"] and
+      manifest["requirement"] == Map.take(receipt["requirement"], ["id", "revision"])
   end
 
   defp result(manifest, receipt, plan, raw, verdict, opts) do

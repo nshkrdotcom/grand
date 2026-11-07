@@ -1,0 +1,31 @@
+{
+  "entities": [
+    {
+      "anchor": {
+        "line": 31,
+        "path": "lib/hold_ledger/portable.ex"
+      },
+      "epistemic_status": "sourced",
+      "evidence_ids": [
+        "evidence:hold-void"
+      ],
+      "id": "entity:hold-void-moved",
+      "kind": "function",
+      "label": "HoldLedger.Portable.request_void/1",
+      "semantic_key": "hold:request_void/1"
+    }
+  ],
+  "evidence": [
+    {
+      "anchor": {
+        "line": 31,
+        "path": "lib/hold_ledger/portable.ex"
+      },
+      "id": "evidence:hold-void",
+      "kind": "source"
+    }
+  ],
+  "relations": [],
+  "schema_version": 2,
+  "snapshot_id": "g05-v2-line-shift"
+}
