@@ -1,0 +1,11 @@
+==> grand_core
+Compiling 2 files (.ex)
+==> grand_beamcompass
+Compiling 4 files (.ex)
+Generated grand_beamcompass app
+Running ExUnit with seed: 361819, max_cases: 48
+
+............
+Finished in 3.7 seconds (3.7s async, 0.00s sync)
+
+Result: 12 passed

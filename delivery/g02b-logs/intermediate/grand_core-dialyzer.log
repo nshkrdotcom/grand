@@ -1,0 +1,42 @@
+Finding suitable PLTs
+Checking PLT...
+[:compiler, :crypto, :elixir, :grand_core, :kernel, :logger, :mix, :stdlib]
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Looking up modules in dialyxir_erlang-29.1.2.plt
+Finding applications for dialyxir_erlang-29.1.2.plt
+Finding modules for dialyxir_erlang-29.1.2.plt
+Creating dialyxir_erlang-29.1.2.plt
+Looking up modules in dialyxir_erlang-29.1.2.plt
+Removing 3 modules from dialyxir_erlang-29.1.2.plt
+Checking 19 modules in dialyxir_erlang-29.1.2.plt
+Adding 204 modules to dialyxir_erlang-29.1.2.plt
+done in 0m17.76s
+Finding applications for dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Finding modules for dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Copying dialyxir_erlang-29.1.2.plt to dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Checking 223 modules in dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Adding 271 modules to dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+done in 0m9.61s
+Finding applications for dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Finding modules for dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Copying dialyxir_erlang-29.1.2_elixir-1.20.5.plt to dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Checking 494 modules in dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Adding 175 modules to dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+done in 0m26.53s
+No :ignore_warnings opt specified in mix.exs and default does not exist.
+
+Starting Dialyzer
+[
+  check_plt: false,
+  init_plt: ~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt",
+  files: [~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/lib/grand_core/ebin/Elixir.Grand.Core.JSON.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/lib/grand_core/ebin/Elixir.Grand.Core.Store.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_core/_build/dev/lib/grand_core/ebin/Elixir.Grand.Core.beam"],
+  warnings: [:unknown]
+]
+Total errors: 0, Skipped: 0, Unnecessary Skips: 0
+done in 0m1.46s
+done (passed successfully)

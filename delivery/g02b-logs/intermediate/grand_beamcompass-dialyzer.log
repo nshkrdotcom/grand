@@ -1,0 +1,114 @@
+Finding suitable PLTs
+Checking PLT...
+[:compiler, :crypto, :elixir, :grand_beamcompass, :grand_core, :kernel, :logger, :mix, :stdlib]
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Finding applications for dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Finding modules for dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Removing 6 modules from dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Checking 488 modules in dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+Adding 6 modules to dialyxir_erlang-29.1.2_elixir-1.20.5.plt
+done in 0m9.31s
+Finding applications for dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Finding modules for dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Copying dialyxir_erlang-29.1.2_elixir-1.20.5.plt to dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Looking up modules in dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Checking 494 modules in dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+Adding 179 modules to dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt
+done in 0m26.37s
+No :ignore_warnings opt specified in mix.exs and default does not exist.
+
+Starting Dialyzer
+[
+  check_plt: false,
+  init_plt: ~c"/home/home/p/g/n/grand/monorepo/grand_beamcompass/_build/dev/dialyxir_erlang-29.1.2_elixir-1.20.5_deps-dev.plt",
+  files: [~c"/home/home/p/g/n/grand/monorepo/grand_beamcompass/_build/dev/lib/grand_beamcompass/ebin/Elixir.Grand.BeamCompass.Query.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_beamcompass/_build/dev/lib/grand_beamcompass/ebin/Elixir.Grand.BeamCompass.V1.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_beamcompass/_build/dev/lib/grand_beamcompass/ebin/Elixir.Grand.BeamCompass.V2.beam",
+   ~c"/home/home/p/g/n/grand/monorepo/grand_beamcompass/_build/dev/lib/grand_beamcompass/ebin/Elixir.Grand.BeamCompass.beam"],
+  warnings: [...]
+]
+Total errors: 6, Skipped: 0, Unnecessary Skips: 0
+done in 0m1.41s
+lib/grand/beam_compass/query.ex:190:75:call_without_opaque
+Function call without opaqueness type mismatch.
+
+Call does not have expected term of type %MapSet{:map => :sets.set(_)} (with opaque subterms) in the 1st position.
+
+MapSet.member?(
+  _evidence_ids :: %MapSet{
+    :map =>
+      {:set, non_neg_integer(), non_neg_integer(), pos_integer(), non_neg_integer(),
+       non_neg_integer(), non_neg_integer(), tuple(), tuple()}
+      | %{_ => []}
+  },
+  any()
+)
+
+________________________________________________________________________________
+lib/grand/beam_compass/query.ex:204:29:call_without_opaque
+Function call without opaqueness type mismatch.
+
+Call does not have expected term of type %MapSet{:map => :sets.set(_)} (with opaque subterms) in the 1st position.
+
+MapSet.member?(
+  _evidence_ids :: %MapSet{
+    :map =>
+      {:set, non_neg_integer(), non_neg_integer(), pos_integer(), non_neg_integer(),
+       non_neg_integer(), non_neg_integer(), tuple(), tuple()}
+      | %{_ => []}
+  },
+  any()
+)
+
+________________________________________________________________________________
+lib/grand/beam_compass/query.ex:271:23:call_without_opaque
+Function call without opaqueness type mismatch.
+
+Call does not have expected term of type %MapSet{:map => :sets.set(_)} (with opaque subterms) in the 1st position.
+
+MapSet.member?(
+  _found :: %MapSet{
+    :map =>
+      {:set, non_neg_integer(), non_neg_integer(), pos_integer(), non_neg_integer(),
+       non_neg_integer(), non_neg_integer(), tuple(), tuple()}
+      | %{_ => []}
+  },
+  _id :: any()
+)
+
+________________________________________________________________________________
+Please file a bug in https://github.com/jeremyjh/dialyxir/issues with this message.
+
+Unknown error occurred: %FunctionClauseError{module: Dialyxir.WarningHelpers, function: :ordinal, arity: 1, kind: nil, args: nil, clauses: nil}
+
+
+Legacy warning:
+lib/grand/beam_compass/query.ex:272:40: The call 'Elixir.Grand.BeamCompass.Query':evidence_closure(_rest@1::[any()],_evidence@1::map(),_found@1::#{'__struct__':='Elixir.MapSet', 'map':=sets:set(_)}) contains an opaque term as 3rd argument when terms of different types are expected in these positions
+________________________________________________________________________________
+Please file a bug in https://github.com/jeremyjh/dialyxir/issues with this message.
+
+Unknown error occurred: %FunctionClauseError{module: Dialyxir.WarningHelpers, function: :ordinal, arity: 1, kind: nil, args: nil, clauses: nil}
+
+
+Legacy warning:
+lib/grand/beam_compass/query.ex:277:16: The call 'Elixir.Grand.BeamCompass.Query':evidence_closure([any()],_evidence@1::map(),#{'__struct__':='Elixir.MapSet', 'map':=sets:set(_)}) contains an opaque term as 3rd argument when terms of different types are expected in these positions
+________________________________________________________________________________
+lib/grand/beam_compass/v2.ex:228:22:call_without_opaque
+Function call without opaqueness type mismatch.
+
+Call does not have expected term of type %MapSet{:map => :sets.set(_)} (with opaque subterms) in the 1st position.
+
+MapSet.member?(
+  _path :: %MapSet{
+    :map =>
+      {:set, non_neg_integer(), non_neg_integer(), pos_integer(), non_neg_integer(),
+       non_neg_integer(), non_neg_integer(), tuple(), tuple()}
+      | %{_ => []}
+  },
+  _id :: any()
+)
+
+________________________________________________________________________________
+done (warnings were emitted)
+Halting VM with exit status 2

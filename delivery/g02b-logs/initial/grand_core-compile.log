@@ -1,0 +1,3 @@
+warning: mtime (modified time) for "lib/grand/core.ex" was set to the future, resetting to now
+warning: mtime (modified time) for "lib/grand/core/store.ex" was set to the future, resetting to now
+Compiling 2 files (.ex)

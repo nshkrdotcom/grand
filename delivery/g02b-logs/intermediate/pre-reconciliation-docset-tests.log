@@ -1,0 +1,30 @@
+test_current_docset (test_docsetctl.TestDocset.test_current_docset) ... FAIL
+test_g02a_delivery_reflects_authored_not_runtime_verified (test_docsetctl.TestDocset.test_g02a_delivery_reflects_authored_not_runtime_verified) ... ok
+test_required_entrypoint_missing (test_docsetctl.TestDocset.test_required_entrypoint_missing) ... ok
+test_every_retained_upstream_byte_hash (test_g02_pinned.TestPinnedP02B.test_every_retained_upstream_byte_hash) ... ok
+test_negative_rehashed_mode_and_bad_effect_type (test_g02_pinned.TestPinnedP02B.test_negative_rehashed_mode_and_bad_effect_type) ... ok
+test_two_real_exports_and_exact_refs (test_g02_pinned.TestPinnedP02B.test_two_real_exports_and_exact_refs) ... ok
+test_examples (test_schemas.TestSchemas.test_examples) ... ok
+test_schema_meta_validation (test_schemas.TestSchemas.test_schema_meta_validation) ... ok
+
+======================================================================
+FAIL: test_current_docset (test_docsetctl.TestDocset.test_current_docset)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/home/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset/tools/test_docsetctl.py", line 15, in test_current_docset
+    self.assertEqual([], check(ROOT))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != ['source-manifest file set mismatch: phase[47 chars].md']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'source-manifest file set mismatch: phases/G02-behavior-evidence/cold-read-g02b-20261106.md'
+
+- []
++ ['source-manifest file set mismatch: '
++  'phases/G02-behavior-evidence/cold-read-g02b-20261106.md']
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.087s
+
+FAILED (failures=1)

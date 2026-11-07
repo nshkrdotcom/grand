@@ -1,0 +1,2 @@
+PASS: pinned P02B byte hashes, two actual v2 exports, exact refs, 6 rehashed hostile controls
+SCOPE: independent Python contract only; Grand Mix runtime UNRUN

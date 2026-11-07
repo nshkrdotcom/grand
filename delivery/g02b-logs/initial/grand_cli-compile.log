@@ -1,0 +1,9 @@
+==> grand_core
+Compiling 2 files (.ex)
+==> grand_beamcompass
+Compiling 4 files (.ex)
+Generated grand_beamcompass app
+==> grand_cli
+warning: mtime (modified time) for "lib/grand/cli.ex" was set to the future, resetting to now
+warning: mtime (modified time) for "lib/mix/tasks/grand.ex" was set to the future, resetting to now
+Compiling 2 files (.ex)

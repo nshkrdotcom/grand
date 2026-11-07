@@ -1,0 +1,13 @@
+Checking 5 source files ...
+
+  Refactoring opportunities                                                     
+┃ 
+┃ [F] → Function body is nested too deep (max depth is 2, was 3).
+┃       lib/grand/cli.ex:183:11 #(Grand.CLI.dispatch)
+
+Please report incorrect results: https://github.com/rrrene/credo/issues
+
+Analysis took 0.04 seconds (0.00s to load, 0.04s running 69 checks on 5 files)
+30 mods/funs, found 1 refactoring opportunity.
+
+Use `mix credo explain` to explain issues, `mix credo --help` for options.

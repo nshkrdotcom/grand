@@ -1,0 +1,23 @@
+** (Mix) mix format failed due to --check-formatted.
+The following files are not formatted:
+
+[1m[31m/home/home/p/g/n/grand/monorepo/grand_core/test/v2_reference_test.exs
+[0m
+       |
+21 21  |    entity = @ref |> Map.put("object_kind", "entity") |> Map.delete("resolution")
+22 22  |    assert {:ok, ^entity} = Core.validate("behavior_ref_v2", entity)
+   23 +|
+23 24  |    evidence =
+24 25  |      @ref
+       |
+40 41  |          Map.put(@ref, "unknown", true)
+41 42  |        ] do
+42    -|      assert {:error, {:invalid_record, "behavior_ref_v2", _}} = Core.validate("behavior_ref_v2", bad)
+   43 +|      assert {:error, {:invalid_record, "behavior_ref_v2", _}} =
+   44 +|               Core.validate("behavior_ref_v2", bad)
+43 45  |    end
+44 46  |
+       |
+
+
+

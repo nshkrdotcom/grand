@@ -16,3 +16,4 @@ grand-store/
 # Validation transcripts are intentional delivery evidence.
 !delivery/g01b-logs/*.log
 !delivery/g01b-logs/repair-attempt/*.log
+!delivery/g02b-logs/**/*.log
