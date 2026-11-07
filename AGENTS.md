@@ -1,3 +1,15 @@
+# Current G04A onward handoff rule
+
+Only the latest two ZIPs are exchanged (`grand-repo.zip` and
+`grand-docset.zip`). Work directly in their extracted trees; do not require
+Git, commits, checkout status, archive hashes, provenance manifests or
+per-command audit matrices. See the companion docset `control/WORKFLOW.md`.
+Implement code/tests first, report actual test outcomes, preserve the four
+independent Mix apps and G03 historical result limits. This rule overrides any
+older delivery procedure below.
+
+---
+
 # Grand code-agent entry
 
 1. Read README.md and the authoritative docset at

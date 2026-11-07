@@ -13,11 +13,12 @@ Grand owns **normative requirement and assurance records**. BeamCompass remains
 an independent product; Grand reads only its versioned portable JSON exports.
 This repository is a headless prototype. G01B passed its historical 24 local Mix gates. G02B validation and repairs are recorded in `delivery/G02B-VALIDATION.md`.
 
-**Baseline delivery:** `GRAND-G01A-20261106-A` (see `delivery/manifest.json`).
-**Authoritative docset on the user's machine:**
-`~/p/g/n/brainstorms/nshkrdotcom/docs/20261106/grand/grand-docset`.
-Its canonical continuation entry is `control/NEXT_AGENT.md`. No docset files
-are vendored into the Grand code repository.
+**Delivery:** The supplied `grand-repo.zip` and `grand-docset.zip` are the
+sole working inputs and outputs for G04A and all later A/B phases. Unzip both,
+work directly on the extracted source/doc files and return two updated ZIPs.
+There is no checkout, commit, archive checksum or provenance prerequisite.
+See docset `control/WORKFLOW.md` for the continuing rule. Historical G03B
+runtime acceptance remains separate from the new G04A implementation.
 
 ## Repository layout
 
@@ -96,8 +97,8 @@ All six stable G03 acceptance IDs, legacy v1/G02 regressions, isolated smoke,
 Python contract/schema checks and 25 supplemental real CLI subprocesses passed.
 Exact commands, timestamps, versions, lock hashes, statuses, exit codes and
 stdout/stderr are under `delivery/g03b-logs/`, with `acceptance-matrix.json`. Earlier
-failed attempts are retained separately. The authoritative docset contains the
-G03B receiving cold read, factual handoff, current ledger and sole G04A prompt.
+failed attempts are retained separately. The accompanying docset ZIP retains G03B records independently, plus the
+G04A source handoff and one G04B continuation prompt.
 No target/checker execution, authenticated identity, causality, proof or production
 durability is claimed; G03 receipts remain conditional unrun/unassessed records.
 The G03A authoring section below retains its original historical UNRUN scope.
@@ -215,3 +216,37 @@ mix grand g03 history requirement g03-confirm-once --store /tmp/grand-g03-demo
 ```
 
 The imported snapshot ID is the digest reported by import; all fixture exact refs point to this particular synthetic digest. You can also `mix grand g03 motif propose fixture:synthetic-retry SNAPSHOT_ID --actor agent:motif --store /tmp/grand-g03-demo`, then explicitly reject the candidate as a human. Full CLI command/field details are in `Grand.CLI` help and the authoritative docset `contracts/interfaces.md`. G03A ExUnit cases in all four projects, including a real `System.cmd("mix", ["grand", ...])` subprocess lifecycle, are authored **UNRUN here**. Static checks: `python3 scripts/static_validate.py`, `python3 scripts/g02_contract_check.py`, `python3 scripts/g03_contract_check.py --docset PATH`. Existing G01/G02 source fixture and query receipts are unchanged.
+
+## G04A — explicit Lean and finite TLC verification (authored, not runtime accepted)
+
+From `monorepo/grand_cli`, use an existing G03 store with an approved exact
+G03 requirement and registered obligation (the synthetic CLI integration test
+creates such a store). Example manifests are in `../../fixtures/g04/`:
+
+```sh
+mix grand g04 inspect ../../fixtures/g04/tlc-manifest.json --store /path/to/g03-store
+mix grand g04 run ../../fixtures/g04/tlc-manifest.json --store /path/to/g03-store --execute --tlc-jar /path/to/tla2tools.jar
+mix grand g04 run ../../fixtures/g04/lean-manifest.json --store /path/to/g03-store --execute --allow-law-code
+mix grand g04 applicability result.json ../../fixtures/g04/tlc-manifest.json --store /path/to/g03-store
+```
+
+`inspect` never launches a checker. `run` defaults to `unrun`; `--execute` is
+required, and Lean source needs the extra `--allow-law-code` opt-in. No imported
+BeamCompass anchor or target Mix project is executed. Only trusted local law or
+model files should be passed; the disposable workspace is **not** an OS or
+network sandbox. Arguments are allowlisted and output/time bounds enforced.
+
+A result lists its exact G03 scope, named law or finite model, bound, fairness,
+hypotheses, assumption revisions, open witness gaps, engine version, separate
+stdout/stderr, and distinct `proved` / `bounded_pass` / `counterexample` /
+`inconclusive` / `unsupported` / `error` / `unrun` statuses. `applicability`
+returns `current` or `stale` for source/assumption changes. It is not a verdict
+about runtime conformance or unbounded behavior. Nothing approves a requirement.
+
+G04A adds `Grand.Assurance.G04` and an adapter behaviour, Lean/TLC drivers,
+`Grand.CLI.G04`, positive/negative toy fixtures, API/CLI security ExUnit tests
+and a v3 result schema in the separate docset. It also adds
+`scripts/g04_contract_check.py`. Python-only checks passed; Elixir/Mix, Lean
+and a real TLC JAR are absent in this authoring environment, so all actual
+Mix/checker acceptance is **UNRUN**. G04B must run and repair those tests
+when the toolchain is available. Synthetic fixtures are not Hold Ledger laws.

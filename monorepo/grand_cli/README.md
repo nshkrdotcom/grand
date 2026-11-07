@@ -32,7 +32,7 @@ Part of [Grand](https://github.com/nshkrdotcom/grand), providing the operator in
 
 ## Getting started
 
-Requires Elixir >= 1.15. From this application's directory:
+Requires Elixir 1.20.5 / OTP 29.1.2. From this application's directory:
 
 ```sh
 mix deps.get
@@ -102,3 +102,27 @@ and do not accept a forged v2 fact. G02B independently passed the actual-export 
 Explicit `mix grand g03` JSON-only lifecycle/motif subcommands and a real Mix subprocess end-to-end test; legacy CLI preserved.
 
 See root README and authoritative docset G03 design/verification. Toolchain Elixir 1.20.5-otp-29 / OTP 29.1.2 is not present in G03A, so G03B must independently execute six required Mix gates here.
+
+## G04A scoped verification (source authored; engine acceptance pending)
+
+`Grand.Assurance.G04.run/3` checks a source-only JSON manifest against the
+existing G03 approved obligation. `Grand.Assurance.G04.applicability/3` reports
+`current` or `stale` after relevant source or assumption changes; it does not
+rewrite G03. Independent `G04.Lean` and `G04.TLC` adapters share an explicitly
+opted-in subprocess runner, never an implicit import or target-code executor.
+
+From `monorepo/grand_cli`:
+
+```sh
+mix grand g04 inspect ../../fixtures/g04/tlc-manifest.json --store /path/to/g03-store
+mix grand g04 run ../../fixtures/g04/tlc-manifest.json --store /path/to/g03-store --execute --tlc-jar /path/to/tla2tools.jar
+mix grand g04 run ../../fixtures/g04/lean-manifest.json --store /path/to/g03-store --execute --allow-law-code
+mix grand g04 applicability result.json ../../fixtures/g04/tlc-manifest.json --store /path/to/g03-store
+```
+
+Finite TLC results do not prove unlimited correctness. The named Lean toy law
+is not a Hold Ledger source law. Unavailable checker/JAR is `unsupported`,
+nonexecution is `unrun`, timeout/cancel is `inconclusive`, malformed output is
+`error`, and G03's original unrun receipt remains unmodified. The runner is a
+bounded local process boundary, not a hardened sandbox. The authoring host had
+no Elixir/Mix/Lean/TLC JAR; ExUnit and actual engines remain unrun until G04B.

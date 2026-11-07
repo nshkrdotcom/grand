@@ -10,6 +10,7 @@ defmodule Grand.CLI do
   alias Grand.Assurance
   alias Grand.BeamCompass
   alias Grand.CLI.G03, as: G03CLI
+  alias Grand.CLI.G04, as: G04CLI
   alias Grand.Core
   alias Grand.Core.JSON
 
@@ -29,7 +30,12 @@ defmodule Grand.CLI do
     preserve: :string,
     replacement: :string,
     evidence: :string,
-    revision: :integer
+    revision: :integer,
+    execute: :boolean,
+    allow_law_code: :boolean,
+    tlc_jar: :string,
+    timeout_ms: :integer,
+    output_limit_bytes: :integer
   ]
 
   @usage """
@@ -55,6 +61,9 @@ defmodule Grand.CLI do
     mix grand g03 inspect candidate|requirement|assumption|obligation ID --store DIR [--revision N]
     mix grand g03 history candidate|requirement|assumption|obligation ID --store DIR
     mix grand g03 receipt OBLIGATION_ID --store DIR [--out NEW_FILE]
+    mix grand g04 inspect MANIFEST.json --store DIR [--out NEW_FILE]
+    mix grand g04 run MANIFEST.json --store DIR --execute [--allow-law-code] [--tlc-jar JAR] [--timeout-ms N] [--out NEW_FILE]
+    mix grand g04 applicability RESULT.json MANIFEST.json --store DIR
   """
 
   @spec run([binary()]) :: {:ok, term()} | {:error, term()}
@@ -71,6 +80,7 @@ defmodule Grand.CLI do
   defp dispatch(["help"], _opts), do: {:ok, %{"usage" => @usage}}
 
   defp dispatch(["g03" | args], opts), do: G03CLI.run(args, opts)
+  defp dispatch(["g04" | args], opts), do: G04CLI.run(args, opts)
 
   defp dispatch(["import", path], opts) do
     with {:ok, root} <- required(opts, :store),
