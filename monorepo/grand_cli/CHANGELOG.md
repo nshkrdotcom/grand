@@ -6,3 +6,7 @@
 - Subcommands: `import`, `link`, `approve`, `inspect`, and `export`.
 - Output streaming of deterministic JSON records and atomic file export via `--out`.
 - Integration and end-to-end regression test suite.
+
+## Unreleased — G03A authored, awaiting G03B runtime verification
+
+- Explicit `mix grand g03` JSON-only lifecycle/motif subcommands and a real Mix subprocess end-to-end test; legacy CLI preserved. No new production runtime/identity/proof claims.

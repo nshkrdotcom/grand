@@ -17,3 +17,7 @@ grand-store/
 !delivery/g01b-logs/*.log
 !delivery/g01b-logs/repair-attempt/*.log
 !delivery/g02b-logs/**/*.log
+
+# Offline Python schema/provenance check caches are not delivery assets.
+__pycache__/
+*.pyc

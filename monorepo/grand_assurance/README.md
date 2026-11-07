@@ -75,3 +75,9 @@ Development uses the sibling core application when available. Standalone install
 ## License
 
 MIT — Copyright (c) 2026 nshkrdotcom. See [LICENSE](LICENSE).
+
+## G03A additive implementation (runtime UNRUN)
+
+`Grand.Assurance.G03` candidate, human-labelled requirement and assumption transitions, exact obligation and conditional unrun/unassessed receipt; v1 untouched.
+
+See root README and authoritative docset G03 design/verification. Toolchain Elixir 1.20.5-otp-29 / OTP 29.1.2 is not present in G03A, so G03B must independently execute six required Mix gates here.

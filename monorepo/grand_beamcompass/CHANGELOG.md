@@ -6,3 +6,7 @@
 - Bounded, read-only import of portable BeamCompass v1 JSON exports.
 - Exact snapshot and fact resolution via canonical `BehaviorRef` identifiers.
 - Relative path traversal validation and non-execution isolation guarantees for imported source references.
+
+## Unreleased — G03A authored, awaiting G03B runtime verification
+
+- Source-only `Grand.BeamCompass.Motif.retry_external_effect/1` deterministic question spike over existing typed V2 exact refs and bounded query receipts; original P02B unchanged. No new production runtime/identity/proof claims.

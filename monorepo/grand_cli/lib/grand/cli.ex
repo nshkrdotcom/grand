@@ -8,6 +8,7 @@ defmodule Grand.CLI do
   """
 
   alias Grand.Assurance
+  alias Grand.CLI.G03, as: G03CLI
   alias Grand.BeamCompass
   alias Grand.Core
   alias Grand.Core.JSON
@@ -25,7 +26,10 @@ defmodule Grand.CLI do
     focus: :string,
     budget: :integer,
     lens: :string,
-    preserve: :string
+    preserve: :string,
+    replacement: :string,
+    evidence: :string,
+    revision: :integer
   ]
 
   @usage """
@@ -40,9 +44,20 @@ defmodule Grand.CLI do
     mix grand query PROJECT_ID SNAPSHOT_ID --focus ENTITY_ID [--lens neighbors|connected|effects] [--budget N] [--preserve entity=ID] [--preserve relation=ID] --store DIRECTORY [--out NEW_FILE]
     mix grand export snapshot PROJECT_ID SNAPSHOT_ID --schema 2 --store DIRECTORY --out NEW_FILE
     mix grand export REQUIREMENT_ID --project ID --store DIRECTORY [--out NEW_FILE]
+    mix grand g03 propose CANDIDATE.json --store DIR --actor agent:ID
+    mix grand g03 motif propose PROJECT SNAPSHOT --store DIR --actor agent:ID
+    mix grand g03 candidate reject|supersede ID --store DIR --actor human:ID --ack-human [--replacement ID]
+    mix grand g03 requirement draft REQUIREMENT.json --store DIR --actor human:ID --ack-human
+    mix grand g03 requirement submit|approve|reject|supersede ID --store DIR --actor human:ID --ack-human
+    mix grand g03 assumption register ASSUMPTION.json --store DIR --actor human:ID --ack-human
+    mix grand g03 assumption attest|test|discharge|invalidate|supersede ID --store DIR --actor human:ID --ack-human [--evidence JSON_LIST] [--replacement ID]
+    mix grand g03 obligation create OBLIGATION.json --store DIR --actor human:ID --ack-human
+    mix grand g03 inspect candidate|requirement|assumption|obligation ID --store DIR [--revision N]
+    mix grand g03 history candidate|requirement|assumption|obligation ID --store DIR
+    mix grand g03 receipt OBLIGATION_ID --store DIR [--out NEW_FILE]
   """
 
-  @spec run([binary()]) :: {:ok, map()} | {:error, term()}
+  @spec run([binary()]) :: {:ok, term()} | {:error, term()}
   def run(argv) when is_list(argv) do
     {options, positional, invalid} = OptionParser.parse(argv, strict: @switches)
 
@@ -54,6 +69,8 @@ defmodule Grand.CLI do
   end
 
   defp dispatch(["help"], _opts), do: {:ok, %{"usage" => @usage}}
+
+  defp dispatch(["g03" | args], opts), do: G03CLI.run(args, opts)
 
   defp dispatch(["import", path], opts) do
     with {:ok, root} <- required(opts, :store),

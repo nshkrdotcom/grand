@@ -82,3 +82,9 @@ record with the upstream v2 snapshot SHA-256, project, typed `entity`/`relation`
 status is invalid in this contract. `behavior_ref` schema_version 1 and existing
 requirement/assurance documents are not silently migrated; a separate v2 store
 namespace preserves old v1 lookup and immutable content. Elixir acceptance passed at G02B on Elixir 1.20.5 / OTP 29.1.2.
+
+## G03A additive implementation (runtime UNRUN)
+
+Additive `Grand.Core.G03` contract validators and `Grand.Core.LifecycleStore` bounded hash-chain immutable audit journal; pre-HEAD fault injection tests. v1 untouched.
+
+See root README and authoritative docset G03 design/verification. Toolchain Elixir 1.20.5-otp-29 / OTP 29.1.2 is not present in G03A, so G03B must independently execute six required Mix gates here.

@@ -106,3 +106,9 @@ receipts. It is never a proof or semantic-completeness assertion.
 G02B passed the ExUnit suite on the bundled **actual exported** P02B JSON
 under `fixtures/upstream/beamcompass-p02b`. G02A authoring was runtime UNRUN;
 see root `delivery/G02B-VALIDATION.md` for independent B acceptance.
+
+## G03A additive implementation (runtime UNRUN)
+
+Source-only `Grand.BeamCompass.Motif.retry_external_effect/1` deterministic question spike over existing typed V2 exact refs and bounded query receipts; original P02B unchanged.
+
+See root README and authoritative docset G03 design/verification. Toolchain Elixir 1.20.5-otp-29 / OTP 29.1.2 is not present in G03A, so G03B must independently execute six required Mix gates here.

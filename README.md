@@ -175,3 +175,29 @@ results, including failures and repairs. Python contract checks supplement
 Elixir execution. They do not establish runtime target behavior. G01B's
 historical verification remains unchanged. The authoritative docset owns the
 phase ledger and canonical next-A implementation prompt.
+
+## G03A — additive v2 specification/assumption lifecycle (authored; runtime UNRUN here)
+
+**Independent G03A portable delivery**, not a new runtime-verified baseline. G02B's 24-gate acceptance remains historical. Code, tests and docs are authored against Elixir **1.20.5-otp-29** and OTP **29.1.2** (`.tool-versions`; all four apps require `~> 1.20.5`); no Elixir/Mix was available in the G03A environment. Run each app's six gates at G03B; do not treat the Python checks as ExUnit passes.
+
+`Grand.Core.G03` defines additive strict `candidate_v2`, `requirement_v2`, `assumption_v2`, `obligation_v2` records without mutating v1. `Grand.Core.LifecycleStore` publishes canonical SHA-256 linked immutable commits via a single local writer lock and atomic HEAD rename, replaying and validating full contiguous histories; tests inject precommit/pre-HEAD failures, tampering and stale HEAD conflicts. Single-directory 512-commit and 4MB bounds; this does **not** guarantee durability against power-loss, hostile full-store rewrites, distributed writers or authenticated history.
+
+`Grand.Assurance.G03` supports candidate propose/reject/supersede, human-labelled requirement draft/submit/approve/reject/supersede, assumption register/revise (`external|compiler|model|runtime`, open gaps, no external attestation as proof), and obligation creation over **exact approved historical requirement revision, exact source refs, exact assumption revisions**, explicit witness/preconditions and typed vacuity/contradiction challenges. Receipts carry the pinned and latest assumption records and unresolved gaps; their verification is permanently `unrun` and coverage `unassessed` at G03. `human:` with `--ack-human` is a self-attestation string, **not authenticated identity or production authorization**; no agent approval or candidate auto-promotion.
+
+`Grand.BeamCompass.Motif.retry_external_effect/1` takes only validated imported v2 source-only JSON. It asks a reviewable question when a retry-labelled function is a typed resolved `performs_effect` source of an `effect` record; the preserved, omitted and unresolved *bounded* query receipt, exact refs, alternative explanation and limitations follow the question. This does **not** establish retries, external calls, bug, causality, equivalence or unknown performers. The included `fixtures/g03_synthetic_retry_v2.json` is **synthetic positive**, correctly rehashed, NOT an actual upstream export or proof. Original pinned P02B `a.json` is a required negative. Do not change BeamCompass source, wait for P03 or execute any target `mix.exs` or source anchors.
+
+From `monorepo/grand_cli` after importing the synthetic fixture (or other validated exact source), an illustrative lifecycle is:
+
+```sh
+mix grand import ../../fixtures/g03_synthetic_retry_v2.json --project fixture:synthetic-retry --schema 2 --store /tmp/grand-g03-demo
+mix grand g03 propose ../../fixtures/g03_candidate_input.json --actor agent:motif --store /tmp/grand-g03-demo
+mix grand g03 assumption register ../../fixtures/g03_assumption_input.json --actor human:reviewer --ack-human --store /tmp/grand-g03-demo
+mix grand g03 requirement draft ../../fixtures/g03_requirement_input.json --actor human:reviewer --ack-human --store /tmp/grand-g03-demo
+mix grand g03 requirement submit g03-confirm-once --actor human:reviewer --ack-human --store /tmp/grand-g03-demo
+mix grand g03 requirement approve g03-confirm-once --actor human:reviewer --ack-human --store /tmp/grand-g03-demo
+mix grand g03 obligation create ../../fixtures/g03_obligation_input.json --actor human:reviewer --ack-human --store /tmp/grand-g03-demo
+mix grand g03 receipt g03-obligation-once --store /tmp/grand-g03-demo --out /tmp/grand-g03-conditional.json
+mix grand g03 history requirement g03-confirm-once --store /tmp/grand-g03-demo
+```
+
+The imported snapshot ID is the digest reported by import; all fixture exact refs point to this particular synthetic digest. You can also `mix grand g03 motif propose fixture:synthetic-retry SNAPSHOT_ID --actor agent:motif --store /tmp/grand-g03-demo`, then explicitly reject the candidate as a human. Full CLI command/field details are in `Grand.CLI` help and the authoritative docset `contracts/interfaces.md`. G03A ExUnit cases in all four projects, including a real `System.cmd("mix", ["grand", ...])` subprocess lifecycle, are authored **UNRUN here**. Static checks: `python3 scripts/static_validate.py`, `python3 scripts/g02_contract_check.py`, `python3 scripts/g03_contract_check.py --docset PATH`. Existing G01/G02 source fixture and query receipts are unchanged.

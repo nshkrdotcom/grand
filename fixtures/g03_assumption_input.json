@@ -1,0 +1,21 @@
+{
+  "category": "external",
+  "evidence": [
+    {
+      "description": "Fixture operator attests deduplication; not independent evidence",
+      "kind": "attestation",
+      "source_refs": []
+    }
+  ],
+  "gaps": [
+    "No remote executed confirmation or service contract witness"
+  ],
+  "id": "g03-external-dedup",
+  "owner": "human:ops",
+  "scope": {
+    "project_id": "fixture:synthetic-retry",
+    "snapshot_id": "34939944d49cbce23b8af245f3a8343f1d447a98a17f70f2d469d6d9e8d9d75e",
+    "upstream_schema_version": 2
+  },
+  "statement": "External processor deduplicates retry requests by stable key."
+}

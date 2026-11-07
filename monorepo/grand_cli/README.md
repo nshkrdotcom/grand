@@ -96,3 +96,9 @@ projection. `export snapshot PROJECT SNAPSHOT --schema 2 --store DIR --out
 NEW_FILE` writes a validated portable upstream snapshot without overwriting.
 Legacy v1 commands (`link`, `approve`, `export REQUIREMENT_ID`) remain unchanged
 and do not accept a forged v2 fact. G02B independently passed the actual-export subprocess regressions.
+
+## G03A additive implementation (runtime UNRUN)
+
+Explicit `mix grand g03` JSON-only lifecycle/motif subcommands and a real Mix subprocess end-to-end test; legacy CLI preserved.
+
+See root README and authoritative docset G03 design/verification. Toolchain Elixir 1.20.5-otp-29 / OTP 29.1.2 is not present in G03A, so G03B must independently execute six required Mix gates here.
