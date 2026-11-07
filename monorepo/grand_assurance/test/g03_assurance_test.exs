@@ -357,6 +357,39 @@ defmodule Grand.Assurance.G03Test do
     assert {:ok, [^original]} = G03.history(root, "assumption", original["id"])
   end
 
+  test "human rejection is terminal and a forged initial approval is never published", %{
+    root: root
+  } do
+    assert {:ok, _} = G03.register_assumption(root, input("assumption"), opts())
+    assert {:ok, draft} = G03.draft_requirement(root, input("requirement"), opts())
+    assert {:ok, pending} = G03.review_requirement(root, draft["id"], "submit", opts())
+    assert {:ok, rejected} = G03.review_requirement(root, draft["id"], "reject", opts())
+    assert rejected["status"] == "rejected"
+    assert List.last(rejected["events"])["action"] == "reject"
+
+    assert {:error, :invalid_lifecycle_transition} =
+             G03.review_requirement(root, draft["id"], "approve", opts())
+
+    assert {:ok, [^draft, ^pending, ^rejected]} = G03.history(root, "requirement", draft["id"])
+
+    assert {:error, :requirement_revision_not_approved} =
+             G03.record_obligation(root, input("obligation"), opts())
+
+    approval = %{hd(draft["events"]) | "action" => "approve"}
+
+    forged = %{
+      draft
+      | "id" => "g03-forged-approval",
+        "status" => "approved",
+        "events" => [approval]
+    }
+
+    assert {:error, :invalid_initial_lifecycle_event} =
+             LifecycleStore.append(root, "requirement", forged, resolve_source: resolver())
+
+    assert {:error, _} = G03.latest(root, "requirement", forged["id"])
+  end
+
   defp approved_after_assumption(root) do
     {:ok, draft} = G03.draft_requirement(root, input("requirement"), opts())
     {:ok, pending} = G03.review_requirement(root, draft["id"], "submit", opts())
